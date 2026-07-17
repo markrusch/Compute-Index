@@ -1,0 +1,9 @@
+﻿# Static price entry — manually verified. null price = provider skipped (never invented).
+provider: hetzner
+url: https://www.hetzner.com/dedicated-rootserver/
+gpu_model: H100_SXM
+price_usd_per_gpu_hr: null
+gpu_count: 8
+country: DE
+config_notes: ""
+last_verified: null

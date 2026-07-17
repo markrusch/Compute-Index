@@ -1,0 +1,11 @@
+# EU/EEA-headquartered operators eligible for the EU-Sovereign-CRI sub-index.
+# Adding/removing a name is a methodology change: version bump + changelog + notice.
+sovereign_providers:
+  - nebius
+  - datacrunch
+  - scaleway
+  - ovhcloud
+  - hetzner
+  - genesis_cloud
+  - seeweb
+  - leaseweb

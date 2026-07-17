@@ -1,0 +1,9 @@
+﻿# Static price entry — manually verified. null price = provider skipped (never invented).
+provider: nebius
+url: https://nebius.com/prices
+gpu_model: H100_SXM
+price_usd_per_gpu_hr: null
+gpu_count: 8
+country: FI
+config_notes: ""
+last_verified: null

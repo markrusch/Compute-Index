@@ -1,0 +1,15 @@
+# Environments / secrets
+.venv/
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+build/
+dist/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+
+# NOTE: data/eucri.db and site/ outputs ARE committed by design (audit trail).

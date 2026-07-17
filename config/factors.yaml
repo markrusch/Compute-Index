@@ -1,0 +1,41 @@
+# EU-CRI methodology parameters. Every number that affects a published print lives here.
+# Changing anything in this file (or sovereign.yaml, index.py, normalise.py) requires a
+# methodology_version bump + CHANGELOG entry - enforced by CI (see GOVERNANCE.md).
+methodology_version: "0.1.0-dev"   # '-dev' relaxes the lock guard pre-launch; drop it at launch
+
+reference_unit:
+  gpu_model: H100_SXM        # NVIDIA H100 SXM 80GB
+  node_gpus: 8               # per-GPU price in an 8-GPU NVLink node configuration
+  term: on_demand            # no term commitment
+  location: EU_EEA           # datacenter physically in the EU/EEA
+  # excludes storage and egress; USD primary, EUR companion at ECB reference rate
+
+adjustment_factors:
+  H100_NVL_94GB: 1.0         # default until measured; applied multiplicatively to NVL prices
+
+filters:
+  min_gpu_count: 8           # offers below the node config are excluded
+  price_floor_usd: 0.25      # junk-listing guard: asks below this are excluded
+  price_ceiling_usd: 25.0    # sanity ceiling
+  datacenter_verified_only: true
+  exclude_tiers: [interruptible, spot, community]
+
+weights:
+  capacity_cap: 64           # weight = min(available_gpu_count, capacity_cap) where observable
+  default_capacity: 8        # ... else default_capacity
+  executable_multiplier: 2.0 # executable-quote sources weighted double list-price sources
+
+aggregation:
+  winsorise_pct: [5, 95]     # nearest-rank percentiles; values outside are clamped to boundary
+  min_providers: 5           # below this: value=null, flag='insufficient_sources'
+  smoothing_days: 7          # headline companion series: 7-day mean (>=4 non-null required)
+
+staleness:                   # static (manually verified) provider entries
+  warn_days: 45              # loader warns
+  exclude_days: 90           # excluded from the index with exclusion_reason='stale'
+
+quality:
+  jump_flag_pct: 30          # day-over-day provider move that flags (never excludes)
+
+eu_eea_countries: [AT, BE, BG, HR, CY, CZ, DK, EE, FI, FR, DE, GR, HU, IE, IT,
+                   LV, LT, LU, MT, NL, PL, PT, RO, SK, SI, ES, SE, IS, LI, NO]

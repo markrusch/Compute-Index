@@ -1,0 +1,32 @@
+name: test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install
+        run: pip install -e .[dev]
+      - name: Lint
+        run: ruff check src tests
+      - name: Types
+        run: mypy src/eucri
+      - name: Tests (includes methodology-lock guard)
+        run: pytest
+      - name: Database size check
+        run: |
+          if [ -f data/eucri.db ]; then
+            size=$(stat -c%s data/eucri.db)
+            echo "data/eucri.db: ${size} bytes"
+            if [ "$size" -gt 52428800 ]; then
+              echo "::warning::eucri.db exceeds 50 MB — revisit storage strategy (plan §10)"
+            fi
+          fi
