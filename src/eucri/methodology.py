@@ -37,7 +37,8 @@ def compute_hash(repo_root: Path | None = None) -> str:
         path = root / rel
         h.update(rel.encode("utf-8"))
         h.update(b"\x00")
-        h.update(path.read_bytes() if path.exists() else b"<absent>")
+        content = path.read_bytes() if path.exists() else b"<absent>"
+        h.update(content.replace(b"\r\n", b"\n"))  # hash must not depend on git eol conversion
         h.update(b"\x00")
     return h.hexdigest()
 

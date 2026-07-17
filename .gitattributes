@@ -1,0 +1,5 @@
+# LF everywhere: the METHODOLOGY.lock hash is computed over file bytes and must be
+# identical on Windows working copies and Linux CI checkouts.
+* text=auto eol=lf
+*.db binary
+*.png binary
