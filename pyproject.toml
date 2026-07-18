@@ -12,6 +12,7 @@ dependencies = [
     "requests>=2.31,<3",
     "PyYAML>=6.0,<7",
     "matplotlib>=3.8,<4",
+    "gpuhunt>=0.1,<1",
 ]
 
 [project.optional-dependencies]
@@ -49,6 +50,10 @@ disallow_untyped_defs = false
 module = ["eucri.index", "eucri.normalise"]
 disallow_untyped_defs = true
 strict_equality = true
+
+[[tool.mypy.overrides]]
+module = ["gpuhunt"]
+ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

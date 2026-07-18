@@ -128,7 +128,10 @@ Per UTC day and series:
    (nearest-rank; values outside are clamped to the boundary value).
 5. **Weight** per constituent = min(available GPU count, {f.weights.capacity_cap}) where
    observable, else {f.weights.default_capacity}; multiplied by
-   {f.weights.executable_multiplier} for executable-tier sources.
+   {f.weights.executable_multiplier} for executable-tier sources. Capacity counts as
+   observable only for executable marketplace listings (the sum of GPUs across that
+   provider's qualifying asks); list-price catalog rows disclose no capacity — their
+   multiplicity is region enumeration — so list constituents always carry the default.
 6. **Weighted median**: sort by (price ascending, provider name); the index value is the
    first price at which cumulative weight reaches 50% of total weight (lower weighted
    median, no interpolation).

@@ -17,6 +17,8 @@ from pathlib import Path
 from eucri import config, db
 from eucri.collectors import base
 from eucri.collectors.fx import collect_fx, latest_rate
+from eucri.collectors.gpuhunt_ import GpuHuntCollector
+from eucri.collectors.runpod import RunPodCollector
 from eucri.collectors.static_yaml import StaticYamlCollector
 from eucri.collectors.vast_ai import VastAiCollector
 from eucri.index import compute_print
@@ -33,7 +35,7 @@ SERIES_7D = "EU-CRI-H100-7D"
 
 
 def collectors_for_daily() -> list[base.Collector]:
-    return [VastAiCollector(), StaticYamlCollector()]
+    return [VastAiCollector(), RunPodCollector(), GpuHuntCollector(), StaticYamlCollector()]
 
 
 def _series_definitions(sovereign: frozenset[str]) -> dict[str, object]:
@@ -232,18 +234,14 @@ def cmd_daily(args: argparse.Namespace) -> int:
 
 
 def _maybe_outputs(conn: sqlite3.Connection) -> None:
-    """Charts/post regeneration once Phase 2 lands; never blocks the daily run."""
-    import importlib.util
+    """Charts + post regeneration; never blocks the daily run."""
+    from eucri.outputs import charts, post
 
-    if importlib.util.find_spec("eucri.outputs.charts") is None:
-        return
-    import importlib
-
-    charts = importlib.import_module("eucri.outputs.charts")
     try:
         charts.generate_all(conn)
+        post.generate_post(conn)
     except Exception:
-        log.exception("chart generation failed (fail-soft)")
+        log.exception("output generation failed (fail-soft)")
 
 
 def cmd_constituents(args: argparse.Namespace) -> int:
@@ -301,6 +299,15 @@ def cmd_backfill(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_post(args: argparse.Namespace) -> int:
+    from eucri.outputs import charts, post
+
+    conn = db.connect()
+    charts.generate_all(conn)
+    print(post.generate_post(conn))
+    return 0
+
+
 def dispatch(args: argparse.Namespace) -> int:
     if args.command == "daily":
         return cmd_daily(args)
@@ -308,4 +315,6 @@ def dispatch(args: argparse.Namespace) -> int:
         return cmd_constituents(args)
     if args.command == "backfill":
         return cmd_backfill(args)
+    if args.command == "post":
+        return cmd_post(args)
     raise SystemExit(f"command {args.command!r} is not implemented yet")

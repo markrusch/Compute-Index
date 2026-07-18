@@ -59,17 +59,24 @@ GOLDEN_ROWS = [
     # hyperscaler with unobservable capacity
     obs(provider="azure", source="gpuhunt", gpu_count=None, price_usd_per_gpu_hr=6.98,
         country="IE"),
+    # hyperscaler with two catalog rows (region enumeration != capacity):
+    obs(provider="aws", source="gpuhunt", gpu_count=8, price_usd_per_gpu_hr=6.55,
+        country="SE"),
+    obs(provider="aws", source="gpuhunt", gpu_count=8, price_usd_per_gpu_hr=7.10,
+        country="IE"),
 ]
 
 # Hand-computed expectations:
 # vast.ai: surviving offers 2.20, 2.60, 2.00(NVL x1.0) -> rep 2.00;
-#          capacity 8+8+16=32 -> weight min(32,64)=32 x2 = 64 (executable)
+#          executable capacity 8+8+16=32 -> weight min(32,64)=32 x2 = 64
 # runpod:  rep 2.79, capacity 8 -> weight 8 x2 = 16
-# seeweb 2.16 w8, datacrunch 3.25 w8, nebius 3.85 w8, azure 6.98 w8 (default capacity)
+# seeweb 2.16 w8, datacrunch 3.25 w8, nebius 3.85 w8 (list -> default capacity)
+# azure 6.98 w8 (unknown count), aws rep 6.55 w8 (two catalog rows are region
+#   enumeration, NOT capacity -> default weight, never a sum)
 # stale_prov: EXCLUDED (stale), recorded not dropped
-# included n=6 (>=5), winsorise 5/95 at n=6: bounds are min/max -> no clamping
-# weighted median: sorted [2.00 w64, 2.16 w8, 2.79 w16, 3.25 w8, 3.85 w8, 6.98 w8]
-#   total 112, half 56 -> cumulative 64 >= 56 at first -> value 2.00
+# included n=7 (>=5), winsorise 5/95 at n=7: bounds are min/max -> no clamping
+# weighted median: [2.00 w64, 2.16 w8, 2.79 w16, 3.25 w8, 3.85 w8, 6.55 w8, 6.98 w8]
+#   total 120, half 60 -> cumulative 64 >= 60 at first -> value 2.00
 # EUR: 2.00 / 1.1435 = 1.749016 (round 6)
 
 
@@ -83,7 +90,7 @@ def test_golden_headline() -> None:
     assert result.value_usd == 2.0
     assert result.value_eur == 1.749016
     assert result.fx_rate == 1.1435 and result.fx_date == "2026-07-17"
-    assert result.n_sources == 6
+    assert result.n_sources == 7
     assert result.n_executable == 2
     assert result.flags == ""
 
@@ -91,12 +98,15 @@ def test_golden_headline() -> None:
 def test_golden_constituent_audit() -> None:
     result = _compute()
     by_provider = {c.provider: c for c in result.constituents}
-    assert len(by_provider) == 7  # 6 included + 1 stale, all recorded
+    assert len(by_provider) == 8  # 7 included + 1 stale, all recorded
 
     vast = by_provider["vast.ai"]
     assert vast.included and vast.price_usd == 2.0 and vast.weight == 64.0
     assert by_provider["runpod"].weight == 16.0
     assert by_provider["azure"].weight == 8.0  # unobservable capacity -> default
+    aws = by_provider["aws"]
+    assert aws.price_usd == 6.55  # min over catalog rows
+    assert aws.weight == 8.0      # list rows never sum into capacity
 
     stale = by_provider["stale_prov"]
     assert not stale.included and stale.exclusion_reason == "stale"

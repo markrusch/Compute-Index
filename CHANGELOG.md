@@ -18,3 +18,10 @@ methodology memo (17 Jul 2026):
   datacenter-verified only); >30% day-over-day constituent moves flagged for review.
 - Governance: append-only observations and prints (trigger-enforced), constituent-level
   audit table, METHODOLOGY.lock hash guard in CI.
+- 2026-07-18 (still 0.1.0-dev, pre-launch): capacity weighting tightened after the
+  first live print — capacity counts as observable only for executable marketplace
+  listings; list-price catalog rows always carry the default weight. Rationale: a
+  hyperscaler catalog enumerating one instance type across N regions is not N units
+  of available capacity, and the sum rule let aws/azure/gcp each hit the 64-GPU
+  weight cap and set the median. Also: known sub-node configurations (e.g. 1x H100
+  instances) are excluded at any tier, not only for executable asks.

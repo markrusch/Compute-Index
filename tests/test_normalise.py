@@ -59,6 +59,12 @@ def test_list_with_unknown_count_passes() -> None:
     assert keep(obs(tier="list", gpu_count=None))
 
 
+def test_list_with_known_subnode_count_excluded() -> None:
+    # a 1x H100 instance's per-GPU price is not the 8-GPU node unit price
+    assert not keep(obs(tier="list", gpu_count=1))
+    assert not keep(obs(tier="list", gpu_count=4))
+
+
 def test_price_band() -> None:
     assert not keep(obs(price_usd_per_gpu_hr=0.10))   # junk-listing floor
     assert not keep(obs(price_usd_per_gpu_hr=30.0))   # sanity ceiling

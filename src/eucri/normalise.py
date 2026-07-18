@@ -66,11 +66,11 @@ def normalise_observations(rows: Iterable[RowLike], factors: Factors) -> list[No
             continue
 
         gpu_count = row["gpu_count"]
-        if row["tier"] == "executable":
-            # executable asks must demonstrably cover the node config
-            if gpu_count is None or gpu_count < factors.filters.min_gpu_count:
-                continue
-        # list prices are quoted per-GPU for the standard node; unknown count passes
+        if gpu_count is not None and gpu_count < factors.filters.min_gpu_count:
+            continue  # a known sub-node config never matches the unit (any tier)
+        if row["tier"] == "executable" and gpu_count is None:
+            continue  # executable asks must demonstrably cover the node config
+        # list prices with unknown count pass: quoted per-GPU for the standard node
 
         price = float(row["price_usd_per_gpu_hr"]) * factor
         if not (factors.filters.price_floor_usd <= price <= factors.filters.price_ceiling_usd):

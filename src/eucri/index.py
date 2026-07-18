@@ -81,9 +81,15 @@ def representative_constituents(
         best = min(chosen_pool, key=lambda o: o.price_usd)
         tier = best.tier
 
-        # capacity: sum of qualifying listed GPUs where observable, else default
-        counts = [o.gpu_count for o in chosen_pool if o.gpu_count is not None]
-        capacity = sum(counts) if counts else factors.weights.default_capacity
+        # capacity is only truly observable for executable marketplace listings (real
+        # rentable machines); a list-price catalog row discloses none — its multiplicity
+        # is region enumeration, not inventory. So: executable = sum of listed GPUs
+        # (capped), list = default_capacity.
+        if tier == "executable":
+            counts = [o.gpu_count for o in chosen_pool if o.gpu_count is not None]
+            capacity = sum(counts) if counts else factors.weights.default_capacity
+        else:
+            capacity = factors.weights.default_capacity
         weight = float(min(capacity, factors.weights.capacity_cap))
         if tier == "executable":
             weight *= factors.weights.executable_multiplier
