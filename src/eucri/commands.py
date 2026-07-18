@@ -219,6 +219,9 @@ def cmd_daily(args: argparse.Namespace) -> int:
 
     session = base.make_session()
     collect_fx(conn, session)  # fail-soft; calc falls back to last stored rate
+    from eucri.collectors.entsoe import collect_overlay
+
+    collect_overlay(conn, session, utc_date)  # overlay only; skips without token
     statuses = {
         c.name: base.run_collector(conn, c, utc_date, session) for c in collectors_for_daily()
     }
@@ -317,4 +320,8 @@ def dispatch(args: argparse.Namespace) -> int:
         return cmd_backfill(args)
     if args.command == "post":
         return cmd_post(args)
+    if args.command == "validate":
+        from eucri.validate import run_validate
+
+        return run_validate(db.connect())
     raise SystemExit(f"command {args.command!r} is not implemented yet")

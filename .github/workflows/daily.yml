@@ -1,0 +1,47 @@
+name: daily
+
+on:
+  schedule:
+    - cron: "0 11 * * *"   # 11:00 UTC daily
+  workflow_dispatch: {}     # manual trigger for catch-up runs
+
+concurrency:
+  group: daily-run          # overlapping runs must never race the committed db
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  daily:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install
+        run: pip install -e .
+      - name: Daily run (collect + compute + outputs)
+        env:
+          ENTSOE_TOKEN: ${{ secrets.ENTSOE_TOKEN }}
+          SHADEFORM_API_KEY: ${{ secrets.SHADEFORM_API_KEY }}
+        run: python -m eucri.run daily
+      - name: Weekly validation report (Mondays, warn-only)
+        if: ${{ github.event_name == 'schedule' }}
+        run: |
+          if [ "$(date -u +%u)" = "1" ]; then
+            python -m eucri.run validate || echo "::warning::validate reported issues"
+          fi
+      - name: Commit data + outputs
+        run: |
+          git config user.name "eucri-bot"
+          git config user.email "rusch.mh@gmail.com"
+          git add data/eucri.db site/
+          if git diff --cached --quiet; then
+            echo "nothing to commit"
+          else
+            git pull --rebase origin main
+            git commit -m "daily: $(date -u +%F)"
+            git push origin main
+          fi
