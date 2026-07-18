@@ -5,5 +5,5 @@ gpu_model: H100_SXM
 price_usd_per_gpu_hr: null
 gpu_count: 8
 country: NO
-config_notes: ""
+config_notes: "genesiscloud.com/pricing and root returned 404 on 2026-07-18; site may have moved - check manually."
 last_verified: null

@@ -5,5 +5,5 @@ gpu_model: H100_SXM
 price_usd_per_gpu_hr: null
 gpu_count: 8
 country: DE
-config_notes: ""
+config_notes: "No public H100-class hourly offering found (GEX line is RTX-class); confirm manually before removing from the constituent list."
 last_verified: null

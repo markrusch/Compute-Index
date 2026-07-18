@@ -5,5 +5,5 @@ gpu_model: H100_SXM
 price_usd_per_gpu_hr: null
 gpu_count: 8
 country: FR
-config_notes: ""
+config_notes: "H100 listed as available GPU type but prices render via JS only (checked 2026-07-18); fill manually."
 last_verified: null

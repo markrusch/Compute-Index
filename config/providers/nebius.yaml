@@ -1,9 +1,9 @@
-﻿# Static price entry — manually verified. null price = provider skipped (never invented).
+# Static price entry - manually verified. null price = provider skipped (never invented).
 provider: nebius
 url: https://nebius.com/prices
 gpu_model: H100_SXM
-price_usd_per_gpu_hr: null
+price_usd_per_gpu_hr: 3.85
 gpu_count: 8
 country: FI
-config_notes: ""
-last_verified: null
+config_notes: "NVIDIA HGX H100, on-demand per GPU-hour, USD, from public pricing page (16 vCPU / 200 GB RAM per GPU)."
+last_verified: "2026-07-18"

@@ -5,5 +5,5 @@ gpu_model: H100_SXM
 price_usd_per_gpu_hr: null
 gpu_count: 8
 country: NL
-config_notes: ""
+config_notes: "GPU dedicated servers are monthly-billed (term-committed) - outside the on-demand unit definition; entry kept for a possible future hourly product."
 last_verified: null

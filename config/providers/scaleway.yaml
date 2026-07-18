@@ -1,9 +1,9 @@
-﻿# Static price entry — manually verified. null price = provider skipped (never invented).
+# Static price entry - manually verified. null price = provider skipped (never invented).
 provider: scaleway
 url: https://www.scaleway.com/en/pricing/gpu/
 gpu_model: H100_SXM
 price_usd_per_gpu_hr: null
 gpu_count: 8
 country: FR
-config_notes: ""
+config_notes: "H100-SXM-8-80G instance exists (PAR-2) but prices render via JS only (checked 2026-07-18); fill manually from console/pricing page."
 last_verified: null

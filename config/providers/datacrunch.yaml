@@ -1,9 +1,11 @@
-﻿# Static price entry — manually verified. null price = provider skipped (never invented).
+# Static price entry - manually verified. null price = provider skipped (never invented).
+# NOTE: DataCrunch rebranded to Verda (datacrunch.io 301s to verda.com); provider id kept
+# as 'datacrunch' for series continuity, listed in sovereign.yaml under this id.
 provider: datacrunch
-url: https://datacrunch.io/pricing
+url: https://verda.com/pricing
 gpu_model: H100_SXM
-price_usd_per_gpu_hr: null
+price_usd_per_gpu_hr: 3.25
 gpu_count: 8
 country: FI
-config_notes: ""
-last_verified: null
+config_notes: "H100 SXM5 80GB pay-as-you-go, $3.25/GPU-hr from public page (quoted for 1x config; 8x node assumed same per-GPU rate - re-verify)."
+last_verified: "2026-07-18"
