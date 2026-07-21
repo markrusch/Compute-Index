@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-21T19:02:13Z",
+  "generated_at": "2026-07-21T19:24:58Z",
   "eucri_version": "0.1.0",
   "methodology_version": "0.2.0-dev",
   "disclaimer": "EU-CRI is a research publication. It is not investment advice and is not administered as a benchmark under EU Regulation 2016/1011; it may not be used as a reference price in financial instruments.",
@@ -15,7 +15,9 @@
       "n_executable": 1,
       "flags": "bootstrap_weights",
       "wow_pct": null,
-      "mom_pct": null
+      "mom_pct": null,
+      "prev_date": "2026-07-19",
+      "prev_value_usd": 3.25
     },
     "EU-CRI-H100-7D": {
       "date": "2026-07-21",
@@ -57,7 +59,9 @@
       "n_executable": 0,
       "flags": "bootstrap_weights",
       "wow_pct": null,
-      "mom_pct": null
+      "mom_pct": null,
+      "prev_date": "2026-07-19",
+      "prev_value_usd": 3.85
     },
     "EU-CRI-A100": {
       "date": "2026-07-21",
@@ -80,7 +84,9 @@
         "weight": 15.0,
         "included": true,
         "exclusion_reason": null,
-        "flags": ""
+        "flags": "",
+        "url": "https://www.seeweb.it/en/products/cloud-server-gpu",
+        "note": "EUR 1.89/hr on-demand H100 from public page, converted at ECB EUR/USD 1.1435 (2026-07-17). Page config text ambiguous ('1 GPU, 320 GB GPU RAM') - re-verify GPU count semantics at next refresh."
       },
       {
         "provider": "runpod",
@@ -90,7 +96,9 @@
         "weight": 25.0,
         "included": true,
         "exclusion_reason": null,
-        "flags": "weight_capped"
+        "flags": "weight_capped",
+        "url": "https://www.runpod.io/console/gpu-cloud",
+        "note": "Secure Cloud pricing via RunPod's public GraphQL API."
       },
       {
         "provider": "datacrunch",
@@ -100,7 +108,9 @@
         "weight": 15.0,
         "included": true,
         "exclusion_reason": null,
-        "flags": ""
+        "flags": "",
+        "url": "https://verda.com/pricing",
+        "note": "H100 SXM5 80GB pay-as-you-go, $3.25/GPU-hr from public page (quoted for 1x config; 8x node assumed same per-GPU rate - re-verify)."
       },
       {
         "provider": "nebius",
@@ -110,7 +120,9 @@
         "weight": 15.0,
         "included": true,
         "exclusion_reason": null,
-        "flags": ""
+        "flags": "",
+        "url": "https://nebius.com/prices",
+        "note": "NVIDIA HGX H100, on-demand per GPU-hour, USD, from public pricing page (16 vCPU / 200 GB RAM per GPU)."
       },
       {
         "provider": "gcp",
@@ -120,7 +132,9 @@
         "weight": 15.0,
         "included": true,
         "exclusion_reason": null,
-        "flags": ""
+        "flags": "",
+        "url": "https://cloud.google.com/compute/gpus-pricing",
+        "note": "A3 (8x H100) on-demand list price, EU regions, via the gpuhunt catalog."
       },
       {
         "provider": "aws",
@@ -130,7 +144,9 @@
         "weight": 15.0,
         "included": true,
         "exclusion_reason": null,
-        "flags": ""
+        "flags": "",
+        "url": "https://aws.amazon.com/ec2/instance-types/p5/",
+        "note": "EC2 P5 (8x H100) on-demand list price, EU regions, via the gpuhunt catalog."
       }
     ],
     "EU-CRI-A100": [
@@ -142,9 +158,37 @@
         "weight": 16.0,
         "included": true,
         "exclusion_reason": null,
-        "flags": ""
+        "flags": "",
+        "url": "https://www.runpod.io/console/gpu-cloud",
+        "note": "Secure Cloud pricing via RunPod's public GraphQL API."
       }
     ]
   },
-  "weight_review": null
+  "weight_review": null,
+  "sources": [
+    {
+      "source": "vast_ai",
+      "label": "Vast.ai marketplace API",
+      "url": "https://cloud.vast.ai/",
+      "endpoint": "POST console.vast.ai/api/v0/bundles/"
+    },
+    {
+      "source": "runpod",
+      "label": "RunPod GraphQL API",
+      "url": "https://www.runpod.io/",
+      "endpoint": "POST api.runpod.io/graphql"
+    },
+    {
+      "source": "gpuhunt",
+      "label": "gpuhunt (dstack open-source catalogs)",
+      "url": "https://github.com/dstackai/gpuhunt",
+      "endpoint": "aws/azure/gcp public catalog prices"
+    },
+    {
+      "source": "static_yaml",
+      "label": "Manually verified public pricing pages",
+      "url": "https://github.com/markrusch/Compute-Index/tree/main/config/providers",
+      "endpoint": "config/providers/*.yaml, refreshed manually with a last_verified date"
+    }
+  ]
 }

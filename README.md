@@ -54,9 +54,34 @@ pytest
   normalisation, index calculation, outputs
 - `data/eucri.db` — SQLite, committed; observations and prints are append-only
   (trigger-enforced)
-- `site/` — the live dashboard (`index.html`), CSV history, charts, and `data/latest.json`
-  (constituents + weight review for the dashboard), all regenerated daily. Deployed to
+- `site/` — the live dashboard (`index.html`), CSV history, charts, `data/latest.json`
+  (constituents, weight review, and per-source weblinks for the dashboard), and
+  `api/refresh.js` (Vercel-only serverless function). Regenerated daily. Deployed to
   GitHub Pages by `.github/workflows/pages.yml` on every push that touches `site/`.
+- `config/source_links.yaml` — reference weblinks for the dashboard's Sources panel and
+  per-constituent links. Presentational only; not part of METHODOLOGY.lock.
+
+## Deploying the dashboard
+
+`site/` is a self-contained static site plus one optional serverless endpoint, so it can
+be hosted anywhere that serves static files. Two targets are wired up:
+
+- **GitHub Pages** (works out of the box): `.github/workflows/pages.yml` deploys `site/`
+  on every push. The dashboard degrades gracefully here — the "Request today's
+  collection" button reports "live refresh isn't available on this mirror" since Pages
+  has no serverless functions.
+- **Vercel** (adds live refresh): import the repo as a Vercel project with **Root
+  Directory set to `site`**. This serves the same dashboard plus `api/refresh.js`, which
+  lets a visitor trigger `daily.yml` on demand when today hasn't been collected yet.
+  Requires two Vercel **Environment Variables** (Project Settings → Environment
+  Variables — never committed to the repo):
+  - `GITHUB_DISPATCH_TOKEN` — a token scoped to just this repo's Actions
+    (read/write), e.g. a fine-grained PAT limited to `markrusch/Compute-Index`
+  - `GITHUB_REPO` — `markrusch/Compute-Index`
+
+  The refresh endpoint refuses any date other than today (in UTC): these collectors
+  report live market prices, not history, so a past date can never be honestly
+  re-collected — see `GOVERNANCE.md` and `STYLE.md` on why a gap stays a gap.
 
 ## Changing the methodology
 

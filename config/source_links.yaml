@@ -1,0 +1,54 @@
+# Reference links for the dashboard's "sources" panel and per-constituent weblinks.
+# Presentational metadata only -- never read by the calculation path (index.py,
+# normalise.py), so this file is NOT part of METHODOLOGY.lock. Static-yaml providers
+# (config/providers/*.yaml) already carry their own authoritative `url` field and take
+# precedence over any entry here; this file covers everything else the collectors see:
+# executable-quote marketplaces and the hyperscalers gpuhunt aggregates.
+#
+# tier: 'executable' | 'list' -- mirrors normalise.py's tier, shown as a badge.
+# collected_via: the eucri collector module responsible (matches observations.source).
+
+providers:
+  vast.ai:
+    url: https://cloud.vast.ai/
+    tier: executable
+    collected_via: vast_ai
+    note: "Public marketplace search API; datacenter-verified hosts only."
+  runpod:
+    url: https://www.runpod.io/console/gpu-cloud
+    tier: executable
+    collected_via: runpod
+    note: "Secure Cloud pricing via RunPod's public GraphQL API."
+  aws:
+    url: https://aws.amazon.com/ec2/instance-types/p5/
+    tier: list
+    collected_via: gpuhunt
+    note: "EC2 P5 (8x H100) on-demand list price, EU regions, via the gpuhunt catalog."
+  azure:
+    url: https://learn.microsoft.com/en-us/azure/virtual-machines/nd-h100-v5-series
+    tier: list
+    collected_via: gpuhunt
+    note: "ND H100 v5-series on-demand list price, EU regions, via the gpuhunt catalog."
+  gcp:
+    url: https://cloud.google.com/compute/gpus-pricing
+    tier: list
+    collected_via: gpuhunt
+    note: "A3 (8x H100) on-demand list price, EU regions, via the gpuhunt catalog."
+
+collectors:
+  vast_ai:
+    label: "Vast.ai marketplace API"
+    url: https://cloud.vast.ai/
+    endpoint: "POST console.vast.ai/api/v0/bundles/"
+  runpod:
+    label: "RunPod GraphQL API"
+    url: https://www.runpod.io/
+    endpoint: "POST api.runpod.io/graphql"
+  gpuhunt:
+    label: "gpuhunt (dstack open-source catalogs)"
+    url: https://github.com/dstackai/gpuhunt
+    endpoint: "aws/azure/gcp public catalog prices"
+  static_yaml:
+    label: "Manually verified public pricing pages"
+    url: https://github.com/markrusch/Compute-Index/tree/main/config/providers
+    endpoint: "config/providers/*.yaml, refreshed manually with a last_verified date"

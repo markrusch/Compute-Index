@@ -13,9 +13,11 @@ import sqlite3
 from datetime import datetime, timedelta
 from pathlib import Path
 
+import yaml
+
 from eucri import DISCLAIMER, __version__
 from eucri.commands import COMPOSITE, SERIES_BY_CLASS
-from eucri.config import load_factors
+from eucri.config import CONFIG_DIR, load_factors, load_static_providers
 from eucri.db import utc_now_iso
 
 log = logging.getLogger("eucri.outputs.webdata")
@@ -45,10 +47,52 @@ def _value_on(conn: sqlite3.Connection, series: str, date: str) -> float | None:
     return row["value_usd"] if row else None
 
 
+def _prior_print(
+    conn: sqlite3.Connection, series: str, before_date: str
+) -> tuple[str, float] | None:
+    """The most recent (date, value_usd) strictly before before_date, for the print-meta tile."""
+    row = conn.execute(
+        "SELECT date, value_usd FROM daily_index WHERE series = ? AND date < ?"
+        " AND value_usd IS NOT NULL ORDER BY date DESC, revision DESC LIMIT 1",
+        (series, before_date),
+    ).fetchone()
+    return (row["date"], row["value_usd"]) if row else None
+
+
 def _pct(new: float | None, old: float | None) -> float | None:
     if new is None or old is None or old == 0:
         return None
     return round((new - old) / old * 100.0, 4)
+
+
+def _load_source_links() -> dict:
+    path = CONFIG_DIR / "source_links.yaml"
+    if not path.exists():
+        return {"providers": {}, "collectors": {}}
+    return yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+
+
+def _provider_links() -> dict[str, dict]:
+    """provider -> {url, note}. Static-yaml providers' own url wins (authoritative)."""
+    links = _load_source_links()
+    out: dict[str, dict] = {
+        name: {"url": entry.get("url"), "note": entry.get("note")}
+        for name, entry in (links.get("providers") or {}).items()
+    }
+    for p in load_static_providers():
+        if p.url:
+            out[p.provider] = {"url": p.url, "note": p.config_notes or None}
+    return out
+
+
+def _sources_panel() -> list[dict]:
+    """Collector-level catalogue for the dashboard's Sources panel."""
+    links = _load_source_links()
+    return [
+        {"source": name, "label": c.get("label"), "url": c.get("url"),
+         "endpoint": c.get("endpoint")}
+        for name, c in (links.get("collectors") or {}).items()
+    ]
 
 
 def _series_snapshot(conn: sqlite3.Connection) -> dict:
@@ -73,6 +117,9 @@ def _series_snapshot(conn: sqlite3.Connection) -> dict:
             mom_date = (d - timedelta(days=30)).strftime("%Y-%m-%d")
             entry["wow_pct"] = _pct(row["value_usd"], _value_on(conn, series, wow_date))
             entry["mom_pct"] = _pct(row["value_usd"], _value_on(conn, series, mom_date))
+            prior = _prior_print(conn, series, row["date"])
+            entry["prev_date"] = prior[0] if prior else None
+            entry["prev_value_usd"] = prior[1] if prior else None
         out[series] = entry
     return out
 
@@ -89,12 +136,15 @@ def _constituents(conn: sqlite3.Connection, series: str, date: str) -> list[dict
         " ORDER BY included DESC, price_usd",
         (date, series, row["rev"]),
     ).fetchall()
+    links = _provider_links()
     return [
         {
             "provider": c["provider"], "source": c["source"], "tier": c["tier"],
             "price_usd": c["price_usd"], "weight": round(c["weight"], 4),
             "included": bool(c["included"]), "exclusion_reason": c["exclusion_reason"],
             "flags": c["flags"],
+            "url": (links.get(c["provider"]) or {}).get("url"),
+            "note": (links.get(c["provider"]) or {}).get("note"),
         }
         for c in cons
     ]
@@ -156,6 +206,7 @@ def generate(conn: sqlite3.Connection) -> Path:
         "series": _series_snapshot(conn),
         "constituents": {},
         "weight_review": None,
+        "sources": _sources_panel(),
     }
     if head is not None:
         for series in SERIES_BY_CLASS.values():

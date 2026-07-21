@@ -7,14 +7,14 @@
 <meta name="description" content="EU-CRI: a daily, methodology-transparent reference price for renting AI compute in Europe. Open source, IOSCO-aligned, published by Mark Rusch.">
 <style>
   :root{
-    --ink:#1a1a1a; --muted:#5a5f6a; --line:#e6e8eb; --bg:#ffffff; --panel:#f7f8fa;
+    --ink:#1a1a1a; --muted:#5a5f6a; --faint:#9099a6; --line:#e6e8eb; --bg:#ffffff; --panel:#f7f8fa;
     --accent:#1f3864; --accent2:#2e74b5; --good:#1f7a4d; --warn:#a15c00;
     --mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
     --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
   }
   *{box-sizing:border-box}
   body{margin:0; font-family:var(--sans); color:var(--ink); background:var(--bg); line-height:1.55}
-  .wrap{max-width:880px; margin:0 auto; padding:0 24px}
+  .wrap{max-width:920px; margin:0 auto; padding:0 24px}
   header.site{border-bottom:1px solid var(--line); padding:28px 0 20px}
   header.site .wrap{display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:8px}
   .brand{font-weight:700; font-size:20px; letter-spacing:.2px; color:var(--accent)}
@@ -35,6 +35,25 @@
   .print-meta .m b{display:block; color:var(--ink); font-size:15px; font-variant-numeric:tabular-nums}
   .flagline{margin-top:14px; font-size:13px; color:var(--warn)}
   .flagline.ok{color:var(--good)}
+
+  .toolbar{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:16px}
+  .btn-ghost{background:#fff; border:1px solid var(--line); color:var(--accent); font-size:13px; font-weight:600;
+    padding:7px 14px; border-radius:7px; cursor:pointer; font-family:inherit}
+  .btn-ghost:hover{border-color:var(--accent2); color:var(--accent2)}
+  .btn-ghost:disabled{opacity:.5; cursor:default}
+  .status-msg{font-size:13px; color:var(--muted)}
+  .status-msg.err{color:var(--warn)}
+  .status-msg.ok{color:var(--good)}
+
+  .gap-note{background:#fbf6ec; border:1px solid #f0e4cc; color:#7a5c1e; border-radius:8px; padding:12px 16px; font-size:13.5px; margin-top:16px}
+  .gap-note code{background:#f4ead2; padding:1px 5px; border-radius:4px; font-size:12.5px}
+
+  .tiles{display:grid; grid-template-columns:repeat(auto-fit, minmax(140px,1fr)); gap:12px; margin:22px 0 6px}
+  .tile{border:1px solid var(--line); border-radius:10px; padding:14px 16px; background:#fff}
+  .tile .tl-label{font-size:11.5px; text-transform:uppercase; letter-spacing:.4px; color:var(--muted); margin-bottom:6px}
+  .tile .tl-value{font-size:19px; font-weight:700; font-variant-numeric:tabular-nums; color:var(--ink)}
+  .tile .tl-value.muted{font-size:13px; font-weight:500; color:var(--faint)}
+  .tile .tl-sub{font-size:11px; color:var(--faint); margin-top:5px}
 
   .charts{display:grid; grid-template-columns:1fr; gap:18px; margin:28px 0}
   .chart-box{border:1px solid var(--line); border-radius:10px; overflow:hidden; background:#fff}
@@ -68,8 +87,19 @@
   table.cons tr:last-child td{border-bottom:none}
   table.cons tr.excluded{opacity:.5}
   table.cons .prov{font-weight:600}
+  table.cons .prov a{color:inherit; text-decoration:none; border-bottom:1px dotted #b7bdc7}
+  table.cons .prov a:hover{color:var(--accent2); border-bottom-color:var(--accent2)}
   table.cons .tier{color:var(--muted); font-size:12.5px}
+  .ext-icon{font-size:10px; color:var(--faint); margin-left:3px; text-decoration:none}
   .flag-pill{display:inline-block; font-size:10.5px; font-weight:600; color:var(--warn); background:#fbf1e2; padding:2px 7px; border-radius:20px; margin:1px 3px 1px 0; white-space:nowrap}
+
+  table.src{width:100%; border-collapse:collapse; font-size:13.5px; margin-top:10px}
+  table.src th{text-align:left; font-size:11.5px; text-transform:uppercase; letter-spacing:.4px; color:var(--muted); font-weight:600; padding:8px 10px 7px; border-bottom:1px solid var(--line)}
+  table.src td{padding:9px 10px; border-bottom:1px solid var(--line); vertical-align:top}
+  table.src tr:last-child td{border-bottom:none}
+  table.src a{color:var(--accent2); text-decoration:none}
+  table.src a:hover{text-decoration:underline}
+  table.src .endpoint{font-family:var(--mono); font-size:12px; color:var(--muted)}
 
   .weights-note{color:var(--muted); font-size:14px; max-width:640px; margin:0 0 16px}
   .wrow{display:grid; grid-template-columns:130px 1fr 54px; align-items:center; gap:12px; margin-bottom:8px; font-size:13.5px}
@@ -79,7 +109,7 @@
   .wpct{text-align:right; color:var(--muted); font-variant-numeric:tabular-nums; font-size:12.5px}
   .wclass-label{font-size:12.5px; font-weight:700; color:var(--accent); text-transform:uppercase; letter-spacing:.4px; margin:14px 0 8px}
   .wclass-label:first-child{margin-top:0}
-  #constituents.hidden, #weights.hidden{display:none}
+  #constituents.hidden, #weights.hidden, #sources.hidden, #subindices.hidden{display:none}
 </style>
 </head>
 <body>
@@ -88,8 +118,8 @@
   <div class="wrap">
     <div class="brand">EU-CRI<small>European Compute Rental Index</small></div>
     <nav class="top">
+      <a href="#sources">Sources</a>
       <a href="#methodology">Methodology</a>
-      <a href="#data">Data</a>
       <a id="nav-github" href="#" target="_blank" rel="noopener">GitHub</a>
       <a id="nav-substack" href="#" target="_blank" rel="noopener">Substack</a>
     </nav>
@@ -121,6 +151,15 @@
   </div>
   <div class="flagline" id="flagline"></div>
 
+  <div class="toolbar">
+    <button class="btn-ghost" id="btn-refresh" type="button">↻ Refresh</button>
+    <button class="btn-ghost hidden" id="btn-request" type="button">Request today's collection</button>
+    <span class="status-msg" id="refresh-status"></span>
+  </div>
+  <div class="gap-note hidden" id="gap-note"></div>
+
+  <div class="tiles hidden" id="subindices"></div>
+
   <div class="charts" id="data">
     <div class="chart-box">
       <img src="charts/headline_7d.png" alt="EU-CRI-H100 headline series" loading="lazy">
@@ -138,13 +177,25 @@
   <section id="constituents" class="hidden">
     <h2>Today’s constituents — EU-CRI-H100</h2>
     <p>Every provider behind the latest print: price, the weight it carried in that print
-      (post concentration-cap, so included weights sum to 100), and its status. Excluded rows
-      are kept, not dropped — a full audit trail, always.</p>
+      (post concentration-cap, so included weights sum to 100), and its status. Provider names
+      link to the actual public page or API the price came from. Excluded rows are kept, not
+      dropped — a full audit trail, always.</p>
     <table class="cons">
       <thead><tr>
         <th>Provider</th><th>Tier</th><th class="num">Price</th><th class="num">Weight</th><th>Status</th>
       </tr></thead>
       <tbody id="cons-body"></tbody>
+    </table>
+  </section>
+
+  <section id="sources" class="hidden">
+    <h2 id="sources-anchor">Data sources</h2>
+    <p>The collectors behind every observation. Public pages and public APIs only — no logins,
+      one request per source per day. Full collection conduct and per-source ToS basis:
+      <code>SOURCES.md</code> in the repository.</p>
+    <table class="src">
+      <thead><tr><th>Source</th><th>What it is</th><th>Endpoint</th></tr></thead>
+      <tbody id="src-body"></tbody>
     </table>
   </section>
 
@@ -178,6 +229,8 @@
         parameter and weight review is a citable number.</li>
       <li>Governance and correction policy: <code>GOVERNANCE.md</code>.</li>
       <li>Data sources and collection conduct: <code>SOURCES.md</code>.</li>
+      <li>Full daily history as CSV: <a id="csv-link" href="data/index_history.csv">data/index_history.csv</a> —
+        every print, every series, every revision.</li>
       <li>All of it, plus the code that computes the print above: the public repository (link top right).</li>
     </ul>
   </section>
@@ -220,15 +273,14 @@
 const GITHUB_REPO_URL = "https://github.com/markrusch/Compute-Index";
 const SUBSTACK_URL   = "https://computeindex.substack.com";
 /* --------------------------------------------------------------------------
-   This page reads data/index_history.csv at load time, so the headline
-   number updates automatically every day the GitHub Action commits a new
-   print — no rebuild of this file required. If the fetch fails (e.g. opened
-   from disk via file://), it falls back to the values below, refreshed at
-   the last time this file was hand-edited.
+   Primary data source: data/latest.json (server-computed: values, deltas,
+   constituents, weights, sources). Falls back to parsing data/index_history.csv
+   for the hero print if latest.json is unavailable, and to a hand-edited
+   FALLBACK constant if both fetches fail (e.g. opened via file://).
    -------------------------------------------------------------------------- */
 const FALLBACK = {
-  date: "2026-07-19", value_usd: 3.25, value_eur: 2.84, fx_rate: 1.1435, fx_date: "2026-07-17",
-  n_sources: 6, n_executable: 1, flags: "", prev_date: "2026-07-18", prev_value_usd: 2.99
+  date: "2026-07-21", value_usd: 3.25, value_eur: 2.85, fx_rate: 1.1418, fx_date: "2026-07-21",
+  n_sources: 6, n_executable: 1, flags: "bootstrap_weights", prev_date: "2026-07-19", prev_value_usd: 3.25
 };
 
 document.getElementById("nav-github").href = GITHUB_REPO_URL;
@@ -237,8 +289,14 @@ document.getElementById("cta-substack").href = SUBSTACK_URL;
 
 function fmtUsd(v){ return "$" + Number(v).toFixed(2); }
 function fmtEur(v){ return "€" + Number(v).toFixed(2); }
+function fmtDateHuman(iso){
+  if (!iso) return "—";
+  const d = new Date(iso + "T00:00:00Z");
+  return d.toLocaleDateString(undefined, { day: "2-digit", month: "short", year: "numeric", timeZone: "UTC" });
+}
+function todayUtc(){ return new Date().toISOString().slice(0, 10); }
 
-function render(row, prevRow){
+function renderHero(row, prevRow){
   const hasValue = row.value_usd !== null && row.value_usd !== undefined && row.value_usd !== "";
   document.getElementById("headline-value").innerHTML = hasValue
     ? fmtUsd(row.value_usd) + " <small>/ GPU-hr &nbsp;·&nbsp; " + fmtEur(row.value_eur) + "</small>"
@@ -263,15 +321,13 @@ function render(row, prevRow){
     flagEl.textContent = "No flags on the latest print.";
     flagEl.classList.add("ok");
   }
-  document.getElementById("footer-updated").textContent =
-    "Page loaded " + new Date().toISOString().slice(0,16).replace("T"," ") + " UTC · data refreshed live from data/index_history.csv where available.";
 }
 
 function parseCsv(text){
   const lines = text.trim().split("\n");
   const header = lines[0].split(",");
   const idx = Object.fromEntries(header.map((h,i)=>[h.trim(), i]));
-  const rows = lines.slice(1).map(line => {
+  return lines.slice(1).map(line => {
     const c = line.split(",");
     return {
       date: c[idx.date], series: c[idx.series],
@@ -282,7 +338,6 @@ function parseCsv(text){
       flags: c[idx.flags], revision: parseInt(c[idx.revision] || "1", 10)
     };
   });
-  return rows;
 }
 
 function latestByDate(rows, series){
@@ -294,48 +349,89 @@ function latestByDate(rows, series){
   return [...byDate.values()].sort((a,b) => a.date.localeCompare(b.date));
 }
 
-fetch("data/index_history.csv", { cache: "no-store" })
-  .then(r => { if (!r.ok) throw new Error("csv fetch failed"); return r.text(); })
-  .then(text => {
-    const series = latestByDate(parseCsv(text), "EU-CRI-H100");
-    if (series.length === 0) throw new Error("no rows");
-    const latest = series[series.length - 1];
-    const prev = series.length > 1 ? series[series.length - 2] : null;
-    render(latest, prev);
-  })
-  .catch(() => {
-    render(
-      { date: FALLBACK.date, value_usd: FALLBACK.value_usd, value_eur: FALLBACK.value_eur,
-        fx_rate: FALLBACK.fx_rate, fx_date: FALLBACK.fx_date, n_sources: FALLBACK.n_sources,
-        n_executable: FALLBACK.n_executable, flags: FALLBACK.flags },
-      { date: FALLBACK.prev_date, value_usd: FALLBACK.prev_value_usd }
-    );
-  });
-
-/* ---- constituents table + weight-review panel, from data/latest.json ----
-   Independent of the CSV/FALLBACK flow above: if this fetch fails (e.g. the
-   page opened via file://, or the first daily run hasn't produced the file
-   yet), the two sections simply stay hidden rather than showing stale or
-   fabricated numbers — same "a gap is credible" rule as the index itself. */
-function fmtDateHuman(iso){
-  if (!iso) return "—";
-  const d = new Date(iso + "T00:00:00Z");
-  return d.toLocaleDateString(undefined, { day: "2-digit", month: "short", year: "numeric", timeZone: "UTC" });
+function heroFromCsv(){
+  return fetch("data/index_history.csv", { cache: "no-store" })
+    .then(r => { if (!r.ok) throw new Error("csv fetch failed"); return r.text(); })
+    .then(text => {
+      const series = latestByDate(parseCsv(text), "EU-CRI-H100");
+      if (series.length === 0) throw new Error("no rows");
+      const latest = series[series.length - 1];
+      const prev = series.length > 1 ? series[series.length - 2] : null;
+      return { row: latest, prev };
+    });
 }
 
+function heroFromFallback(){
+  return {
+    row: { date: FALLBACK.date, value_usd: FALLBACK.value_usd, value_eur: FALLBACK.value_eur,
+           fx_rate: FALLBACK.fx_rate, fx_date: FALLBACK.fx_date, n_sources: FALLBACK.n_sources,
+           n_executable: FALLBACK.n_executable, flags: FALLBACK.flags },
+    prev: { date: FALLBACK.prev_date, value_usd: FALLBACK.prev_value_usd },
+  };
+}
+
+/* ---------------------------------------------------------------- sub-indices --- */
+const SUBINDEX_DEFS = [
+  ["EU-CRI-H100-SOV", "EU-Sovereign", "EU/EEA-headquartered providers"],
+  ["EU-CRI-H100-MKT", "Marketplace", "executable-quote only"],
+  ["EU-CRI-H100-CLOUD", "Cloud / list", "list-price only"],
+  ["EU-CRI-A100", "EU-CRI-A100", "A100-class companion series"],
+  ["EU-CRI-B200", "EU-CRI-B200", "B200-class companion series"],
+  ["EU-CRI-COMPUTE", "EU-CRI-COMPUTE", "chain-linked composite (level, base 100)"],
+];
+
+function renderSubindices(latest){
+  const present = SUBINDEX_DEFS.filter(d => latest.series && latest.series[d[0]]);
+  if (present.length === 0) return;
+  const box = document.getElementById("subindices");
+  box.innerHTML = "";
+  present.forEach(([key, label, sub]) => {
+    const s = latest.series[key];
+    const tile = document.createElement("div");
+    tile.className = "tile";
+    const l = document.createElement("div"); l.className = "tl-label"; l.textContent = label;
+    tile.appendChild(l);
+    const v = document.createElement("div"); v.className = "tl-value";
+    if (s.value_usd !== null && s.value_usd !== undefined) {
+      v.textContent = key === "EU-CRI-COMPUTE" ? s.value_usd.toFixed(2) : fmtUsd(s.value_usd);
+    } else {
+      v.classList.add("muted"); v.textContent = "insufficient sources";
+    }
+    tile.appendChild(v);
+    const sb = document.createElement("div"); sb.className = "tl-sub";
+    sb.textContent = sub + " · n=" + s.n_sources;
+    tile.appendChild(sb);
+    box.appendChild(tile);
+  });
+  box.classList.remove("hidden");
+}
+
+/* -------------------------------------------------------------- constituents --- */
 function renderConstituents(latest){
   const cons = latest.constituents && latest.constituents["EU-CRI-H100"];
   if (!cons || cons.length === 0) return;
   const body = document.getElementById("cons-body");
+  body.innerHTML = "";
   cons.forEach(c => {
     const tr = document.createElement("tr");
     if (!c.included) tr.className = "excluded";
 
     const tdProv = document.createElement("td");
-    const provSpan = document.createElement("span");
-    provSpan.className = "prov";
-    provSpan.textContent = c.provider;
-    tdProv.appendChild(provSpan);
+    const provWrap = document.createElement("span");
+    provWrap.className = "prov";
+    if (c.url) {
+      const a = document.createElement("a");
+      a.href = c.url; a.target = "_blank"; a.rel = "noopener";
+      a.textContent = c.provider;
+      if (c.note) a.title = c.note;
+      provWrap.appendChild(a);
+      const ext = document.createElement("span");
+      ext.className = "ext-icon"; ext.textContent = "↗";
+      provWrap.appendChild(ext);
+    } else {
+      provWrap.textContent = c.provider;
+    }
+    tdProv.appendChild(provWrap);
     tr.appendChild(tdProv);
 
     const tdTier = document.createElement("td");
@@ -376,6 +472,37 @@ function renderConstituents(latest){
   document.getElementById("constituents").classList.remove("hidden");
 }
 
+/* ------------------------------------------------------------------ sources --- */
+function renderSources(latest){
+  const sources = latest.sources;
+  if (!sources || sources.length === 0) return;
+  const body = document.getElementById("src-body");
+  body.innerHTML = "";
+  sources.forEach(s => {
+    const tr = document.createElement("tr");
+    const tdName = document.createElement("td");
+    if (s.url) {
+      const a = document.createElement("a");
+      a.href = s.url; a.target = "_blank"; a.rel = "noopener";
+      a.textContent = s.label || s.source;
+      tdName.appendChild(a);
+    } else {
+      tdName.textContent = s.label || s.source;
+    }
+    tr.appendChild(tdName);
+    const tdWhat = document.createElement("td");
+    tdWhat.textContent = s.source;
+    tr.appendChild(tdWhat);
+    const tdEp = document.createElement("td");
+    tdEp.className = "endpoint";
+    tdEp.textContent = s.endpoint || "—";
+    tr.appendChild(tdEp);
+    body.appendChild(tr);
+  });
+  document.getElementById("sources").classList.remove("hidden");
+}
+
+/* ------------------------------------------------------------------ weights --- */
 function renderWeightRow(container, name, weight, total){
   const pct = total > 0 ? (weight / total * 100) : 0;
   const row = document.createElement("div");
@@ -399,6 +526,7 @@ function renderWeightRow(container, name, weight, total){
 function renderWeights(latest){
   const note = document.getElementById("weights-note");
   const body = document.getElementById("weights-body");
+  body.innerHTML = "";
   const review = latest.weight_review;
   if (!review) {
     note.textContent = "No scheduled weight review is in effect yet — the trailing " +
@@ -439,13 +567,131 @@ function renderWeights(latest){
   document.getElementById("weights").classList.remove("hidden");
 }
 
-fetch("data/latest.json", { cache: "no-store" })
-  .then(r => { if (!r.ok) throw new Error("latest.json fetch failed"); return r.json(); })
-  .then(latest => {
-    renderConstituents(latest);
-    renderWeights(latest);
-  })
-  .catch(() => { /* sections stay hidden — no fabricated content */ });
+/* ------------------------------------------------------- refresh / request --- */
+let lastLatest = null;
+
+function setStatus(msg, kind){
+  const el = document.getElementById("refresh-status");
+  el.textContent = msg || "";
+  el.className = "status-msg" + (kind ? " " + kind : "");
+}
+
+function updateGapAndRequestUi(latest){
+  const btnRequest = document.getElementById("btn-request");
+  const gapNote = document.getElementById("gap-note");
+  const today = todayUtc();
+  if (latest && latest.date && latest.date < today) {
+    btnRequest.classList.remove("hidden");
+    gapNote.classList.remove("hidden");
+    gapNote.innerHTML = "Today (" + today + ") hasn't been collected yet — the latest print is from " +
+      latest.date + ". Click <b>Request today's collection</b> to trigger it now, or wait for the " +
+      "11:00 UTC scheduled run. Past dates with no print can't be retroactively collected: these " +
+      "collectors report live market prices, not history — see <code>python -m eucri.run constituents " +
+      "--date YYYY-MM-DD</code> for the full local audit trail.";
+  } else {
+    btnRequest.classList.add("hidden");
+    gapNote.classList.add("hidden");
+  }
+}
+
+function renderAll(latest){
+  lastLatest = latest;
+  const head = latest.series && latest.series["EU-CRI-H100"];
+  if (head) {
+    const prev = (head.prev_date && head.prev_value_usd !== null && head.prev_value_usd !== undefined)
+      ? { date: head.prev_date, value_usd: head.prev_value_usd }
+      : null;
+    renderHero(head, prev);
+  }
+  renderSubindices(latest);
+  renderConstituents(latest);
+  renderSources(latest);
+  renderWeights(latest);
+  updateGapAndRequestUi(latest);
+  document.getElementById("footer-updated").textContent =
+    "Data generated " + (latest.generated_at || "—") + " · page loaded " +
+    new Date().toISOString().slice(0, 16).replace("T", " ") + " UTC.";
+}
+
+function loadLatestJson(bust){
+  const url = "data/latest.json" + (bust ? ("?t=" + Date.now()) : "");
+  return fetch(url, { cache: "no-store" }).then(r => {
+    if (!r.ok) throw new Error("latest.json " + r.status);
+    return r.json();
+  });
+}
+
+function initialLoad(){
+  loadLatestJson(false)
+    .then(latest => renderAll(latest))
+    .catch(() => {
+      heroFromCsv()
+        .then(({ row, prev }) => renderHero(row, prev))
+        .catch(() => {
+          const { row, prev } = heroFromFallback();
+          renderHero(row, prev);
+        });
+    });
+}
+
+document.getElementById("btn-refresh").addEventListener("click", () => {
+  setStatus("Refreshing…");
+  loadLatestJson(true)
+    .then(latest => {
+      renderAll(latest);
+      setStatus("Refreshed at " + new Date().toLocaleTimeString(), "ok");
+    })
+    .catch(() => setStatus("Couldn't refresh — the data files may not be reachable right now.", "err"));
+});
+
+function pollForFreshPrint(startedDate, attemptsLeft){
+  if (attemptsLeft <= 0) {
+    setStatus("Still running — check the Action directly on GitHub, or come back in a minute.", "err");
+    return;
+  }
+  setTimeout(() => {
+    loadLatestJson(true).then(latest => {
+      if (latest.date && latest.date >= todayUtc() && latest.date !== startedDate) {
+        renderAll(latest);
+        setStatus("New print is in — updated at " + new Date().toLocaleTimeString(), "ok");
+      } else {
+        setStatus("Collection still running… (checking again in 10s)");
+        pollForFreshPrint(startedDate, attemptsLeft - 1);
+      }
+    }).catch(() => pollForFreshPrint(startedDate, attemptsLeft - 1));
+  }, 10000);
+}
+
+document.getElementById("btn-request").addEventListener("click", (ev) => {
+  const btn = ev.currentTarget;
+  btn.disabled = true;
+  setStatus("Requesting a fresh collection run via GitHub Actions…");
+  const startedDate = lastLatest ? lastLatest.date : null;
+  fetch("api/refresh?date=" + todayUtc(), { method: "POST" })
+    .then(r => r.json().catch(() => ({})).then(body => ({ ok: r.ok, status: r.status, body })))
+    .then(({ ok, status, body }) => {
+      if (ok && body && body.ok) {
+        if (body.alreadyRunning) {
+          setStatus("A collection run is already in progress — checking for the new print…");
+        } else {
+          setStatus("Requested — this can take 1–3 minutes. Checking for a new print…");
+        }
+        pollForFreshPrint(startedDate, 24); // ~4 minutes at 10s intervals
+      } else if (status === 404 || status === 405) {
+        setStatus("Live refresh isn't available on this mirror — try the Vercel-hosted dashboard, " +
+          "or check back after 11:00 UTC.", "err");
+      } else {
+        setStatus((body && body.message) || "Couldn't request a collection run right now.", "err");
+      }
+    })
+    .catch(() => setStatus(
+      "Live refresh isn't available on this mirror — try the Vercel-hosted dashboard, " +
+      "or check back after 11:00 UTC.", "err"
+    ))
+    .finally(() => { btn.disabled = false; });
+});
+
+initialLoad();
 </script>
 
 </body>
