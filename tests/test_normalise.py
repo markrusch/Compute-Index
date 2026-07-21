@@ -28,9 +28,15 @@ def test_reference_row_passes() -> None:
     assert keep(obs())
 
 
-def test_non_reference_model_without_factor_excluded() -> None:
-    assert not keep(obs(gpu_model="A100_SXM"))
+def test_model_class_tagging() -> None:
+    assert normalise_observations([obs()], FACTORS)[0].model_class == "H100"
+    out = normalise_observations([obs(gpu_model="A100_SXM")], FACTORS)
+    assert len(out) == 1 and out[0].model_class == "A100"
+
+
+def test_unlisted_variant_excluded() -> None:
     assert not keep(obs(gpu_model="H100_PCIE"))
+    assert not keep(obs(gpu_model="V100_SXM"))
 
 
 def test_nvl_adjusted_with_published_factor() -> None:
@@ -38,7 +44,8 @@ def test_nvl_adjusted_with_published_factor() -> None:
         [obs(gpu_model="H100_NVL_94GB", price_usd_per_gpu_hr=2.0)], FACTORS
     )
     assert len(out) == 1
-    assert out[0].price_usd == 2.0 * FACTORS.adjustment_factors["H100_NVL_94GB"]
+    assert out[0].model_class == "H100"
+    assert out[0].price_usd == 2.0 * FACTORS.model_classes["H100"].variants["H100_NVL_94GB"]
 
 
 def test_term_committed_excluded() -> None:

@@ -71,6 +71,7 @@ def test_recompute_appends_revision_not_duplicate(conn: sqlite3.Connection) -> N
     ).fetchone()
     assert head["value_usd"] is not None
     assert head["n_sources"] == 6
+    assert "bootstrap_weights" in head["flags"]  # one collection day < min_history_days
 
     sov = conn.execute(
         "SELECT * FROM daily_index WHERE date = ? AND series = 'EU-CRI-H100-SOV'"
@@ -78,4 +79,4 @@ def test_recompute_appends_revision_not_duplicate(conn: sqlite3.Connection) -> N
         (DATE,),
     ).fetchone()
     assert sov["value_usd"] is None  # fake providers are not in sovereign.yaml
-    assert sov["flags"] == "insufficient_sources"
+    assert "insufficient_sources" in sov["flags"]

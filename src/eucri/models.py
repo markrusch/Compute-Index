@@ -25,7 +25,12 @@ class Observation:
 
 @dataclass(frozen=True)
 class Constituent:
-    """A provider's contribution to one print (audit row)."""
+    """A provider's contribution to one print (audit row).
+
+    For included constituents of a published print, `weight` is the final print share
+    (all included shares sum to 100, post concentration cap). For excluded candidates
+    and gapped prints it is the raw pre-cap weight.
+    """
 
     provider: str
     source: str

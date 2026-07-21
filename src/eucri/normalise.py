@@ -1,8 +1,10 @@
 """Normalisation to the reference unit (methodology-hashed: changes require a version bump).
 
 Input: raw observation rows (sqlite Rows or dicts). Output: observations expressed in
-the reference unit — H100 SXM 80GB per-GPU-hour, on-demand, EU/EEA datacenter, 8-GPU
-node — with published adjustment factors applied and everything else filtered out.
+the class reference unit — per-GPU-hour for the class's reference variant (headline:
+H100 SXM 80GB), on-demand, EU/EEA datacenter, 8-GPU node — with published per-variant
+adjustment factors applied, tagged with the model class, and everything else filtered
+out. Variants not listed under any configured model class are excluded.
 """
 
 from __future__ import annotations
@@ -26,9 +28,10 @@ class NormalisedObs:
     provider: str
     source: str
     tier: str  # 'executable' | 'list'
-    gpu_model: str
+    model_class: str  # e.g. 'H100' — the class the observation prices
+    gpu_model: str  # the raw variant observed
     gpu_count: int | None
-    price_usd: float  # adjusted, per reference GPU-hour
+    price_usd: float  # adjusted, per class-reference GPU-hour
     country: str
     last_verified: str | None  # static entries only (parsed from raw_json)
 
@@ -43,18 +46,26 @@ def _last_verified(row: RowLike) -> str | None:
         return None
 
 
+def _variant_map(factors: Factors) -> dict[str, tuple[str, float]]:
+    """variant name -> (model class, published adjustment factor)."""
+    return {
+        variant: (class_name, factor)
+        for class_name, mc in factors.model_classes.items()
+        for variant, factor in mc.variants.items()
+    }
+
+
 def normalise_observations(rows: Iterable[RowLike], factors: Factors) -> list[NormalisedObs]:
     """Apply the unit definition. Order of checks mirrors METHODOLOGY.md §1."""
     reference = factors.reference_unit
+    variants = _variant_map(factors)
     out: list[NormalisedObs] = []
     for row in rows:
         gpu_model = row["gpu_model"]
-        if gpu_model == reference.gpu_model:
-            factor = 1.0
-        elif gpu_model in factors.adjustment_factors:
-            factor = factors.adjustment_factors[gpu_model]
-        else:
-            continue  # not the reference model and no published adjustment
+        entry = variants.get(gpu_model)
+        if entry is None:
+            continue  # not a configured variant of any observed class
+        model_class, factor = entry
 
         if row["term"] != reference.term:
             continue
@@ -81,6 +92,7 @@ def normalise_observations(rows: Iterable[RowLike], factors: Factors) -> list[No
                 provider=row["provider"],
                 source=row["source"],
                 tier=row["tier"],
+                model_class=model_class,
                 gpu_model=gpu_model,
                 gpu_count=gpu_count,
                 price_usd=price,

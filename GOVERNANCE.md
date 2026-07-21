@@ -9,10 +9,11 @@ request to hard-wire it into a financial contract will be refused).
 ## 1. Methodology change procedure (IOSCO P12)
 
 The methodology is everything that can change a published print: `config/factors.yaml`,
-`config/sovereign.yaml`, `src/eucri/index.py`, `src/eucri/normalise.py`. A sha256 over
-these files is recorded in `METHODOLOGY.lock`; CI fails whenever the working tree no
-longer matches the lock, and the lock generator refuses to record a changed hash under
-an unchanged released version. A methodology change therefore requires, in one commit:
+`config/sovereign.yaml`, `src/eucri/index.py`, `src/eucri/normalise.py`,
+`src/eucri/weights.py`. A sha256 over these files is recorded in `METHODOLOGY.lock`;
+CI fails whenever the working tree no longer matches the lock, and the lock generator
+refuses to record a changed hash under an unchanged released version. A methodology
+change therefore requires, in one commit:
 
 1. The change itself.
 2. A `methodology_version` bump in `config/factors.yaml`
@@ -26,6 +27,13 @@ an unchanged released version. A methodology change therefore requires, in one c
 
 Versions with a `-dev` suffix (pre-launch construction) are exempt from the refusal
 rule; the exemption ends at launch when the suffix is dropped.
+
+**Scheduled weight reviews are not methodology changes.** Constituent weights and the
+composite's class basket shares are recomputed on a fixed schedule by a fixed published
+formula (METHODOLOGY.md §3.1–3.2) with no discretion; each review is stored append-only
+in `weight_sets` and reproducible via `python -m eucri.run weights --date`. Changing the
+formula, the schedule, or any of their parameters **is** a methodology change and
+follows the procedure above.
 
 ## 2. Correction policy (IOSCO P13)
 

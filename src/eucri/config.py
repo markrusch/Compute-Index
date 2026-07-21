@@ -33,10 +33,32 @@ class Filters:
 
 
 @dataclass(frozen=True)
+class ModelClass:
+    reference_variant: str
+    variants: dict[str, float]  # variant name -> multiplicative adjustment factor
+
+
+@dataclass(frozen=True)
+class WeightReview:
+    anchor_weekday: int  # ISO weekday a review takes effect (1 = Monday)
+    window_days: int
+    min_history_days: int
+
+
+@dataclass(frozen=True)
 class Weights:
     capacity_cap: int
     default_capacity: int
     executable_multiplier: float
+    max_weight_share_pct: float
+    review: WeightReview
+
+
+@dataclass(frozen=True)
+class Composite:
+    base_value: float
+    min_class_share_pct: float
+    max_class_share_pct: float
 
 
 @dataclass(frozen=True)
@@ -56,13 +78,24 @@ class Staleness:
 class Factors:
     methodology_version: str
     reference_unit: ReferenceUnit
-    adjustment_factors: dict[str, float]
+    model_classes: dict[str, ModelClass]
     filters: Filters
     weights: Weights
+    composite: Composite
     aggregation: Aggregation
     staleness: Staleness
     jump_flag_pct: float
     eu_eea_countries: frozenset[str]
+
+    @property
+    def headline_class(self) -> str:
+        """The class whose reference variant is the headline reference unit."""
+        for name, mc in self.model_classes.items():
+            if mc.reference_variant == self.reference_unit.gpu_model:
+                return name
+        raise ValueError(
+            f"no model class has reference_variant {self.reference_unit.gpu_model!r}"
+        )
 
 
 @dataclass(frozen=True)
@@ -84,7 +117,13 @@ def load_factors(config_dir: Path | None = None) -> Factors:
     return Factors(
         methodology_version=str(raw["methodology_version"]),
         reference_unit=ReferenceUnit(**raw["reference_unit"]),
-        adjustment_factors={k: float(v) for k, v in raw["adjustment_factors"].items()},
+        model_classes={
+            name: ModelClass(
+                reference_variant=str(mc["reference_variant"]),
+                variants={k: float(v) for k, v in mc["variants"].items()},
+            )
+            for name, mc in raw["model_classes"].items()
+        },
         filters=Filters(
             min_gpu_count=int(raw["filters"]["min_gpu_count"]),
             price_floor_usd=float(raw["filters"]["price_floor_usd"]),
@@ -96,6 +135,17 @@ def load_factors(config_dir: Path | None = None) -> Factors:
             capacity_cap=int(raw["weights"]["capacity_cap"]),
             default_capacity=int(raw["weights"]["default_capacity"]),
             executable_multiplier=float(raw["weights"]["executable_multiplier"]),
+            max_weight_share_pct=float(raw["weights"]["max_weight_share_pct"]),
+            review=WeightReview(
+                anchor_weekday=int(raw["weights"]["review"]["anchor_weekday"]),
+                window_days=int(raw["weights"]["review"]["window_days"]),
+                min_history_days=int(raw["weights"]["review"]["min_history_days"]),
+            ),
+        ),
+        composite=Composite(
+            base_value=float(raw["composite"]["base_value"]),
+            min_class_share_pct=float(raw["composite"]["min_class_share_pct"]),
+            max_class_share_pct=float(raw["composite"]["max_class_share_pct"]),
         ),
         aggregation=Aggregation(
             winsorise_pct=(

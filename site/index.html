@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EU-CRI — European Compute Rental Index</title>
+<meta name="description" content="EU-CRI: a daily, methodology-transparent reference price for renting AI compute in Europe. Open source, IOSCO-aligned, published by Mark Rusch.">
+<style>
+  :root{
+    --ink:#1a1a1a; --muted:#5a5f6a; --line:#e6e8eb; --bg:#ffffff; --panel:#f7f8fa;
+    --accent:#1f3864; --accent2:#2e74b5; --good:#1f7a4d; --warn:#a15c00;
+    --mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; font-family:var(--sans); color:var(--ink); background:var(--bg); line-height:1.55}
+  .wrap{max-width:880px; margin:0 auto; padding:0 24px}
+  header.site{border-bottom:1px solid var(--line); padding:28px 0 20px}
+  header.site .wrap{display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:8px}
+  .brand{font-weight:700; font-size:20px; letter-spacing:.2px; color:var(--accent)}
+  .brand small{display:block; font-weight:400; font-size:12.5px; color:var(--muted); margin-top:2px}
+  nav.top a{color:var(--muted); text-decoration:none; margin-left:18px; font-size:14px}
+  nav.top a:hover{color:var(--accent)}
+
+  .hero{padding:40px 0 8px}
+  .hero h1{font-size:26px; margin:0 0 6px}
+  .hero p.lede{color:var(--muted); font-size:16px; max-width:640px; margin:0 0 24px}
+
+  .print-card{background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:24px 28px; display:flex; flex-wrap:wrap; gap:28px; align-items:flex-end; justify-content:space-between}
+  .print-main .label{font-size:12.5px; text-transform:uppercase; letter-spacing:.6px; color:var(--muted); margin-bottom:4px}
+  .print-main .value{font-size:44px; font-weight:700; color:var(--accent); font-variant-numeric:tabular-nums}
+  .print-main .value small{font-size:16px; font-weight:500; color:var(--muted); margin-left:8px}
+  .print-meta{display:flex; gap:22px; flex-wrap:wrap}
+  .print-meta .m{font-size:13px; color:var(--muted)}
+  .print-meta .m b{display:block; color:var(--ink); font-size:15px; font-variant-numeric:tabular-nums}
+  .flagline{margin-top:14px; font-size:13px; color:var(--warn)}
+  .flagline.ok{color:var(--good)}
+
+  .charts{display:grid; grid-template-columns:1fr; gap:18px; margin:28px 0}
+  .chart-box{border:1px solid var(--line); border-radius:10px; overflow:hidden; background:#fff}
+  .chart-box img{width:100%; display:block}
+  .chart-box .cap{padding:10px 16px; font-size:13px; color:var(--muted); border-top:1px solid var(--line)}
+
+  section{padding:28px 0; border-top:1px solid var(--line)}
+  section h2{font-size:19px; margin:0 0 10px; color:var(--accent)}
+  section p{color:#2a2e35; font-size:15.5px}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:24px}
+  @media (max-width:640px){ .grid2{grid-template-columns:1fr} .print-card{flex-direction:column; align-items:flex-start} }
+
+  ul.tight{padding-left:20px; margin:8px 0}
+  ul.tight li{margin-bottom:6px; font-size:15px; color:#2a2e35}
+  code, .mono{font-family:var(--mono); font-size:13px; background:var(--panel); padding:1px 5px; border-radius:4px}
+
+  .cta{background:var(--accent); color:#fff; border-radius:10px; padding:26px 28px; margin:28px 0; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px}
+  .cta h3{margin:0 0 4px; font-size:18px}
+  .cta p{margin:0; color:#dbe4f2; font-size:14px}
+  .cta a.btn{background:#fff; color:var(--accent); text-decoration:none; font-weight:600; padding:11px 20px; border-radius:7px; font-size:14px; white-space:nowrap}
+
+  footer{padding:30px 0 60px; color:var(--muted); font-size:12.5px; border-top:1px solid var(--line)}
+  footer p{margin:0 0 8px}
+  footer a{color:var(--accent2)}
+  .badge{display:inline-block; font-size:11px; font-weight:600; letter-spacing:.3px; text-transform:uppercase; padding:3px 8px; border-radius:20px; background:#eef2f8; color:var(--accent2); margin-right:6px}
+
+  table.cons{width:100%; border-collapse:collapse; font-size:14px; margin-top:6px}
+  table.cons th{text-align:left; font-size:11.5px; text-transform:uppercase; letter-spacing:.4px; color:var(--muted); font-weight:600; padding:8px 10px 7px; border-bottom:1px solid var(--line)}
+  table.cons th.num, table.cons td.num{text-align:right; font-variant-numeric:tabular-nums}
+  table.cons td{padding:8px 10px; border-bottom:1px solid var(--line); vertical-align:middle}
+  table.cons tr:last-child td{border-bottom:none}
+  table.cons tr.excluded{opacity:.5}
+  table.cons .prov{font-weight:600}
+  table.cons .tier{color:var(--muted); font-size:12.5px}
+  .flag-pill{display:inline-block; font-size:10.5px; font-weight:600; color:var(--warn); background:#fbf1e2; padding:2px 7px; border-radius:20px; margin:1px 3px 1px 0; white-space:nowrap}
+
+  .weights-note{color:var(--muted); font-size:14px; max-width:640px; margin:0 0 16px}
+  .wrow{display:grid; grid-template-columns:130px 1fr 54px; align-items:center; gap:12px; margin-bottom:8px; font-size:13.5px}
+  .wrow .wname{font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .wtrack{height:8px; border-radius:5px; background:#e3ecf5; overflow:hidden}
+  .wfill{height:100%; background:var(--accent2); border-radius:5px}
+  .wpct{text-align:right; color:var(--muted); font-variant-numeric:tabular-nums; font-size:12.5px}
+  .wclass-label{font-size:12.5px; font-weight:700; color:var(--accent); text-transform:uppercase; letter-spacing:.4px; margin:14px 0 8px}
+  .wclass-label:first-child{margin-top:0}
+  #constituents.hidden, #weights.hidden{display:none}
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap">
+    <div class="brand">EU-CRI<small>European Compute Rental Index</small></div>
+    <nav class="top">
+      <a href="#methodology">Methodology</a>
+      <a href="#data">Data</a>
+      <a id="nav-github" href="#" target="_blank" rel="noopener">GitHub</a>
+      <a id="nav-substack" href="#" target="_blank" rel="noopener">Substack</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="hero">
+    <h1>A daily, open reference price for renting AI compute in Europe</h1>
+    <p class="lede">EU-CRI-H100 is a methodology-transparent index for one H100-class GPU-hour delivered
+      from a data centre in the EU/EEA. Every parameter is a published config value, every observation
+      is stored and auditable, and a gap is published rather than a fabricated print. Built and
+      administered in the open by <a href="mailto:rusch.mh@gmail.com">Mark Rusch</a>.</p>
+  </div>
+
+  <div class="print-card" id="print-card">
+    <div class="print-main">
+      <div class="label">EU-CRI-H100 · latest print</div>
+      <div class="value" id="headline-value">loading…</div>
+      <div style="margin-top:6px; font-size:13px; color:var(--muted)" id="headline-date"></div>
+    </div>
+    <div class="print-meta">
+      <div class="m"><span>Constituents</span><b id="m-sources">–</b></div>
+      <div class="m"><span>Executable-quote</span><b id="m-executable">–</b></div>
+      <div class="m"><span>FX (ECB ref.)</span><b id="m-fx">–</b></div>
+      <div class="m"><span>Prior print</span><b id="m-prev">–</b></div>
+    </div>
+  </div>
+  <div class="flagline" id="flagline"></div>
+
+  <div class="charts" id="data">
+    <div class="chart-box">
+      <img src="charts/headline_7d.png" alt="EU-CRI-H100 headline series" loading="lazy">
+      <div class="cap">Daily print, EU-CRI-H100 (USD/GPU-hour). History builds one point per publication day —
+        short history in the first weeks is disclosed, not smoothed over.</div>
+    </div>
+    <div class="chart-box">
+      <img src="charts/dispersion.png" alt="Constituent price dispersion" loading="lazy">
+      <div class="cap">Every constituent price behind the latest print, for the same reference unit
+        (H100 SXM 80GB, on-demand, 8-GPU node, EU/EEA). The spread between cheapest and dearest
+        <em>is</em> the finding.</div>
+    </div>
+  </div>
+
+  <section id="constituents" class="hidden">
+    <h2>Today’s constituents — EU-CRI-H100</h2>
+    <p>Every provider behind the latest print: price, the weight it carried in that print
+      (post concentration-cap, so included weights sum to 100), and its status. Excluded rows
+      are kept, not dropped — a full audit trail, always.</p>
+    <table class="cons">
+      <thead><tr>
+        <th>Provider</th><th>Tier</th><th class="num">Price</th><th class="num">Weight</th><th>Status</th>
+      </tr></thead>
+      <tbody id="cons-body"></tbody>
+    </table>
+  </section>
+
+  <section id="weights" class="hidden">
+    <h2>Constituent weights</h2>
+    <p class="weights-note" id="weights-note"></p>
+    <div id="weights-body"></div>
+  </section>
+
+  <section id="methodology">
+    <h2>Methodology, in brief</h2>
+    <div class="grid2">
+      <div>
+        <p><b>Unit:</b> one NVIDIA H100 SXM 80GB GPU-hour, on-demand, in an 8-GPU NVLink node,
+          delivered from an EU/EEA data centre, excluding storage and egress.</p>
+        <p><b>Aggregation:</b> representative price per provider (minimum executable ask, else
+          list price) → winsorised at the 5th/95th percentile → weighted median, weights set by a
+          fixed, data-driven formula reviewed weekly, capped so no single venue can move the print
+          more than 25%.</p>
+      </div>
+      <div>
+        <p><b>Publication gate:</b> fewer than five qualifying providers → no value is published,
+          the print is flagged. A gap is credible; a fabricated print is not.</p>
+        <p><b>Governance:</b> built on the IOSCO Principles for Financial Benchmarks (2013) as
+          voluntary best practice — versioned methodology, immutable observations, a public
+          correction policy, and a full constituent-level audit trail for every print.</p>
+      </div>
+    </div>
+    <ul class="tight">
+      <li>Full methodology: <code>METHODOLOGY.md</code> — auto-generated from the live config, every
+        parameter and weight review is a citable number.</li>
+      <li>Governance and correction policy: <code>GOVERNANCE.md</code>.</li>
+      <li>Data sources and collection conduct: <code>SOURCES.md</code>.</li>
+      <li>All of it, plus the code that computes the print above: the public repository (link top right).</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Why this exists</h2>
+    <p>Compute is becoming a traded commodity — CME Group and Silicon Data announced the first
+      cash-settled H100 futures market in May 2026, and Kalshi now publishes compute forward curves.
+      Both are priced off US-centric benchmarks. No published, methodology-open reference price exists
+      for compute delivered in Europe — despite the EU committing roughly €20bn to AI gigafactories,
+      European lenders financing GPU-backed debt with no market mark, and Dutch/EU data-centre buyers
+      signing power contracts against unhedged compute revenue. EU-CRI is a research attempt to close
+      that specific gap, built in the open so every reader can check the arithmetic.</p>
+  </section>
+
+  <div class="cta">
+    <div>
+      <h3>Weekly commentary on Substack</h3>
+      <p>Index reads, dispersion analysis, and the European compute-risk thesis — every 2–3 weeks.</p>
+    </div>
+    <a class="btn" id="cta-substack" href="#" target="_blank" rel="noopener">Subscribe →</a>
+  </div>
+
+</div>
+
+<footer>
+  <div class="wrap">
+    <p><span class="badge">Research publication</span> EU-CRI is not investment advice and is not
+      administered as a benchmark under EU Regulation 2016/1011; it may not be used as a reference
+      price in financial instruments.</p>
+    <p>Administrator: Mark Rusch (<a href="mailto:rusch.mh@gmail.com">rusch.mh@gmail.com</a>), Amsterdam.
+      The author may hold positions on venues whose prices this index observes — see GOVERNANCE.md.
+      Corrections are published as flagged revisions, never silently.</p>
+    <p id="footer-updated"></p>
+  </div>
+</footer>
+
+<script>
+/* ---- CONFIG: fill these in once the repo is pushed / Substack is live ---- */
+const GITHUB_REPO_URL = "https://github.com/markrusch/Compute-Index";
+const SUBSTACK_URL   = "https://computeindex.substack.com";
+/* --------------------------------------------------------------------------
+   This page reads data/index_history.csv at load time, so the headline
+   number updates automatically every day the GitHub Action commits a new
+   print — no rebuild of this file required. If the fetch fails (e.g. opened
+   from disk via file://), it falls back to the values below, refreshed at
+   the last time this file was hand-edited.
+   -------------------------------------------------------------------------- */
+const FALLBACK = {
+  date: "2026-07-19", value_usd: 3.25, value_eur: 2.84, fx_rate: 1.1435, fx_date: "2026-07-17",
+  n_sources: 6, n_executable: 1, flags: "", prev_date: "2026-07-18", prev_value_usd: 2.99
+};
+
+document.getElementById("nav-github").href = GITHUB_REPO_URL;
+document.getElementById("nav-substack").href = SUBSTACK_URL;
+document.getElementById("cta-substack").href = SUBSTACK_URL;
+
+function fmtUsd(v){ return "$" + Number(v).toFixed(2); }
+function fmtEur(v){ return "€" + Number(v).toFixed(2); }
+
+function render(row, prevRow){
+  const hasValue = row.value_usd !== null && row.value_usd !== undefined && row.value_usd !== "";
+  document.getElementById("headline-value").innerHTML = hasValue
+    ? fmtUsd(row.value_usd) + " <small>/ GPU-hr &nbsp;·&nbsp; " + fmtEur(row.value_eur) + "</small>"
+    : "no print";
+  document.getElementById("headline-date").textContent = "as of " + row.date +
+    (hasValue ? "" : " — fewer than the required minimum of qualifying providers today");
+  document.getElementById("m-sources").textContent = row.n_sources || "–";
+  document.getElementById("m-executable").textContent = row.n_executable || "–";
+  document.getElementById("m-fx").textContent = row.fx_rate ? (Number(row.fx_rate).toFixed(4) + " (" + row.fx_date + ")") : "–";
+  if (prevRow && prevRow.value_usd) {
+    const chg = ((row.value_usd - prevRow.value_usd) / prevRow.value_usd * 100);
+    document.getElementById("m-prev").textContent = fmtUsd(prevRow.value_usd) + " on " + prevRow.date +
+      " (" + (chg >= 0 ? "+" : "") + chg.toFixed(1) + "%)";
+  } else {
+    document.getElementById("m-prev").textContent = "n/a — first print";
+  }
+  const flagEl = document.getElementById("flagline");
+  if (row.flags) {
+    flagEl.textContent = "Flag on latest print: " + row.flags;
+    flagEl.classList.remove("ok");
+  } else {
+    flagEl.textContent = "No flags on the latest print.";
+    flagEl.classList.add("ok");
+  }
+  document.getElementById("footer-updated").textContent =
+    "Page loaded " + new Date().toISOString().slice(0,16).replace("T"," ") + " UTC · data refreshed live from data/index_history.csv where available.";
+}
+
+function parseCsv(text){
+  const lines = text.trim().split("\n");
+  const header = lines[0].split(",");
+  const idx = Object.fromEntries(header.map((h,i)=>[h.trim(), i]));
+  const rows = lines.slice(1).map(line => {
+    const c = line.split(",");
+    return {
+      date: c[idx.date], series: c[idx.series],
+      value_usd: c[idx.value_usd] === "" ? null : parseFloat(c[idx.value_usd]),
+      value_eur: c[idx.value_eur] === "" ? null : parseFloat(c[idx.value_eur]),
+      fx_rate: c[idx.fx_rate], fx_date: c[idx.fx_date],
+      n_sources: c[idx.n_sources], n_executable: c[idx.n_executable],
+      flags: c[idx.flags], revision: parseInt(c[idx.revision] || "1", 10)
+    };
+  });
+  return rows;
+}
+
+function latestByDate(rows, series){
+  const byDate = new Map();
+  rows.filter(r => r.series === series).forEach(r => {
+    const existing = byDate.get(r.date);
+    if (!existing || r.revision >= existing.revision) byDate.set(r.date, r);
+  });
+  return [...byDate.values()].sort((a,b) => a.date.localeCompare(b.date));
+}
+
+fetch("data/index_history.csv", { cache: "no-store" })
+  .then(r => { if (!r.ok) throw new Error("csv fetch failed"); return r.text(); })
+  .then(text => {
+    const series = latestByDate(parseCsv(text), "EU-CRI-H100");
+    if (series.length === 0) throw new Error("no rows");
+    const latest = series[series.length - 1];
+    const prev = series.length > 1 ? series[series.length - 2] : null;
+    render(latest, prev);
+  })
+  .catch(() => {
+    render(
+      { date: FALLBACK.date, value_usd: FALLBACK.value_usd, value_eur: FALLBACK.value_eur,
+        fx_rate: FALLBACK.fx_rate, fx_date: FALLBACK.fx_date, n_sources: FALLBACK.n_sources,
+        n_executable: FALLBACK.n_executable, flags: FALLBACK.flags },
+      { date: FALLBACK.prev_date, value_usd: FALLBACK.prev_value_usd }
+    );
+  });
+
+/* ---- constituents table + weight-review panel, from data/latest.json ----
+   Independent of the CSV/FALLBACK flow above: if this fetch fails (e.g. the
+   page opened via file://, or the first daily run hasn't produced the file
+   yet), the two sections simply stay hidden rather than showing stale or
+   fabricated numbers — same "a gap is credible" rule as the index itself. */
+function fmtDateHuman(iso){
+  if (!iso) return "—";
+  const d = new Date(iso + "T00:00:00Z");
+  return d.toLocaleDateString(undefined, { day: "2-digit", month: "short", year: "numeric", timeZone: "UTC" });
+}
+
+function renderConstituents(latest){
+  const cons = latest.constituents && latest.constituents["EU-CRI-H100"];
+  if (!cons || cons.length === 0) return;
+  const body = document.getElementById("cons-body");
+  cons.forEach(c => {
+    const tr = document.createElement("tr");
+    if (!c.included) tr.className = "excluded";
+
+    const tdProv = document.createElement("td");
+    const provSpan = document.createElement("span");
+    provSpan.className = "prov";
+    provSpan.textContent = c.provider;
+    tdProv.appendChild(provSpan);
+    tr.appendChild(tdProv);
+
+    const tdTier = document.createElement("td");
+    const tierSpan = document.createElement("span");
+    tierSpan.className = "tier";
+    tierSpan.textContent = c.tier;
+    tdTier.appendChild(tierSpan);
+    tr.appendChild(tdTier);
+
+    const tdPrice = document.createElement("td");
+    tdPrice.className = "num";
+    tdPrice.textContent = "$" + Number(c.price_usd).toFixed(3);
+    tr.appendChild(tdPrice);
+
+    const tdWeight = document.createElement("td");
+    tdWeight.className = "num";
+    tdWeight.textContent = c.included ? Number(c.weight).toFixed(1) + "%" : "—";
+    tr.appendChild(tdWeight);
+
+    const tdStatus = document.createElement("td");
+    const labels = [];
+    if (!c.included) labels.push(c.exclusion_reason || "excluded");
+    if (c.flags) c.flags.split(",").forEach(f => { if (f) labels.push(f.replace(/_/g, " ")); });
+    if (labels.length === 0) {
+      tdStatus.textContent = "—";
+    } else {
+      labels.forEach(label => {
+        const pill = document.createElement("span");
+        pill.className = "flag-pill";
+        pill.textContent = label;
+        tdStatus.appendChild(pill);
+      });
+    }
+    tr.appendChild(tdStatus);
+
+    body.appendChild(tr);
+  });
+  document.getElementById("constituents").classList.remove("hidden");
+}
+
+function renderWeightRow(container, name, weight, total){
+  const pct = total > 0 ? (weight / total * 100) : 0;
+  const row = document.createElement("div");
+  row.className = "wrow";
+  const nameEl = document.createElement("div");
+  nameEl.className = "wname";
+  nameEl.textContent = name;
+  const track = document.createElement("div");
+  track.className = "wtrack";
+  const fill = document.createElement("div");
+  fill.className = "wfill";
+  fill.style.width = Math.max(2, pct) + "%";
+  track.appendChild(fill);
+  const pctEl = document.createElement("div");
+  pctEl.className = "wpct";
+  pctEl.textContent = pct.toFixed(1) + "%";
+  row.appendChild(nameEl); row.appendChild(track); row.appendChild(pctEl);
+  container.appendChild(row);
+}
+
+function renderWeights(latest){
+  const note = document.getElementById("weights-note");
+  const body = document.getElementById("weights-body");
+  const review = latest.weight_review;
+  if (!review) {
+    note.textContent = "No scheduled weight review is in effect yet — the trailing " +
+      "observation window is still building history. Bootstrap weighting (same-day observed " +
+      "capacity) applies, and every print is flagged accordingly. See METHODOLOGY.md §3.1.";
+    document.getElementById("weights").classList.remove("hidden");
+    return;
+  }
+  note.textContent = "Weight review effective " + fmtDateHuman(review.effective_date) +
+    ", computed from the " + fmtDateHuman(review.window_start) + " – " +
+    fmtDateHuman(review.window_end) + " window (" + review.n_days_window +
+    " collection days). Bars show each provider's share of its class's raw review weight, " +
+    "before the concentration cap applied at print time — see the constituent table above " +
+    "for today's final (capped) shares.";
+
+  const classes = Object.keys(review.providers || {}).sort();
+  classes.forEach(cls => {
+    const pset = review.providers[cls];
+    const total = pset.reduce((s, p) => s + p.weight, 0);
+    if (classes.length > 1) {
+      const label = document.createElement("div");
+      label.className = "wclass-label";
+      label.textContent = cls;
+      body.appendChild(label);
+    }
+    pset.forEach(p => renderWeightRow(body, p.provider, p.weight, total));
+  });
+
+  const shares = review.model_shares || {};
+  if (Object.keys(shares).length > 1) {
+    const label = document.createElement("div");
+    label.className = "wclass-label";
+    label.textContent = "Composite class basket";
+    body.appendChild(label);
+    const total = Object.values(shares).reduce((s, v) => s + v, 0);
+    Object.keys(shares).sort().forEach(cls => renderWeightRow(body, cls, shares[cls], total));
+  }
+  document.getElementById("weights").classList.remove("hidden");
+}
+
+fetch("data/latest.json", { cache: "no-store" })
+  .then(r => { if (!r.ok) throw new Error("latest.json fetch failed"); return r.json(); })
+  .then(latest => {
+    renderConstituents(latest);
+    renderWeights(latest);
+  })
+  .catch(() => { /* sections stay hidden — no fabricated content */ });
+</script>
+
+</body>
+</html>

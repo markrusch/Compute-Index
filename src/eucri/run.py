@@ -47,6 +47,11 @@ def main(argv: list[str] | None = None) -> int:
     p_back.add_argument("--from", dest="date_from", required=True)
     p_back.add_argument("--to", dest="date_to", required=True)
 
+    p_weights = sub.add_parser(
+        "weights", help="show (computing if due) the effective weight review for a date"
+    )
+    p_weights.add_argument("--date", help="YYYY-MM-DD (default: today UTC)")
+
     sub.add_parser("validate", help="source-dropout sensitivity + check-series correlation")
     sub.add_parser("post", help="regenerate substack_post.md")
 
@@ -56,7 +61,7 @@ def main(argv: list[str] | None = None) -> int:
         return _cmd_migrate(args)
     if args.command == "docs":
         return _cmd_docs(args)
-    if args.command in {"daily", "constituents", "backfill", "validate", "post"}:
+    if args.command in {"daily", "constituents", "backfill", "weights", "validate", "post"}:
         from eucri import commands
 
         return commands.dispatch(args)

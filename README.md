@@ -3,7 +3,12 @@
 **EU-CRI** — a daily, methodology-transparent reference price for renting AI compute in
 Europe. Headline series **EU-CRI-H100**: one NVIDIA H100 SXM 80GB GPU-hour, on-demand,
 8-GPU NVLink node, delivered from an EU/EEA data centre, in USD (EUR companion at the
-ECB reference rate). Sub-indices: EU-sovereign providers, marketplace vs cloud.
+ECB reference rate). Sub-indices: EU-sovereign providers, marketplace vs cloud, class
+series (A100/B200 once they clear the source gate), and **EU-CRI-COMPUTE** — a
+chain-linked composite whose class basket follows the observed market across hardware
+generations. Constituent weights are data-driven: recomputed on a fixed weekly schedule
+from a trailing observation window, capped so no single venue can set the print, and
+stored append-only for audit.
 
 The credibility strategy is radical methodological transparency on a regional niche:
 every parameter is a visible config value, the methodology document is generated from
@@ -36,6 +41,7 @@ pytest
 | `daily [--date D]` | run collectors (idempotent per source+day), compute all series, export CSV/charts |
 | `constituents --date D [--series S]` | full audit table for a print (IOSCO P13/P16) |
 | `backfill --from D --to D` | recompute prints from stored observations (never re-collects) |
+| `weights [--date D]` | show (computing if due) the weight review in effect for a date |
 | `validate` | source-dropout sensitivity + optional check-series correlation |
 | `post` | regenerate the paste-ready Substack post |
 | `docs` | regenerate METHODOLOGY.md + METHODOLOGY.lock |
@@ -48,11 +54,15 @@ pytest
   normalisation, index calculation, outputs
 - `data/eucri.db` — SQLite, committed; observations and prints are append-only
   (trigger-enforced)
-- `site/` — CSV history and charts, regenerated daily
+- `site/` — the live dashboard (`index.html`), CSV history, charts, and `data/latest.json`
+  (constituents + weight review for the dashboard), all regenerated daily. Deployed to
+  GitHub Pages by `.github/workflows/pages.yml` on every push that touches `site/`.
 
 ## Changing the methodology
 
 Not casually. Any change to `config/factors.yaml`, `config/sovereign.yaml`,
-`src/eucri/index.py`, or `src/eucri/normalise.py` fails CI unless the version is bumped,
-the CHANGELOG has an entry, and the lock is regenerated — and takes effect only after
-one publication's notice. Procedure: [GOVERNANCE.md](GOVERNANCE.md).
+`src/eucri/index.py`, `src/eucri/normalise.py`, or `src/eucri/weights.py` fails CI
+unless the version is bumped, the CHANGELOG has an entry, and the lock is regenerated —
+and takes effect only after one publication's notice. Scheduled weight reviews execute
+a fixed published formula and are data updates, not methodology changes. Procedure:
+[GOVERNANCE.md](GOVERNANCE.md).

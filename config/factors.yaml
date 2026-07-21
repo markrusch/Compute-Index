@@ -1,17 +1,34 @@
 # EU-CRI methodology parameters. Every number that affects a published print lives here.
-# Changing anything in this file (or sovereign.yaml, index.py, normalise.py) requires a
-# methodology_version bump + CHANGELOG entry - enforced by CI (see GOVERNANCE.md).
-methodology_version: "0.1.0-dev"   # '-dev' relaxes the lock guard pre-launch; drop it at launch
+# Changing anything in this file (or sovereign.yaml, index.py, normalise.py, weights.py)
+# requires a methodology_version bump + CHANGELOG entry - enforced by CI (see GOVERNANCE.md).
+methodology_version: "0.2.0-dev"   # '-dev' relaxes the lock guard pre-launch; drop it at launch
 
 reference_unit:
-  gpu_model: H100_SXM        # NVIDIA H100 SXM 80GB
+  gpu_model: H100_SXM        # headline reference variant (class H100 below)
   node_gpus: 8               # per-GPU price in an 8-GPU NVLink node configuration
   term: on_demand            # no term commitment
   location: EU_EEA           # datacenter physically in the EU/EEA
   # excludes storage and egress; USD primary, EUR companion at ECB reference rate
 
-adjustment_factors:
-  H100_NVL_94GB: 1.0         # default until measured; applied multiplicatively to NVL prices
+# Compute classes the index observes. Each class prices its reference variant; other
+# variants are normalised in via the published multiplicative factor. The headline class
+# is the one whose reference_variant equals reference_unit.gpu_model. Adding a class
+# (or variant) is a methodology change; a class publishes only once it clears the same
+# >=min_providers gate as every other series.
+model_classes:
+  H100:
+    reference_variant: H100_SXM
+    variants:
+      H100_SXM: 1.0
+      H100_NVL_94GB: 1.0     # default until measured
+  A100:
+    reference_variant: A100_SXM
+    variants:
+      A100_SXM: 1.0
+  B200:
+    reference_variant: B200_SXM
+    variants:
+      B200_SXM: 1.0
 
 filters:
   min_gpu_count: 8           # offers below the node config are excluded
@@ -21,9 +38,21 @@ filters:
   exclude_tiers: [interruptible, spot, community]
 
 weights:
-  capacity_cap: 64           # weight = min(available_gpu_count, capacity_cap) where observable
-  default_capacity: 8        # ... else default_capacity
+  capacity_cap: 64           # daily capacity term = min(observed qualifying GPUs, cap)
+  default_capacity: 8        # ... where capacity is unobservable (all list-price rows)
   executable_multiplier: 2.0 # executable-quote sources weighted double list-price sources
+  max_weight_share_pct: 25   # concentration cap: no constituent may exceed this share of a
+                             # print's total weight; excess is redistributed pro-rata
+  review:                    # scheduled, data-driven weight reviews (fixed rule, no discretion)
+    anchor_weekday: 1        # ISO weekday a review takes effect (1 = Monday, i.e. weekly)
+    window_days: 28          # trailing observation window ending the day before the review
+    min_history_days: 5      # fewer collection days than this in the window -> bootstrap
+                             # rule: same-day capacity weighting, prints flagged
+
+composite:                   # EU-CRI-COMPUTE: chain-linked basket of class sub-indices
+  base_value: 100.0          # level on the composite's first print
+  min_class_share_pct: 5     # floor for an eligible class at review (applies with >=2 classes)
+  max_class_share_pct: 75    # cap for a class at review (applies with >=2 classes)
 
 aggregation:
   winsorise_pct: [5, 95]     # nearest-rank percentiles; values outside are clamped to boundary

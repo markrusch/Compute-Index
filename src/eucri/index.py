@@ -6,21 +6,26 @@ Implements METHODOLOGY.md §3 exactly:
 1. representative price per provider = min surviving executable ask, else min list price
 2. staleness exclusion for static entries (> staleness.exclude_days)
 3. winsorise at nearest-rank p5/p95, clamping to the boundary value
-4. weight = min(sum of qualifying listed GPUs, capacity_cap) else default_capacity,
-   x executable_multiplier for executable tier
-5. lower weighted median: first price whose cumulative weight reaches 50% of total
-6. publish gate: fewer than min_providers included -> value None, 'insufficient_sources'
+4. weight per provider = the effective review weight (weights.py) when a weight review
+   is in effect; providers absent from the review enter at the default weight, flagged
+   'no_weight_history'. Without a review (bootstrap), the same-day capacity rule applies.
+5. concentration cap: no constituent above max_weight_share_pct of total weight; excess
+   redistributed pro-rata; included constituents' final weights are shares summing to 100
+6. lower weighted median: first price whose cumulative share reaches 50% of total
+7. publish gate: fewer than min_providers included -> value None, 'insufficient_sources'
 """
 
 from __future__ import annotations
 
 import math
+from collections.abc import Mapping
 from datetime import date as date_type
 from datetime import datetime
 
 from eucri.config import Factors
 from eucri.models import Constituent, IndexPrint
 from eucri.normalise import NormalisedObs
+from eucri.weights import apply_concentration_cap
 
 
 def nearest_rank(sorted_values: list[float], pct: float) -> float:
@@ -66,9 +71,18 @@ def _staleness_days(last_verified: str, on_date: str) -> int:
 
 
 def representative_constituents(
-    observations: list[NormalisedObs], factors: Factors, on_date: str
+    observations: list[NormalisedObs],
+    factors: Factors,
+    on_date: str,
+    provider_weights: Mapping[str, float] | None = None,
 ) -> list[Constituent]:
-    """One candidate constituent per provider, with exclusions recorded, not dropped."""
+    """One candidate constituent per provider, with exclusions recorded, not dropped.
+
+    provider_weights is the effective review weight set (raw weights from weights.py).
+    None means no review is in effect (bootstrap): weight falls back to the same-day
+    capacity rule. A provider missing from a supplied review set enters at the default
+    weight for its tier and is flagged 'no_weight_history'.
+    """
     by_provider: dict[str, list[NormalisedObs]] = {}
     for obs in observations:
         by_provider.setdefault(obs.provider, []).append(obs)
@@ -81,18 +95,29 @@ def representative_constituents(
         best = min(chosen_pool, key=lambda o: o.price_usd)
         tier = best.tier
 
-        # capacity is only truly observable for executable marketplace listings (real
-        # rentable machines); a list-price catalog row discloses none — its multiplicity
-        # is region enumeration, not inventory. So: executable = sum of listed GPUs
-        # (capped), list = default_capacity.
-        if tier == "executable":
-            counts = [o.gpu_count for o in chosen_pool if o.gpu_count is not None]
-            capacity = sum(counts) if counts else factors.weights.default_capacity
+        flags = ""
+        if provider_weights is None:
+            # bootstrap: same-day capacity. Capacity is only truly observable for
+            # executable marketplace listings (real rentable machines); a list-price
+            # catalog row discloses none — its multiplicity is region enumeration,
+            # not inventory. So: executable = sum of listed GPUs (capped), list =
+            # default_capacity.
+            if tier == "executable":
+                counts = [o.gpu_count for o in chosen_pool if o.gpu_count is not None]
+                capacity = sum(counts) if counts else factors.weights.default_capacity
+            else:
+                capacity = factors.weights.default_capacity
+            weight = float(min(capacity, factors.weights.capacity_cap))
+            if tier == "executable":
+                weight *= factors.weights.executable_multiplier
         else:
-            capacity = factors.weights.default_capacity
-        weight = float(min(capacity, factors.weights.capacity_cap))
-        if tier == "executable":
-            weight *= factors.weights.executable_multiplier
+            review = provider_weights.get(provider)
+            if review is None:
+                mult = factors.weights.executable_multiplier if tier == "executable" else 1.0
+                weight = float(factors.weights.default_capacity) * mult
+                flags = "no_weight_history"
+            else:
+                weight = float(review)
 
         exclusion: str | None = None
         if best.last_verified is not None:
@@ -108,6 +133,7 @@ def representative_constituents(
                 weight=weight,
                 included=exclusion is None,
                 exclusion_reason=exclusion,
+                flags=flags,
             )
         )
     return constituents
@@ -120,9 +146,10 @@ def compute_print(
     factors: Factors,
     fx: tuple[float, str] | None,
     prev_prices: dict[str, float] | None = None,
+    provider_weights: Mapping[str, float] | None = None,
 ) -> IndexPrint:
     """Compute one print. prev_prices (provider -> last included price) drives jump flags."""
-    candidates = representative_constituents(observations, factors, date)
+    candidates = representative_constituents(observations, factors, date, provider_weights)
     included = [c for c in candidates if c.included]
 
     # jump flags: >jump_flag_pct% day-over-day move flags for review, never excludes
@@ -163,11 +190,26 @@ def compute_print(
     clamped, lo, hi = winsorise(
         prices, factors.aggregation.winsorise_pct[0], factors.aggregation.winsorise_pct[1]
     )
-
-    # deterministic order: (clamped price, provider name); mark clamped constituents
-    audit: list[Constituent] = []
-    pairs: list[tuple[float, float, str]] = []
     clamp_map = dict(zip([c.provider for c in included], clamped, strict=True))
+
+    # deterministic order: (clamped price, provider name); then cap concentration and
+    # normalise the included weights into shares summing to 100
+    ordered = sorted(included, key=lambda c: (clamp_map[c.provider], c.provider))
+    shares, capped_idx = apply_concentration_cap(
+        [c.weight for c in ordered], factors.weights.max_weight_share_pct
+    )
+    share_info = {
+        c.provider: (round(share, 6), i in capped_idx)
+        for i, (c, share) in enumerate(zip(ordered, shares, strict=True))
+    }
+    value_usd = weighted_median(
+        [(clamp_map[c.provider], share) for c, share in zip(ordered, shares, strict=True)]
+    )
+    value_eur = round(value_usd / fx[0], 6) if fx else None
+
+    # audit rows: included constituents carry their final print share; excluded ones
+    # keep the raw pre-cap weight they would have carried
+    audit: list[Constituent] = []
     for c in candidates:
         if not c.included:
             audit.append(c)
@@ -176,17 +218,16 @@ def compute_print(
         reason = c.exclusion_reason
         if clamped_price != c.price_usd:
             reason = "winsorised"  # included=1: value clamped, constituent stays in
+        share, was_capped = share_info[c.provider]
+        flags = c.flags
+        if was_capped:
+            flags = "weight_capped" if not flags else f"{flags},weight_capped"
         audit.append(
             Constituent(
                 provider=c.provider, source=c.source, tier=c.tier, price_usd=c.price_usd,
-                weight=c.weight, included=True, exclusion_reason=reason, flags=c.flags,
+                weight=share, included=True, exclusion_reason=reason, flags=flags,
             )
         )
-        pairs.append((clamped_price, c.weight, c.provider))
-
-    ordered = sorted(pairs, key=lambda p: (p[0], p[2]))
-    value_usd = weighted_median([(price, weight) for price, weight, _ in ordered])
-    value_eur = round(value_usd / fx[0], 6) if fx else None
 
     return IndexPrint(
         date=date, series=series, value_usd=round(value_usd, 6), value_eur=value_eur,
