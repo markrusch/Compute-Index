@@ -41,7 +41,10 @@ jobs:
           if git diff --cached --quiet; then
             echo "nothing to commit"
           else
-            git pull --rebase origin main
+            # commit locally before pulling: `git pull --rebase` refuses to run
+            # with staged changes in the index, which silently discarded every
+            # day's real print from 2026-07-22 onward (computed, never persisted).
             git commit -m "daily: $(date -u +%F)"
+            git pull --rebase origin main
             git push origin main
           fi
