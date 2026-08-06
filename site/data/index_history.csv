@@ -23,3 +23,9 @@ date,series,value_usd,value_eur,fx_rate,fx_date,n_sources,n_executable,flags,met
 2026-08-05,EU-CRI-H100-CLOUD,3.85,3.332179,1.1554,2026-08-05,5,0,bootstrap_weights,0.2.0-dev,2
 2026-08-05,EU-CRI-H100-MKT,,,1.1554,2026-08-05,0,0,"insufficient_sources,bootstrap_weights",0.2.0-dev,2
 2026-08-05,EU-CRI-H100-SOV,,,1.1554,2026-08-05,3,0,"insufficient_sources,bootstrap_weights",0.2.0-dev,2
+2026-08-06,EU-CRI-A100,,,1.1554,2026-08-05,2,2,"insufficient_sources,bootstrap_weights",0.2.0-dev,1
+2026-08-06,EU-CRI-H100,3.85,3.332179,1.1554,2026-08-05,5,0,bootstrap_weights,0.2.0-dev,1
+2026-08-06,EU-CRI-H100-7D,,,1.1554,2026-08-05,2,0,insufficient_history,0.2.0-dev,1
+2026-08-06,EU-CRI-H100-CLOUD,3.85,3.332179,1.1554,2026-08-05,5,0,bootstrap_weights,0.2.0-dev,1
+2026-08-06,EU-CRI-H100-MKT,,,1.1554,2026-08-05,0,0,"insufficient_sources,bootstrap_weights",0.2.0-dev,1
+2026-08-06,EU-CRI-H100-SOV,,,1.1554,2026-08-05,3,0,"insufficient_sources,bootstrap_weights",0.2.0-dev,1

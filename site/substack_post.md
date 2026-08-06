@@ -1,4 +1,4 @@
-# EU-CRI weekly — 2026-08-05
+# EU-CRI weekly — 2026-08-06
 
 **EU-CRI-H100: $3.85 / GPU-hour** (€3.33 at ECB 1.1554 on 2026-08-05)
 

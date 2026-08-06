@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-08-05T19:59:32Z",
+  "generated_at": "2026-08-06T11:45:47Z",
   "eucri_version": "0.1.0",
   "methodology_version": "0.2.0-dev",
   "disclaimer": "EU-CRI is a research publication. It is not investment advice and is not administered as a benchmark under EU Regulation 2016/1011; it may not be used as a reference price in financial instruments.",
-  "date": "2026-08-05",
+  "date": "2026-08-06",
   "series": {
     "EU-CRI-H100": {
-      "date": "2026-08-05",
+      "date": "2026-08-06",
       "value_usd": 3.85,
       "value_eur": 3.332179,
       "fx_rate": 1.1554,
@@ -16,21 +16,21 @@
       "flags": "bootstrap_weights",
       "wow_pct": 18.4615,
       "mom_pct": null,
-      "prev_date": "2026-07-21",
-      "prev_value_usd": 3.25
+      "prev_date": "2026-08-05",
+      "prev_value_usd": 3.85
     },
     "EU-CRI-H100-7D": {
-      "date": "2026-08-05",
+      "date": "2026-08-06",
       "value_usd": null,
       "value_eur": null,
       "fx_rate": 1.1554,
       "fx_date": "2026-08-05",
-      "n_sources": 1,
+      "n_sources": 2,
       "n_executable": 0,
       "flags": "insufficient_history"
     },
     "EU-CRI-H100-SOV": {
-      "date": "2026-08-05",
+      "date": "2026-08-06",
       "value_usd": null,
       "value_eur": null,
       "fx_rate": 1.1554,
@@ -40,7 +40,7 @@
       "flags": "insufficient_sources,bootstrap_weights"
     },
     "EU-CRI-H100-MKT": {
-      "date": "2026-08-05",
+      "date": "2026-08-06",
       "value_usd": null,
       "value_eur": null,
       "fx_rate": 1.1554,
@@ -50,7 +50,7 @@
       "flags": "insufficient_sources,bootstrap_weights"
     },
     "EU-CRI-H100-CLOUD": {
-      "date": "2026-08-05",
+      "date": "2026-08-06",
       "value_usd": 3.85,
       "value_eur": 3.332179,
       "fx_rate": 1.1554,
@@ -60,17 +60,17 @@
       "flags": "bootstrap_weights",
       "wow_pct": 0.0,
       "mom_pct": null,
-      "prev_date": "2026-07-21",
+      "prev_date": "2026-08-05",
       "prev_value_usd": 3.85
     },
     "EU-CRI-A100": {
-      "date": "2026-08-05",
+      "date": "2026-08-06",
       "value_usd": null,
       "value_eur": null,
       "fx_rate": 1.1554,
       "fx_date": "2026-08-05",
-      "n_sources": 1,
-      "n_executable": 1,
+      "n_sources": 2,
+      "n_executable": 2,
       "flags": "insufficient_sources,bootstrap_weights"
     }
   },
@@ -138,6 +138,18 @@
       }
     ],
     "EU-CRI-A100": [
+      {
+        "provider": "vast.ai",
+        "source": "vast_ai",
+        "tier": "executable",
+        "price_usd": 0.8001851851851851,
+        "weight": 16.0,
+        "included": true,
+        "exclusion_reason": null,
+        "flags": "",
+        "url": "https://cloud.vast.ai/",
+        "note": "Public marketplace search API; datacenter-verified hosts only."
+      },
       {
         "provider": "runpod",
         "source": "runpod",
