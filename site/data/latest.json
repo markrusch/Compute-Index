@@ -1,70 +1,70 @@
 {
-  "generated_at": "2026-08-09T11:10:22Z",
+  "generated_at": "2026-08-10T11:24:51Z",
   "eucri_version": "0.1.0",
   "methodology_version": "0.2.0-dev",
   "disclaimer": "EU-CRI is a research publication. It is not investment advice and is not administered as a benchmark under EU Regulation 2016/1011; it may not be used as a reference price in financial instruments.",
-  "date": "2026-08-09",
+  "date": "2026-08-10",
   "series": {
     "EU-CRI-H100": {
-      "date": "2026-08-09",
+      "date": "2026-08-10",
       "value_usd": 3.29,
       "value_eur": 2.852189,
       "fx_rate": 1.1535,
       "fx_date": "2026-08-07",
       "n_sources": 6,
       "n_executable": 1,
-      "flags": "bootstrap_weights",
+      "flags": "",
       "wow_pct": 1.2308,
       "mom_pct": null,
-      "prev_date": "2026-08-08",
+      "prev_date": "2026-08-09",
       "prev_value_usd": 3.29
     },
     "EU-CRI-H100-7D": {
-      "date": "2026-08-09",
-      "value_usd": 3.514,
-      "value_eur": 3.046381,
+      "date": "2026-08-10",
+      "value_usd": 3.476667,
+      "value_eur": 3.014016,
       "fx_rate": 1.1535,
       "fx_date": "2026-08-07",
-      "n_sources": 5,
+      "n_sources": 6,
       "n_executable": 0,
       "flags": "",
       "wow_pct": null,
       "mom_pct": null,
-      "prev_date": "2026-08-08",
-      "prev_value_usd": 3.57
+      "prev_date": "2026-08-09",
+      "prev_value_usd": 3.514
     },
     "EU-CRI-H100-SOV": {
-      "date": "2026-08-09",
+      "date": "2026-08-10",
       "value_usd": null,
       "value_eur": null,
       "fx_rate": 1.1535,
       "fx_date": "2026-08-07",
       "n_sources": 3,
       "n_executable": 0,
-      "flags": "insufficient_sources,bootstrap_weights"
+      "flags": "insufficient_sources"
     },
     "EU-CRI-H100-MKT": {
-      "date": "2026-08-09",
+      "date": "2026-08-10",
       "value_usd": null,
       "value_eur": null,
       "fx_rate": 1.1535,
       "fx_date": "2026-08-07",
       "n_sources": 1,
       "n_executable": 1,
-      "flags": "insufficient_sources,bootstrap_weights"
+      "flags": "insufficient_sources"
     },
     "EU-CRI-H100-CLOUD": {
-      "date": "2026-08-09",
+      "date": "2026-08-10",
       "value_usd": 3.85,
       "value_eur": 3.337668,
       "fx_rate": 1.1535,
       "fx_date": "2026-08-07",
       "n_sources": 5,
       "n_executable": 0,
-      "flags": "bootstrap_weights",
+      "flags": "",
       "wow_pct": 0.0,
       "mom_pct": null,
-      "prev_date": "2026-08-08",
+      "prev_date": "2026-08-09",
       "prev_value_usd": 3.85
     },
     "EU-CRI-A100": {
@@ -76,6 +76,20 @@
       "n_sources": 1,
       "n_executable": 1,
       "flags": "insufficient_sources,bootstrap_weights"
+    },
+    "EU-CRI-COMPUTE": {
+      "date": "2026-08-10",
+      "value_usd": 100.0,
+      "value_eur": null,
+      "fx_rate": null,
+      "fx_date": null,
+      "n_sources": 1,
+      "n_executable": 0,
+      "flags": "base",
+      "wow_pct": null,
+      "mom_pct": null,
+      "prev_date": null,
+      "prev_value_usd": null
     }
   },
   "constituents": {
@@ -85,7 +99,7 @@
         "source": "static_yaml",
         "tier": "list",
         "price_usd": 2.16,
-        "weight": 15.0,
+        "weight": 15.3846,
         "included": true,
         "exclusion_reason": null,
         "flags": "",
@@ -97,7 +111,7 @@
         "source": "static_yaml",
         "tier": "list",
         "price_usd": 3.25,
-        "weight": 15.0,
+        "weight": 15.3846,
         "included": true,
         "exclusion_reason": null,
         "flags": "",
@@ -109,10 +123,10 @@
         "source": "runpod",
         "tier": "executable",
         "price_usd": 3.29,
-        "weight": 25.0,
+        "weight": 23.0769,
         "included": true,
         "exclusion_reason": null,
-        "flags": "weight_capped",
+        "flags": "",
         "url": "https://www.runpod.io/console/gpu-cloud",
         "note": "Secure Cloud pricing via RunPod's public GraphQL API."
       },
@@ -121,7 +135,7 @@
         "source": "static_yaml",
         "tier": "list",
         "price_usd": 3.85,
-        "weight": 15.0,
+        "weight": 15.3846,
         "included": true,
         "exclusion_reason": null,
         "flags": "",
@@ -133,7 +147,7 @@
         "source": "gpuhunt",
         "tier": "list",
         "price_usd": 5.442394,
-        "weight": 15.0,
+        "weight": 15.3846,
         "included": true,
         "exclusion_reason": null,
         "flags": "",
@@ -145,7 +159,7 @@
         "source": "gpuhunt",
         "tier": "list",
         "price_usd": 7.3616,
-        "weight": 15.0,
+        "weight": 15.3846,
         "included": true,
         "exclusion_reason": null,
         "flags": "",
@@ -154,7 +168,67 @@
       }
     ]
   },
-  "weight_review": null,
+  "weight_review": {
+    "effective_date": "2026-08-10",
+    "window_start": "2026-07-13",
+    "window_end": "2026-08-09",
+    "n_days_window": 8,
+    "providers": {
+      "A100": [
+        {
+          "provider": "runpod",
+          "weight": 14.0,
+          "days_observed": 7
+        },
+        {
+          "provider": "vast.ai",
+          "weight": 2.0,
+          "days_observed": 1
+        }
+      ],
+      "H100": [
+        {
+          "provider": "runpod",
+          "weight": 12.0,
+          "days_observed": 6
+        },
+        {
+          "provider": "aws",
+          "weight": 8.0,
+          "days_observed": 8
+        },
+        {
+          "provider": "datacrunch",
+          "weight": 8.0,
+          "days_observed": 8
+        },
+        {
+          "provider": "gcp",
+          "weight": 8.0,
+          "days_observed": 8
+        },
+        {
+          "provider": "nebius",
+          "weight": 8.0,
+          "days_observed": 8
+        },
+        {
+          "provider": "seeweb",
+          "weight": 8.0,
+          "days_observed": 8
+        },
+        {
+          "provider": "vast.ai",
+          "weight": 2.0,
+          "days_observed": 1
+        }
+      ]
+    },
+    "model_shares": {
+      "A100": 25.0,
+      "H100": 75.0
+    }
+  },
   "sources": [
     {
       "source": "vast_ai",

@@ -1,10 +1,10 @@
-# EU-CRI weekly — 2026-08-09
+# EU-CRI weekly — 2026-08-10
 
 **EU-CRI-H100: $3.29 / GPU-hour** (€2.85 at ECB 1.1535 on 2026-08-07)
 
 Week-over-week: +1.2% · Month-over-month: n/a · Constituents: 6 (1 executable-quote)
 
-7-day mean: $3.51
+7-day mean: $3.48
 
 <!-- EDITORIAL: lead commentary -->
 
@@ -14,7 +14,7 @@ Dispersion: cheapest constituent $2.16, dearest $7.36 — a 3.4x spread for the 
 |---|---|---|---|
 | seeweb | list | $2.16 | 15 |
 | datacrunch | list | $3.25 | 15 |
-| runpod | executable | $3.29 | 25 |
+| runpod | executable | $3.29 | 23 |
 | nebius | list | $3.85 | 15 |
 | gcp | list | $5.44 | 15 |
 | aws | list | $7.36 | 15 |
