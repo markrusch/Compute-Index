@@ -1,84 +1,84 @@
 {
-  "generated_at": "2026-08-12T11:18:18Z",
+  "generated_at": "2026-08-13T11:18:43Z",
   "eucri_version": "0.1.0",
   "methodology_version": "0.2.0-dev",
   "disclaimer": "EU-CRI is a research publication. It is not investment advice and is not administered as a benchmark under EU Regulation 2016/1011; it may not be used as a reference price in financial instruments.",
-  "date": "2026-08-12",
+  "date": "2026-08-13",
   "series": {
     "EU-CRI-H100": {
-      "date": "2026-08-12",
+      "date": "2026-08-13",
       "value_usd": 3.29,
-      "value_eur": 2.850953,
-      "fx_rate": 1.154,
-      "fx_date": "2026-08-11",
+      "value_eur": 2.849718,
+      "fx_rate": 1.1545,
+      "fx_date": "2026-08-12",
       "n_sources": 6,
       "n_executable": 1,
       "flags": "",
       "wow_pct": -14.5455,
       "mom_pct": null,
-      "prev_date": "2026-08-11",
+      "prev_date": "2026-08-12",
       "prev_value_usd": 3.29
     },
     "EU-CRI-H100-7D": {
-      "date": "2026-08-12",
-      "value_usd": 3.37,
-      "value_eur": 2.920277,
-      "fx_rate": 1.154,
-      "fx_date": "2026-08-11",
+      "date": "2026-08-13",
+      "value_usd": 3.29,
+      "value_eur": 2.849718,
+      "fx_rate": 1.1545,
+      "fx_date": "2026-08-12",
       "n_sources": 7,
       "n_executable": 0,
       "flags": "",
       "wow_pct": null,
       "mom_pct": null,
-      "prev_date": "2026-08-11",
-      "prev_value_usd": 3.45
+      "prev_date": "2026-08-12",
+      "prev_value_usd": 3.37
     },
     "EU-CRI-H100-SOV": {
-      "date": "2026-08-12",
+      "date": "2026-08-13",
       "value_usd": null,
       "value_eur": null,
-      "fx_rate": 1.154,
-      "fx_date": "2026-08-11",
+      "fx_rate": 1.1545,
+      "fx_date": "2026-08-12",
       "n_sources": 3,
       "n_executable": 0,
       "flags": "insufficient_sources"
     },
     "EU-CRI-H100-MKT": {
-      "date": "2026-08-12",
+      "date": "2026-08-13",
       "value_usd": null,
       "value_eur": null,
-      "fx_rate": 1.154,
-      "fx_date": "2026-08-11",
+      "fx_rate": 1.1545,
+      "fx_date": "2026-08-12",
       "n_sources": 1,
       "n_executable": 1,
       "flags": "insufficient_sources"
     },
     "EU-CRI-H100-CLOUD": {
-      "date": "2026-08-12",
+      "date": "2026-08-13",
       "value_usd": 3.85,
-      "value_eur": 3.336222,
-      "fx_rate": 1.154,
-      "fx_date": "2026-08-11",
+      "value_eur": 3.334777,
+      "fx_rate": 1.1545,
+      "fx_date": "2026-08-12",
       "n_sources": 5,
       "n_executable": 0,
       "flags": "",
       "wow_pct": 0.0,
       "mom_pct": null,
-      "prev_date": "2026-08-11",
+      "prev_date": "2026-08-12",
       "prev_value_usd": 3.85
     },
     "EU-CRI-A100": {
-      "date": "2026-08-11",
+      "date": "2026-08-13",
       "value_usd": null,
       "value_eur": null,
-      "fx_rate": 1.1555,
-      "fx_date": "2026-08-10",
+      "fx_rate": 1.1545,
+      "fx_date": "2026-08-12",
       "n_sources": 1,
       "n_executable": 1,
       "flags": "insufficient_sources"
     },
     "EU-CRI-COMPUTE": {
-      "date": "2026-08-12",
+      "date": "2026-08-13",
       "value_usd": 100.0,
       "value_eur": null,
       "fx_rate": null,
@@ -88,7 +88,7 @@
       "flags": "",
       "wow_pct": null,
       "mom_pct": null,
-      "prev_date": "2026-08-11",
+      "prev_date": "2026-08-12",
       "prev_value_usd": 100.0
     }
   },
@@ -165,6 +165,20 @@
         "flags": "",
         "url": "https://aws.amazon.com/ec2/instance-types/p5/",
         "note": "EC2 P5 (8x H100) on-demand list price, EU regions, via the gpuhunt catalog."
+      }
+    ],
+    "EU-CRI-A100": [
+      {
+        "provider": "runpod",
+        "source": "runpod",
+        "tier": "executable",
+        "price_usd": 1.59,
+        "weight": 14.0,
+        "included": true,
+        "exclusion_reason": null,
+        "flags": "",
+        "url": "https://www.runpod.io/console/gpu-cloud",
+        "note": "Secure Cloud pricing via RunPod's public GraphQL API."
       }
     ]
   },
