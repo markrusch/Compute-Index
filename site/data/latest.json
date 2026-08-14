@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-08-13T15:33:56Z",
+  "generated_at": "2026-08-14T11:17:27Z",
   "eucri_version": "0.1.0",
   "methodology_version": "0.2.0-dev",
   "disclaimer": "EU-CRI is a research publication. It is not investment advice and is not administered as a benchmark under EU Regulation 2016/1011; it may not be used as a reference price in financial instruments.",
-  "date": "2026-08-13",
+  "date": "2026-08-14",
   "series": {
     "EU-CRI-H100": {
-      "date": "2026-08-13",
+      "date": "2026-08-14",
       "value_usd": 3.29,
       "value_eur": 2.852436,
       "fx_rate": 1.1534,
@@ -14,13 +14,13 @@
       "n_sources": 6,
       "n_executable": 1,
       "flags": "",
-      "wow_pct": -14.5455,
+      "wow_pct": 0.0,
       "mom_pct": null,
-      "prev_date": "2026-08-12",
+      "prev_date": "2026-08-13",
       "prev_value_usd": 3.29
     },
     "EU-CRI-H100-7D": {
-      "date": "2026-08-13",
+      "date": "2026-08-14",
       "value_usd": 3.29,
       "value_eur": 2.852436,
       "fx_rate": 1.1534,
@@ -30,11 +30,11 @@
       "flags": "",
       "wow_pct": null,
       "mom_pct": null,
-      "prev_date": "2026-08-12",
-      "prev_value_usd": 3.37
+      "prev_date": "2026-08-13",
+      "prev_value_usd": 3.29
     },
     "EU-CRI-H100-SOV": {
-      "date": "2026-08-13",
+      "date": "2026-08-14",
       "value_usd": null,
       "value_eur": null,
       "fx_rate": 1.1534,
@@ -44,7 +44,7 @@
       "flags": "insufficient_sources"
     },
     "EU-CRI-H100-MKT": {
-      "date": "2026-08-13",
+      "date": "2026-08-14",
       "value_usd": null,
       "value_eur": null,
       "fx_rate": 1.1534,
@@ -54,7 +54,7 @@
       "flags": "insufficient_sources"
     },
     "EU-CRI-H100-CLOUD": {
-      "date": "2026-08-13",
+      "date": "2026-08-14",
       "value_usd": 3.85,
       "value_eur": 3.337957,
       "fx_rate": 1.1534,
@@ -64,11 +64,11 @@
       "flags": "",
       "wow_pct": 0.0,
       "mom_pct": null,
-      "prev_date": "2026-08-12",
+      "prev_date": "2026-08-13",
       "prev_value_usd": 3.85
     },
     "EU-CRI-A100": {
-      "date": "2026-08-13",
+      "date": "2026-08-14",
       "value_usd": null,
       "value_eur": null,
       "fx_rate": 1.1534,
@@ -78,7 +78,7 @@
       "flags": "insufficient_sources"
     },
     "EU-CRI-COMPUTE": {
-      "date": "2026-08-13",
+      "date": "2026-08-14",
       "value_usd": 100.0,
       "value_eur": null,
       "fx_rate": null,
@@ -88,7 +88,7 @@
       "flags": "",
       "wow_pct": null,
       "mom_pct": null,
-      "prev_date": "2026-08-12",
+      "prev_date": "2026-08-13",
       "prev_value_usd": 100.0
     }
   },
