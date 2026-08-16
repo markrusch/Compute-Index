@@ -1,6 +1,12 @@
 # EU-CRI Design System
 
-**European Compute Reference Index — visual specification, v1.0**
+**European Compute Reference Index — visual specification, v1.1**
+
+v1.1 raised the radius ceiling (`--radius-md` 6px → 12px, plus a new
+`--radius-lg` 20px reserved for the hero print card) and added two rationed,
+dark-mode-only motifs — `--shadow-glow`/`--accent-glow` and `--texture-dot`
+(§2, §11). No colour token changed value; every accessibility ratio in §5
+still holds as measured.
 
 | File | What it is |
 |---|---|
@@ -137,11 +143,33 @@ is 3.35:1 on white and fails AA as text. `--status-good-ink` `#006300` is 7.54:1
 | Teal on links, buttons, headers, and chips | Teal on the live value; `--ink-1` links with a `--rule-heavy` underline |
 | `--ink-faint` for a caption | `--ink-3` |
 | Zebra-striped tables | Hairline row rules; stripes read as a spreadsheet export |
-| A second `box-shadow` for card depth | Surface + hairline. The one shadow token is for floating layers |
-| `border-radius: 12px` | `--radius-md` (6px) is the ceiling |
+| A second `box-shadow` for card depth | Surface + hairline. `--shadow-raised` is for floating layers only |
+| A glow on more than one element | `--shadow-glow` (hero card) and `--accent-glow` (live dot) are rationed exactly like the accent itself — see below |
+| `border-radius: 28px` on a card | `--radius-md` (12px) is the card ceiling; `--radius-lg` (20px) is reserved for the hero print card alone |
 | A gradient on a CTA | A flat `--accent` fill |
 | Hiding nav behind a hamburger on desktop | A broad flat top nav |
 | A page with no visible `as of` stamp | Data vintage is non-optional chrome |
+
+### Glow and texture are rationed, not decorative defaults
+
+`--shadow-glow`, `--accent-glow` and `--texture-dot` (§11) exist to give the
+hero print and the live dot the ambient, "this is a live instrument" quality a
+dark surface can plausibly carry — the visual language a dark dashboard is
+expected to speak in 2026. They follow the accent's own rule: budgeted, not
+sprinkled.
+
+- `--accent-glow` ships on exactly one element: `.live-dot`. It is the same
+  teal the dot already is — a halo, not a new colour.
+- `--shadow-glow` ships on exactly one element: `.print`, the hero card. No
+  other card ever earns a shadow; the ordinary `--shadow-raised` token still
+  covers the tooltip and dropdown case.
+- `--texture-dot` is a near-invisible (5.5% white alpha) dot grid on the
+  masthead, hero and footer chrome planes only. It never carries information —
+  if you can consciously see the dots at reading distance, the opacity is
+  wrong.
+- All three are `none` / fully transparent in light mode. A glow reads as
+  ambient light; only a dark surface can plausibly emit it, so the light
+  theme stays exactly as flat as §11 originally specified.
 
 ---
 

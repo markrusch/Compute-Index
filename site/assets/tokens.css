@@ -413,25 +413,37 @@
   /* ------------------------------------------------------------------------
      §10  RADII & BORDER WIDTHS
      ------------------------------------------------------------------------
-     Nothing rounder than 6px. >8px corner radii are a consumer-SaaS signal;
-     no institutional comparable uses them. Tables and the ticker are square.
+     Nothing rounder than 20px, and only the hero print card earns the
+     maximum — the one element the eye should land on first. Tables and the
+     ticker stay square; density there reads as precision, not as chrome.
      ---------------------------------------------------------------------- */
   --radius-0:  0;      /* tables, ticker, full-bleed bands — square          */
-  --radius-xs: 2px;    /* chips, badges, inline code                         */
-  --radius-sm: 3px;    /* buttons, inputs                                    */
-  --radius-md: 6px;    /* cards, panels. THE MAXIMUM.                        */
+  --radius-xs: 4px;    /* chips, badges, inline code                         */
+  --radius-sm: 6px;    /* buttons, inputs                                    */
+  --radius-md: 12px;   /* cards, panels, tiles                               */
+  --radius-lg: 20px;   /* the hero print card only. THE MAXIMUM.             */
   --radius-pill: 999px;/* the live dot only                                  */
 
   --border-hairline: 1px;
   --border-marker:   2px;   /* the accent rule on the hero card; focus ring  */
 
   /* ------------------------------------------------------------------------
-     §11  ELEVATION — exactly one shadow token
+     §11  ELEVATION — shadow, glow, texture
      ------------------------------------------------------------------------
      Depth in this system is surface + hairline. --shadow-raised exists for
      genuinely floating layers only: the chart tooltip and a dropdown. A card
      never has a shadow. If you are reaching for a second shadow, use a
      hairline instead.
+
+     --shadow-glow and --accent-glow are the one deliberate exception, and
+     they are RATIONED exactly like --accent itself (§5): --accent-glow ships
+     only on the live dot, --shadow-glow only on the hero print card. Both
+     are inert (`none` / fully transparent) in light mode — a glow reads as
+     ambient light, which only a dark surface can plausibly emit.
+
+     --texture-dot is the same story for surface texture: a near-invisible
+     dot grid, dark-mode only, on the masthead, hero and footer chrome. It is
+     never a foreground channel — nothing is ever encoded in it.
      ---------------------------------------------------------------------- */
   --shadow-none:   none;
   --shadow-raised: 0 2px 8px rgba(17, 18, 20, 0.10),
@@ -439,6 +451,9 @@
   /* The same elevation expressed as a filter, for SVG tooltips — box-shadow
      does not apply inside SVG. Keep the two in step. */
   --shadow-raised-svg: drop-shadow(0 2px 8px rgba(17, 18, 20, 0.18));
+  --shadow-glow:   none;                        /* hero card ambient ring    */
+  --accent-glow:   rgba(0, 120, 108, 0.28);      /* live-dot halo            */
+  --texture-dot:   none;                         /* masthead/hero/footer bg  */
 
   /* ------------------------------------------------------------------------
      §12  MOTION
@@ -565,6 +580,12 @@
     --shadow-raised: 0 2px 10px rgba(0, 0, 0, 0.55),
                      0 0 0 1px rgba(255, 255, 255, 0.10);
     --shadow-raised-svg: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.7));
+    --shadow-glow: 0 0 0 1px rgba(47, 214, 195, 0.22),
+                   0 0 40px rgba(47, 214, 195, 0.13),
+                   0 8px 24px rgba(0, 0, 0, 0.45);
+    --accent-glow: rgba(47, 214, 195, 0.5);
+    --texture-dot: radial-gradient(circle, rgba(255, 255, 255, 0.055) 1px, transparent 1.6px)
+                   0 0/22px 22px;
   }
 }
 
@@ -647,6 +668,12 @@
   --shadow-raised: 0 2px 10px rgba(0, 0, 0, 0.55),
                    0 0 0 1px rgba(255, 255, 255, 0.10);
   --shadow-raised-svg: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.7));
+  --shadow-glow: 0 0 0 1px rgba(47, 214, 195, 0.22),
+                 0 0 40px rgba(47, 214, 195, 0.13),
+                 0 8px 24px rgba(0, 0, 0, 0.45);
+  --accent-glow: rgba(47, 214, 195, 0.5);
+  --texture-dot: radial-gradient(circle, rgba(255, 255, 255, 0.055) 1px, transparent 1.6px)
+                 0 0/22px 22px;
 }
 
 

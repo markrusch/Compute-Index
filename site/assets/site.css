@@ -37,7 +37,7 @@ a:hover { color: var(--accent-ink); text-decoration-color: var(--accent-ink); }
 
 /* ---- MASTHEAD ----------------------------------------------------------- */
 .masthead { position: sticky; top: 0; z-index: var(--z-sticky); }
-.masthead__bar { background: var(--surface-chrome); border-bottom: var(--border-hairline) solid var(--rule-strong); }
+.masthead__bar { background: var(--texture-dot), var(--surface-chrome); border-bottom: var(--border-hairline) solid var(--rule-strong); }
 .masthead__inner { display: flex; align-items: center; gap: var(--space-6); min-height: 56px; }
 .wordmark { display: flex; align-items: center; gap: var(--space-3); text-decoration: none; color: var(--ink-1); flex: none; }
 .wordmark__mark { color: var(--ink-1); }
@@ -67,7 +67,8 @@ a:hover { color: var(--accent-ink); text-decoration-color: var(--accent-ink); }
 
 /* the only ambient motion in the product */
 .live-dot { position: relative; inline-size: 7px; block-size: 7px; flex: none;
-            border-radius: var(--radius-pill); background: var(--accent); }
+            border-radius: var(--radius-pill); background: var(--accent);
+            box-shadow: 0 0 6px 1px var(--accent-glow); }
 .live-dot::after { content: ""; position: absolute; inset: -3px; border-radius: inherit;
                    border: var(--border-hairline) solid var(--accent);
                    animation: cri-pulse var(--dur-pulse) var(--ease) infinite; }
@@ -132,9 +133,11 @@ a:hover { color: var(--accent-ink); text-decoration-color: var(--accent-ink); }
 /* ---- HERO PRINT CARD ---------------------------------------------------- */
 /* The one place the accent becomes structure: a 2px rule across the top. */
 .print { display: grid; grid-template-columns: minmax(0,1fr) 300px;
-         background: var(--surface); border: var(--border-hairline) solid var(--rule-strong);
+         background: var(--texture-dot), var(--surface);
+         border: var(--border-hairline) solid var(--rule-strong);
          border-top: var(--border-marker) solid var(--accent);
-         border-radius: var(--radius-md); overflow: hidden; }
+         border-radius: var(--radius-lg); overflow: hidden;
+         box-shadow: var(--shadow-glow); }
 .print__main { padding: var(--space-6); min-width: 0; }
 .print__head { display: flex; gap: var(--space-5); align-items: flex-start; justify-content: space-between; flex-wrap: wrap; }
 .print__sym  { margin: var(--space-2) 0 0; font-size: var(--text-lg); font-weight: var(--weight-semibold);
@@ -401,7 +404,7 @@ code.inline { background: var(--surface-inset); border: var(--border-hairline) s
 .field .hint { font-size: var(--text-2xs); color: var(--ink-3); text-transform: none; letter-spacing: 0; }
 
 /* ---- FOOTER ------------------------------------------------------------- */
-.footer { background: var(--surface-chrome); border-top: var(--border-hairline) solid var(--rule-strong);
+.footer { background: var(--texture-dot), var(--surface-chrome); border-top: var(--border-hairline) solid var(--rule-strong);
           margin-top: var(--space-9); }
 .footer__inner { padding-block: var(--space-7) var(--space-6); }
 .footer__cols { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: var(--space-6);
