@@ -2,9 +2,46 @@
 
 Administrator and author: **Mark Rusch** (rusch.mh@gmail.com), Amsterdam.
 This document implements the IOSCO Principles for Financial Benchmarks (2013) as
-voluntary best practice. EU-CRI is a research publication outside the scope of EU
-Regulation 2016/1011 (it is not licensed for use in financial instruments and any
-request to hard-wire it into a financial contract will be refused).
+voluntary best practice. EU-CRI is a research publication: it is not licensed for use in
+financial instruments and any request to hard-wire it into a financial contract will be
+refused.
+
+### Regulatory scope — stated precisely
+
+**Regulation (EU) 2025/914** (in force 8 June 2025, applying from **1 January 2026**)
+narrowed the EU Benchmarks Regulation: Titles II–VI now apply only to critical
+benchmarks, significant benchmarks, and EU Climate Transition / Paris-aligned benchmarks.
+A non-significant benchmark falls outside them.
+
+That is easy to over-read, and an earlier draft of this document did over-read it. New
+**Article 2(1c)** separately provides that *"Article 19 applies to any commodity benchmark
+based on contributed input data"* — unless it is a regulated-data benchmark, has a
+majority of supervised contributors, or is a gold/silver/platinum critical benchmark. And
+Article 2(2)(g) exempts a commodity benchmark only while the total average notional of
+instruments referencing it stays below **EUR 200 million over 12 months**.
+
+Whether prices scraped from public rate cards and public APIs constitute "contributed
+input data" within the meaning of the Regulation is an open question on which the
+administrator expresses no view. The disclaimer is therefore retained as a deliberate
+choice rather than a legal necessity, and **legal advice will be obtained before any
+contractual use.** Nothing in this document is legal advice.
+
+### Settlement-grade preconditions (published and falsifiable)
+
+EU-CRI is a **price-transparency benchmark, not a settlement benchmark**, and will not be
+represented as one until *all* of the following hold. Progress is published on the
+dashboard so the claim can be checked rather than trusted:
+
+1. ≥15 independent constituents in the headline population, of which ≥5 executable.
+2. ≥180 consecutive collection days at ≥95% coverage.
+3. Realised index volatility demonstrably driven by price rather than composition.
+4. Executable share ≥50% by weight.
+5. An independent oversight committee (Baltic Index Council model). Governance by one
+   person is not a defect that code can fix.
+6. External methodology assurance review.
+7. A legal opinion on the Article 2(1c) question above.
+
+As of methodology v0.3.0 none of 1, 2, 4, 5, 6 or 7 is met.
 
 ## 1. Methodology change procedure (IOSCO P12)
 

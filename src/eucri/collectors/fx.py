@@ -40,6 +40,20 @@ def collect_fx(conn: sqlite3.Connection, session: requests.Session) -> bool:
     return True
 
 
-def latest_rate(conn: sqlite3.Connection) -> tuple[float, str] | None:
-    row = conn.execute("SELECT eur_usd, date FROM fx ORDER BY date DESC LIMIT 1").fetchone()
+def rate_for(conn: sqlite3.Connection, on_date: str) -> tuple[float, str] | None:
+    """Most recent ECB reference rate published on or before `on_date`.
+
+    The date bound is the point. `ORDER BY date DESC LIMIT 1` with no bound returns the
+    globally latest rate, which during a backfill is a rate published *after* the print —
+    a look-ahead. Two 2026-07 prints were computed that way (fx_date 2026-07-21 on prints
+    dated 07-18 and 07-19). Regression-tested in tests/test_fx_no_lookahead.py.
+
+    The rate is therefore T-1 by construction on most days: the ECB publishes ~14:00 UTC,
+    after the 11:00 UTC index cut-off. METHODOLOGY.md states the EUR leg as T-1 rather
+    than pretending otherwise.
+    """
+    row = conn.execute(
+        "SELECT eur_usd, date FROM fx WHERE date <= ? ORDER BY date DESC LIMIT 1",
+        (on_date,),
+    ).fetchone()
     return (row["eur_usd"], row["date"]) if row else None

@@ -1,0 +1,15 @@
+{
+ "servers": {
+  "B300-SXM-2-288G": {"gpu": 2, "hourly_price": 18.96, "arch": "x86_64", "ncpus": 32, "ram": 288000000000},
+  "B300-SXM-4-288G": {"gpu": 4, "hourly_price": 34.08, "arch": "x86_64", "ncpus": 64, "ram": 576000000000},
+  "B300-SXM-8-288G": {"gpu": 8, "hourly_price": 60.0, "arch": "x86_64", "ncpus": 128, "ram": 1152000000000},
+  "H100-1-80G": {"gpu": 1, "hourly_price": 2.8665, "arch": "x86_64", "ncpus": 16, "ram": 128000000000},
+  "H100-2-80G": {"gpu": 2, "hourly_price": 5.733, "arch": "x86_64", "ncpus": 32, "ram": 256000000000},
+  "H100-SXM-2-80G": {"gpu": 2, "hourly_price": 6.6198, "arch": "x86_64", "ncpus": 32, "ram": 256000000000},
+  "H100-4-80G": {"gpu": 4, "hourly_price": null, "arch": "x86_64", "ncpus": 64, "ram": 512000000000},
+  "A100-SXM-2-80G": {"gpu": 2, "hourly_price": 4.0, "arch": "x86_64", "ncpus": 24, "ram": 192000000000},
+  "L4-1-24G": {"gpu": 1, "hourly_price": 0.75, "arch": "x86_64", "ncpus": 8, "ram": 32000000000},
+  "GPU-3070-S": {"gpu": 1, "hourly_price": 0.35, "arch": "x86_64", "ncpus": 8, "ram": 32000000000},
+  "DEV1-S": {"gpu": null, "hourly_price": 0.02, "arch": "x86_64", "ncpus": 1, "ram": 2000000000}
+ }
+}

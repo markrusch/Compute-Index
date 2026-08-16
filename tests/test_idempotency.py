@@ -60,7 +60,7 @@ def test_recompute_appends_revision_not_duplicate(conn: sqlite3.Connection) -> N
         " WHERE date = ? GROUP BY series",
         (DATE,),
     ).fetchall()
-    assert len(revisions) == 5  # headline, 7D, SOV, MKT, CLOUD
+    assert len(revisions) == 6  # headline, 7D, MKT, NC, HS, SOV
     for r in revisions:
         assert r["n"] == 2 and r["maxrev"] == 2  # two revisions, never edits
 
@@ -71,7 +71,8 @@ def test_recompute_appends_revision_not_duplicate(conn: sqlite3.Connection) -> N
     ).fetchone()
     assert head["value_usd"] is not None
     assert head["n_sources"] == 6
-    assert "bootstrap_weights" in head["flags"]  # one collection day < min_history_days
+    # v0.3.0 weights providers by tier, so there is no capacity history to bootstrap
+    assert "bootstrap_weights" not in head["flags"]
 
     sov = conn.execute(
         "SELECT * FROM daily_index WHERE date = ? AND series = 'EU-CRI-H100-SOV'"

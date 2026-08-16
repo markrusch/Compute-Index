@@ -1,0 +1,85 @@
+{
+  "BillingCurrency": "USD",
+  "CustomerEntityId": "Default",
+  "Items": [
+    {
+      "armSkuName": "Standard_ND96isr_H100_v5",
+      "armRegionName": "westeurope",
+      "retailPrice": 132.232,
+      "unitOfMeasure": "1 Hour",
+      "meterName": "ND96isrH100v5",
+      "productName": "Virtual Machines NDISR H100 v5 Series",
+      "currencyCode": "USD",
+      "type": "Consumption",
+      "serviceName": "Virtual Machines"
+    },
+    {
+      "armSkuName": "Standard_ND96is_noIB_H100_v5",
+      "armRegionName": "westeurope",
+      "retailPrice": 119.45,
+      "unitOfMeasure": "1 Hour",
+      "meterName": "ND96isnIBH100v5",
+      "productName": "Virtual Machines NDIS H100 v5 Series",
+      "currencyCode": "USD",
+      "type": "Consumption",
+      "serviceName": "Virtual Machines"
+    },
+    {
+      "armSkuName": "Standard_ND96isr_H100_v5",
+      "armRegionName": "westeurope",
+      "retailPrice": 21.258283,
+      "unitOfMeasure": "1 Hour",
+      "meterName": "ND96isrH100v5 Spot",
+      "productName": "Virtual Machines NDISR H100 v5 Series",
+      "currencyCode": "USD",
+      "type": "Consumption",
+      "serviceName": "Virtual Machines"
+    },
+    {
+      "armSkuName": "Standard_ND96isr_H100_v5",
+      "armRegionName": "westeurope",
+      "retailPrice": 1132.0,
+      "unitOfMeasure": "1 Month",
+      "meterName": "ND96isrH100v5 Reserved",
+      "productName": "Virtual Machines NDISR H100 v5 Series",
+      "currencyCode": "USD",
+      "type": "Reservation",
+      "serviceName": "Virtual Machines"
+    },
+    {
+      "armSkuName": "Standard_ND128isr_NDR_GB200_v6",
+      "armRegionName": "westeurope",
+      "retailPrice": 146.488,
+      "unitOfMeasure": "1 Hour",
+      "meterName": "ND128isrNDRGB200v6",
+      "productName": "Virtual Machines NDISR GB200 v6 Series",
+      "currencyCode": "USD",
+      "type": "Consumption",
+      "serviceName": "Virtual Machines"
+    },
+    {
+      "armSkuName": "Standard_NC40ads_H100_v5",
+      "armRegionName": "westeurope",
+      "retailPrice": 6.98,
+      "unitOfMeasure": "1 Hour",
+      "meterName": "NC40adsH100v5",
+      "productName": "Virtual Machines NCADS H100 v5 Series",
+      "currencyCode": "USD",
+      "type": "Consumption",
+      "serviceName": "Virtual Machines"
+    },
+    {
+      "armSkuName": "Standard_D8s_v5",
+      "armRegionName": "westeurope",
+      "retailPrice": 0.384,
+      "unitOfMeasure": "1 Hour",
+      "meterName": "D8s v5",
+      "productName": "Virtual Machines Dsv5 Series",
+      "currencyCode": "USD",
+      "type": "Consumption",
+      "serviceName": "Virtual Machines"
+    }
+  ],
+  "NextPageLink": null,
+  "Count": 7
+}

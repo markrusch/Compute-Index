@@ -19,9 +19,11 @@ from pathlib import Path
 
 from eucri import config, db, weights
 from eucri.collectors import base
-from eucri.collectors.fx import collect_fx, latest_rate
+from eucri.collectors.azure_retail import AzureRetailCollector
+from eucri.collectors.fx import collect_fx, rate_for
 from eucri.collectors.gpuhunt_ import GpuHuntCollector
 from eucri.collectors.runpod import RunPodCollector
+from eucri.collectors.scaleway import ScalewayCollector
 from eucri.collectors.static_yaml import StaticYamlCollector
 from eucri.collectors.vast_ai import VastAiCollector
 from eucri.index import compute_print
@@ -36,23 +38,48 @@ CSV_PATH = REPO_ROOT / "site" / "data" / "index_history.csv"
 HEADLINE = "EU-CRI-H100"
 SERIES_7D = "EU-CRI-H100-7D"
 COMPOSITE = "EU-CRI-COMPUTE"
-SERIES_BY_CLASS = {"H100": "EU-CRI-H100", "A100": "EU-CRI-A100", "B200": "EU-CRI-B200"}
+SERIES_BY_CLASS = {
+    "H100": "EU-CRI-H100", "H200": "EU-CRI-H200", "B200": "EU-CRI-B200",
+    "B300": "EU-CRI-B300", "A100": "EU-CRI-A100", "H100P": "EU-CRI-H100-PCIE",
+}
 
 
 def collectors_for_daily() -> list[base.Collector]:
-    return [VastAiCollector(), RunPodCollector(), GpuHuntCollector(), StaticYamlCollector()]
+    return [
+        VastAiCollector(), RunPodCollector(), GpuHuntCollector(), StaticYamlCollector(),
+        ScalewayCollector(), AzureRetailCollector(),
+    ]
 
 
-SeriesDef = tuple[str, Callable[[NormalisedObs], bool]]  # (model class, predicate)
+# (model class, market-segment population, extra predicate)
+SeriesDef = tuple[str, frozenset[str], Callable[[NormalisedObs], bool]]
 
 
-def _series_definitions(sovereign: frozenset[str], headline_class: str) -> dict[str, SeriesDef]:
+def _series_definitions(
+    sovereign: frozenset[str], headline_class: str, factors: config.Factors
+) -> dict[str, SeriesDef]:
+    """v0.3.0 series, segregated by market segment rather than by executable/list tier.
+
+    The constituent distribution is bimodal — measured separation 5.4 sd between the
+    neocloud/marketplace cluster and the hyperscaler catalog cluster — so the headline
+    draws from one side of that gap and the hyperscaler tier gets its own series, where
+    it is the correct object of measurement rather than a drag on someone else's print.
+    """
     hc = headline_class
+
+    def everything(o: NormalisedObs) -> bool:
+        return o.model_class == hc
+
     return {
-        HEADLINE: (hc, lambda o: o.model_class == hc),
-        "EU-CRI-H100-SOV": (hc, lambda o: o.model_class == hc and o.provider in sovereign),
-        "EU-CRI-H100-MKT": (hc, lambda o: o.model_class == hc and o.tier == "executable"),
-        "EU-CRI-H100-CLOUD": (hc, lambda o: o.model_class == hc and o.tier == "list"),
+        HEADLINE: (hc, factors.population_for("headline"), everything),
+        "EU-CRI-H100-MKT": (hc, factors.population_for("marketplace"), everything),
+        "EU-CRI-H100-NC": (hc, frozenset({"neocloud"}), everything),
+        "EU-CRI-H100-HS": (hc, factors.population_for("hyperscaler"), everything),
+        "EU-CRI-H100-SOV": (
+            hc,
+            factors.population_for("sovereign"),
+            lambda o: o.model_class == hc and o.provider in sovereign,
+        ),
     }
 
 
@@ -350,7 +377,7 @@ def compute_all_series(conn: sqlite3.Connection, utc_date: str, correction: bool
     factors = config.load_factors()
     sovereign = config.load_sovereign()
     version = factors.methodology_version
-    fx = latest_rate(conn)
+    fx = rate_for(conn, utc_date)
     if fx is None:
         log.warning("no FX rate stored yet; EUR series will be null")
 
@@ -363,33 +390,32 @@ def compute_all_series(conn: sqlite3.Connection, utc_date: str, correction: bool
     conn.commit()
 
     rows = _observations_for_date(conn, utc_date)
-    normalised = normalise_observations(rows, factors)
+    # FX is needed during normalisation: providers quoting in EUR (Scaleway) are converted
+    # at print time from their native amount, never from a rate frozen at collection.
+    normalised = normalise_observations(rows, factors, fx_eur_usd=fx[0] if fx else None)
     rw = _review_weights(conn, utc_date, factors)
     headline_class = factors.headline_class
 
     common_extra = "correction" if correction else ""
-    series_extra = ",".join(
-        x for x in (common_extra, "" if rw is not None else "bootstrap_weights") if x
-    )
+    # v0.3.0 weights providers by tier only, so a missing weight review no longer changes
+    # the calculation and the bootstrap flag no longer applies.
+    series_extra = common_extra
 
-    definitions = _series_definitions(sovereign, headline_class)
+    definitions = _series_definitions(sovereign, headline_class, factors)
     observed_classes = {o.model_class for o in normalised}
+    headline_pop = factors.population_for("headline")
     for cls, series_name in SERIES_BY_CLASS.items():
         if cls != headline_class and cls in observed_classes:
             definitions[series_name] = (
-                cls, (lambda c: (lambda o: o.model_class == c))(cls)
+                cls, headline_pop, (lambda c: (lambda o: o.model_class == c))(cls)
             )
 
-    for series, (cls, predicate) in definitions.items():
+    for series, (_cls, population, predicate) in definitions.items():
         subset: list[NormalisedObs] = [o for o in normalised if predicate(o)]
-        provider_weights = None
-        if rw is not None:
-            provider_weights = {
-                p: r.weight for p, r in rw.provider_by_class.get(cls, {}).items()
-            }
         result = compute_print(
             utc_date, series, subset, factors, fx,
-            _prev_prices(conn, series, utc_date), provider_weights,
+            population=population,
+            prev_prices=_prev_prices(conn, series, utc_date),
         )
         revision = _store_print(conn, result, version, run_id, series_extra)
         log.info(
@@ -487,13 +513,14 @@ def cmd_daily(args: argparse.Namespace) -> int:
 
 
 def _maybe_outputs(conn: sqlite3.Connection) -> None:
-    """Charts + post + dashboard-data regeneration; never blocks the daily run."""
-    from eucri.outputs import charts, post, webdata
+    """Charts + post + dashboard data + the published site; never blocks the daily run."""
+    from eucri.outputs import charts, post, site, webdata
 
     try:
         charts.generate_all(conn)
         post.generate_post(conn)
         webdata.generate(conn)
+        site.generate(conn)
     except Exception:
         log.exception("output generation failed (fail-soft)")
 
