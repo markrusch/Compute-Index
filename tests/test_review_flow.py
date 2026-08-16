@@ -103,7 +103,9 @@ def test_review_weights_and_composite_chain(conn: sqlite3.Connection) -> None:
         " AND provider = 'newp' ORDER BY revision DESC LIMIT 1",
         (HEADLINE,),
     ).fetchone()
-    assert entrant["flags"] == "no_weight_history"
+    # v0.3.0: providers are weighted by tier, not by review capacity, so a newly seen
+    # provider carries no "missing history" penalty — there is no history to miss.
+    assert entrant["flags"] == ""
 
     comp2 = _latest(conn, COMPOSITE, "2026-07-21")
     assert comp2["value_usd"] == pytest.approx(115.0)  # 100 x 2.53 / 2.20
@@ -143,5 +145,5 @@ def test_bootstrap_below_min_history(conn: sqlite3.Connection) -> None:
     assert conn.execute("SELECT COUNT(*) AS n FROM weight_sets").fetchone()["n"] == 0
     head = _latest(conn, HEADLINE, "2026-07-19")
     assert head["value_usd"] == 2.2
-    assert "bootstrap_weights" in head["flags"]
+    assert "bootstrap_weights" not in head["flags"]
     assert _latest(conn, COMPOSITE, "2026-07-19") is None  # no composite pre-review

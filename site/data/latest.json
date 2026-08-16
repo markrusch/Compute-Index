@@ -1,56 +1,72 @@
 {
-  "generated_at": "2026-08-15T11:05:25Z",
+  "generated_at": "2026-08-16T09:40:56Z",
   "eucri_version": "0.1.0",
-  "methodology_version": "0.2.0-dev",
+  "methodology_version": "0.3.0-dev",
   "disclaimer": "EU-CRI is a research publication. It is not investment advice and is not administered as a benchmark under EU Regulation 2016/1011; it may not be used as a reference price in financial instruments.",
-  "date": "2026-08-15",
+  "date": "2026-08-16",
   "series": {
     "EU-CRI-H100": {
-      "date": "2026-08-15",
+      "date": "2026-08-16",
       "value_usd": 3.29,
       "value_eur": 2.844298,
       "fx_rate": 1.1567,
       "fx_date": "2026-08-14",
-      "n_sources": 6,
+      "n_sources": 5,
       "n_executable": 1,
       "flags": "",
       "wow_pct": 0.0,
       "mom_pct": null,
-      "prev_date": "2026-08-14",
+      "prev_date": "2026-08-15",
       "prev_value_usd": 3.29
     },
     "EU-CRI-H100-7D": {
-      "date": "2026-08-15",
-      "value_usd": 3.29,
-      "value_eur": 2.844298,
-      "fx_rate": 1.1567,
-      "fx_date": "2026-08-14",
-      "n_sources": 7,
-      "n_executable": 0,
-      "flags": "",
-      "wow_pct": -7.8431,
-      "mom_pct": null,
-      "prev_date": "2026-08-14",
-      "prev_value_usd": 3.29
-    },
-    "EU-CRI-H100-SOV": {
-      "date": "2026-08-15",
+      "date": "2026-08-16",
       "value_usd": null,
       "value_eur": null,
       "fx_rate": 1.1567,
       "fx_date": "2026-08-14",
-      "n_sources": 3,
+      "n_sources": 2,
+      "n_executable": 0,
+      "flags": "insufficient_history"
+    },
+    "EU-CRI-H100-SOV": {
+      "date": "2026-08-16",
+      "value_usd": null,
+      "value_eur": null,
+      "fx_rate": 1.1567,
+      "fx_date": "2026-08-14",
+      "n_sources": 4,
       "n_executable": 0,
       "flags": "insufficient_sources"
     },
     "EU-CRI-H100-MKT": {
-      "date": "2026-08-15",
+      "date": "2026-08-16",
       "value_usd": null,
       "value_eur": null,
       "fx_rate": 1.1567,
       "fx_date": "2026-08-14",
       "n_sources": 1,
       "n_executable": 1,
+      "flags": "insufficient_sources"
+    },
+    "EU-CRI-H100-NC": {
+      "date": "2026-08-16",
+      "value_usd": null,
+      "value_eur": null,
+      "fx_rate": 1.1567,
+      "fx_date": "2026-08-14",
+      "n_sources": 4,
+      "n_executable": 0,
+      "flags": "insufficient_sources"
+    },
+    "EU-CRI-H100-HS": {
+      "date": "2026-08-16",
+      "value_usd": null,
+      "value_eur": null,
+      "fx_rate": 1.1567,
+      "fx_date": "2026-08-14",
+      "n_sources": 3,
+      "n_executable": 0,
       "flags": "insufficient_sources"
     },
     "EU-CRI-H100-CLOUD": {
@@ -67,19 +83,49 @@
       "prev_date": "2026-08-14",
       "prev_value_usd": 3.85
     },
-    "EU-CRI-A100": {
-      "date": "2026-08-15",
+    "EU-CRI-H100-PCIE": {
+      "date": "2026-08-16",
       "value_usd": null,
       "value_eur": null,
       "fx_rate": 1.1567,
       "fx_date": "2026-08-14",
       "n_sources": 1,
-      "n_executable": 1,
+      "n_executable": 0,
+      "flags": "insufficient_sources"
+    },
+    "EU-CRI-H200": {
+      "date": "2026-08-16",
+      "value_usd": null,
+      "value_eur": null,
+      "fx_rate": 1.1567,
+      "fx_date": "2026-08-14",
+      "n_sources": 0,
+      "n_executable": 0,
+      "flags": "insufficient_sources"
+    },
+    "EU-CRI-B300": {
+      "date": "2026-08-16",
+      "value_usd": null,
+      "value_eur": null,
+      "fx_rate": 1.1567,
+      "fx_date": "2026-08-14",
+      "n_sources": 1,
+      "n_executable": 0,
+      "flags": "insufficient_sources"
+    },
+    "EU-CRI-A100": {
+      "date": "2026-08-16",
+      "value_usd": null,
+      "value_eur": null,
+      "fx_rate": 1.1567,
+      "fx_date": "2026-08-14",
+      "n_sources": 2,
+      "n_executable": 3,
       "flags": "insufficient_sources"
     },
     "EU-CRI-COMPUTE": {
-      "date": "2026-08-15",
-      "value_usd": 100.0,
+      "date": "2026-08-16",
+      "value_usd": 101.230769,
       "value_eur": null,
       "fx_rate": null,
       "fx_date": null,
@@ -88,7 +134,7 @@
       "flags": "",
       "wow_pct": null,
       "mom_pct": null,
-      "prev_date": "2026-08-14",
+      "prev_date": "2026-08-15",
       "prev_value_usd": 100.0
     }
   },
@@ -99,9 +145,9 @@
         "source": "static_yaml",
         "tier": "list",
         "price_usd": 2.16,
-        "weight": 15.3846,
+        "weight": 18.75,
         "included": true,
-        "exclusion_reason": null,
+        "exclusion_reason": "trimmed",
         "flags": "",
         "url": "https://www.seeweb.it/en/products/cloud-server-gpu",
         "note": "EUR 1.89/hr on-demand H100 from public page, converted at ECB EUR/USD 1.1435 (2026-07-17). Page config text ambiguous ('1 GPU, 320 GB GPU RAM') - re-verify GPU count semantics at next refresh."
@@ -111,7 +157,7 @@
         "source": "static_yaml",
         "tier": "list",
         "price_usd": 3.25,
-        "weight": 15.3846,
+        "weight": 18.75,
         "included": true,
         "exclusion_reason": null,
         "flags": "",
@@ -123,62 +169,164 @@
         "source": "runpod",
         "tier": "executable",
         "price_usd": 3.29,
-        "weight": 23.0769,
+        "weight": 25.0,
+        "included": true,
+        "exclusion_reason": null,
+        "flags": "weight_capped",
+        "url": "https://www.runpod.io/console/gpu-cloud",
+        "note": "Secure Cloud pricing via RunPod's public GraphQL API."
+      },
+      {
+        "provider": "scaleway",
+        "source": "scaleway",
+        "tier": "list",
+        "price_usd": 3.828561,
+        "weight": 18.75,
         "included": true,
         "exclusion_reason": null,
         "flags": "",
-        "url": "https://www.runpod.io/console/gpu-cloud",
-        "note": "Secure Cloud pricing via RunPod's public GraphQL API."
+        "url": "https://www.scaleway.com/en/pricing/gpu/",
+        "note": "H100-SXM-8-80G instance exists (PAR-2) but prices render via JS only (checked 2026-07-18); fill manually from console/pricing page."
       },
       {
         "provider": "nebius",
         "source": "static_yaml",
         "tier": "list",
         "price_usd": 3.85,
-        "weight": 15.3846,
+        "weight": 18.75,
         "included": true,
-        "exclusion_reason": null,
+        "exclusion_reason": "trimmed",
         "flags": "",
         "url": "https://nebius.com/prices",
         "note": "NVIDIA HGX H100, on-demand per GPU-hour, USD, from public pricing page (16 vCPU / 200 GB RAM per GPU)."
       },
       {
-        "provider": "gcp",
-        "source": "gpuhunt",
-        "tier": "list",
-        "price_usd": 5.442394,
-        "weight": 15.3846,
-        "included": true,
-        "exclusion_reason": null,
-        "flags": "",
-        "url": "https://cloud.google.com/compute/gpus-pricing",
-        "note": "A3 (8x H100) on-demand list price, EU regions, via the gpuhunt catalog."
-      },
-      {
         "provider": "aws",
-        "source": "gpuhunt",
-        "tier": "list",
-        "price_usd": 7.3616,
-        "weight": 15.3846,
-        "included": true,
-        "exclusion_reason": null,
+        "source": "",
+        "tier": "",
+        "price_usd": 0.0,
+        "weight": 0.0,
+        "included": false,
+        "exclusion_reason": "out_of_population",
         "flags": "",
         "url": "https://aws.amazon.com/ec2/instance-types/p5/",
         "note": "EC2 P5 (8x H100) on-demand list price, EU regions, via the gpuhunt catalog."
+      },
+      {
+        "provider": "azure",
+        "source": "",
+        "tier": "",
+        "price_usd": 0.0,
+        "weight": 0.0,
+        "included": false,
+        "exclusion_reason": "out_of_population",
+        "flags": "",
+        "url": "https://learn.microsoft.com/en-us/azure/virtual-machines/nd-h100-v5-series",
+        "note": "ND H100 v5-series on-demand list price, EU regions, via the gpuhunt catalog."
+      },
+      {
+        "provider": "gcp",
+        "source": "",
+        "tier": "",
+        "price_usd": 0.0,
+        "weight": 0.0,
+        "included": false,
+        "exclusion_reason": "out_of_population",
+        "flags": "",
+        "url": "https://cloud.google.com/compute/gpus-pricing",
+        "note": "A3 (8x H100) on-demand list price, EU regions, via the gpuhunt catalog."
+      }
+    ],
+    "EU-CRI-H200": [
+      {
+        "provider": "azure",
+        "source": "",
+        "tier": "",
+        "price_usd": 0.0,
+        "weight": 0.0,
+        "included": false,
+        "exclusion_reason": "out_of_population",
+        "flags": "",
+        "url": "https://learn.microsoft.com/en-us/azure/virtual-machines/nd-h100-v5-series",
+        "note": "ND H100 v5-series on-demand list price, EU regions, via the gpuhunt catalog."
+      }
+    ],
+    "EU-CRI-B300": [
+      {
+        "provider": "scaleway",
+        "source": "scaleway",
+        "tier": "list",
+        "price_usd": 8.67525,
+        "weight": 0.0,
+        "included": false,
+        "exclusion_reason": "insufficient_sources",
+        "flags": "",
+        "url": "https://www.scaleway.com/en/pricing/gpu/",
+        "note": "H100-SXM-8-80G instance exists (PAR-2) but prices render via JS only (checked 2026-07-18); fill manually from console/pricing page."
       }
     ],
     "EU-CRI-A100": [
+      {
+        "provider": "azure",
+        "source": "",
+        "tier": "",
+        "price_usd": 0.0,
+        "weight": 0.0,
+        "included": false,
+        "exclusion_reason": "out_of_population",
+        "flags": "",
+        "url": "https://learn.microsoft.com/en-us/azure/virtual-machines/nd-h100-v5-series",
+        "note": "ND H100 v5-series on-demand list price, EU regions, via the gpuhunt catalog."
+      },
+      {
+        "provider": "vast.ai",
+        "source": "vast_ai",
+        "tier": "executable",
+        "price_usd": 0.8003703703703703,
+        "weight": 0.0,
+        "included": false,
+        "exclusion_reason": "insufficient_sources",
+        "flags": "",
+        "url": "https://cloud.vast.ai/",
+        "note": "Public marketplace search API; datacenter-verified hosts only."
+      },
       {
         "provider": "runpod",
         "source": "runpod",
         "tier": "executable",
         "price_usd": 1.59,
-        "weight": 14.0,
-        "included": true,
-        "exclusion_reason": null,
+        "weight": 0.0,
+        "included": false,
+        "exclusion_reason": "insufficient_sources",
         "flags": "",
         "url": "https://www.runpod.io/console/gpu-cloud",
         "note": "Secure Cloud pricing via RunPod's public GraphQL API."
+      }
+    ],
+    "EU-CRI-H100-PCIE": [
+      {
+        "provider": "azure",
+        "source": "",
+        "tier": "",
+        "price_usd": 0.0,
+        "weight": 0.0,
+        "included": false,
+        "exclusion_reason": "out_of_population",
+        "flags": "",
+        "url": "https://learn.microsoft.com/en-us/azure/virtual-machines/nd-h100-v5-series",
+        "note": "ND H100 v5-series on-demand list price, EU regions, via the gpuhunt catalog."
+      },
+      {
+        "provider": "scaleway",
+        "source": "scaleway",
+        "tier": "list",
+        "price_usd": 3.31568055,
+        "weight": 0.0,
+        "included": false,
+        "exclusion_reason": "insufficient_sources",
+        "flags": "",
+        "url": "https://www.scaleway.com/en/pricing/gpu/",
+        "note": "H100-SXM-8-80G instance exists (PAR-2) but prices render via JS only (checked 2026-07-18); fill manually from console/pricing page."
       }
     ]
   },
@@ -190,14 +338,14 @@
     "providers": {
       "A100": [
         {
+          "provider": "vast.ai",
+          "weight": 26.0,
+          "days_observed": 8
+        },
+        {
           "provider": "runpod",
           "weight": 14.0,
           "days_observed": 7
-        },
-        {
-          "provider": "vast.ai",
-          "weight": 2.0,
-          "days_observed": 1
         }
       ],
       "H100": [
@@ -233,14 +381,14 @@
         },
         {
           "provider": "vast.ai",
-          "weight": 2.0,
-          "days_observed": 1
+          "weight": 4.0,
+          "days_observed": 2
         }
       ]
     },
     "model_shares": {
-      "A100": 25.0,
-      "H100": 75.0
+      "A100": 27.5472,
+      "H100": 72.4528
     }
   },
   "sources": [

@@ -1,0 +1,1873 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EU-CRI · Component gallery</title>
+<meta name="color-scheme" content="light dark">
+<style>
+/* ==========================================================================
+   EU-CRI — European Compute Reference Index
+   DESIGN TOKENS  ·  v1.0  ·  the whole visual system, one file
+   ==========================================================================
+
+   HOW THIS FILE IS ORGANISED
+   --------------------------
+   §0  Reset-adjacent globals            §7   Diverging scale (basis ribbon)
+   §1  Neutral ramp (cool slate)         §8   Typography
+   §2  Semantic surfaces                 §9   Space
+   §3  Ink (text)                        §10  Radii & borders
+   §4  Lines, rules, focus               §11  Elevation
+   §5  Brand accent (rationed)           §12  Motion
+   §6  Status, delta, chart chrome,      §13  Layout
+       categorical + sequential
+
+   THE THREE RULES THAT MAKE THIS SYSTEM WORK
+   ------------------------------------------
+   1. THE ACCENT IS RATIONED. `--accent` is teal and it means ONE thing:
+      "this is the live / current value." It is not a link colour by default,
+      not a button colour by default, not a section-header colour, ever. If
+      the teal appears more than a couple of times in a viewport, the system
+      has been misused and the page has stopped signalling anything.
+      (Lineage: Ornn ships exactly one saturated hex, used once, in a
+      stylesheet otherwise made of ten greys.)
+
+   2. THE BASE CARRIES NO HUE. The neutral ramp is a cool slate with no
+      green, no navy, no warmth. All hue in the product comes from the
+      accent, the status scale, and the chart palettes. Tinting the base
+      spends the hue budget on chrome.
+
+   3. COLOUR IS NEVER THE ONLY CHANNEL. Every status, every delta, every
+      diverging value ships with a glyph, a sign, a direct label, or a
+      table view beside it. See §6 and §7.
+
+   THEMING CONTRACT
+   ----------------
+   The complete light palette lives on bare `:root`. Dark mode redefines
+   ONLY the tokens that change, in two places:
+     (a) `@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) }`
+         — follows the OS, but yields to an explicit light stamp.
+     (b) `:root[data-theme="dark"]`
+         — an explicit toggle, declared after (a) so it wins in both
+           directions.
+   Non-colour tokens (type, space, radii, motion, layout) are declared once
+   and never themed.
+
+   NO EXTERNAL REQUESTS. System font stacks only. No @import, no url(),
+   no remote anything. This file is safe under a strict CSP.
+   ========================================================================== */
+
+
+/* ==========================================================================
+   :root — THE COMPLETE LIGHT PALETTE + ALL UNTHEMED TOKENS
+   ========================================================================== */
+
+:root {
+  color-scheme: light;
+
+  /* ------------------------------------------------------------------------
+     §1  NEUTRAL RAMP — cool slate, no hue cast
+     ------------------------------------------------------------------------
+     The raw ladder. DO NOT reference these directly in component CSS —
+     always go through a semantic token in §2/§3/§4. The ramp exists so new
+     semantic tokens can be minted from steps that are already in the family.
+     Numbering runs 0 (white) → 1000 (near-black); the number is a rough
+     darkness position, not a fixed lightness value.
+     ---------------------------------------------------------------------- */
+  --slate-0:    #ffffff;   /* card / chart surface, light mode                */
+  --slate-25:   #f7f8f9;   /* inset well — code blocks, table headers         */
+  --slate-50:   #f3f3f3;   /* page plane, light mode                          */
+  --slate-75:   #eceef1;   /* ticker strip, neutral chip fill                 */
+  --slate-100:  #e8eaed;   /* chart gridline, table row rule                  */
+  --slate-150:  #dbdde0;   /* structural border / hairline                    */
+  --slate-200:  #c4c8ce;   /* chart axis + baseline, strong rule              */
+  --slate-300:  #a2a9b3;   /* — dark-mode secondary-ish; unused in light      */
+  --slate-350:  #949ba5;   /* NON-TEXT only in light (2.80:1). Disabled glyph */
+  --slate-400:  #8b929d;   /* chart de-emphasis stroke, light (3.14:1)        */
+  --slate-450:  #7b828c;   /* dark-mode de-emphasis stroke                    */
+  --slate-500:  #5f6570;   /* light muted ink — smallest AA-safe grey (5.28+) */
+  --slate-550:  #565c66;   /* reserved mid step                               */
+  --slate-600:  #454b54;   /* light secondary ink; default chart line         */
+  --slate-650:  #3d4045;   /* dark-mode strong rule                           */
+  --slate-750:  #2a2d33;   /* dark-mode structural border                     */
+  --slate-800:  #24272c;   /* dark-mode gridline / row rule                   */
+  --slate-825:  #22262c;   /* dark-mode neutral chip fill                     */
+  --slate-850:  #1c1f24;   /* dark-mode inset well                            */
+  --slate-875:  #17191c;   /* dark-mode card / chart surface                  */
+  --slate-925:  #101113;   /* dark-mode page plane                            */
+  --slate-950:  #0b0c0e;   /* dark-mode masthead / footer plane               */
+  --slate-1000: #08090a;   /* deepest step — hard borders on dark             */
+
+  /* ------------------------------------------------------------------------
+     §2  SEMANTIC SURFACES
+     ------------------------------------------------------------------------
+     Four planes, and that is the whole depth model. There is no fifth.
+     Depth is expressed by surface + hairline, not by shadow (see §11).
+     ---------------------------------------------------------------------- */
+  --page:            var(--slate-50);   /* the page body. Always set explicitly
+                                           on <body> — never leave transparent. */
+  --surface:         var(--slate-0);    /* cards, panels, table bodies, the
+                                           surface every chart is drawn on.     */
+  --surface-inset:   var(--slate-25);   /* recessed wells: code blocks, table
+                                           headers, footnote strips.            */
+  --surface-strip:   var(--slate-75);   /* the ticker strip + any full-bleed
+                                           band that must read denser than the
+                                           page but flatter than a card.        */
+  --surface-chrome:  var(--slate-0);    /* masthead / footer plane.             */
+  --surface-hover:   var(--slate-25);   /* ghost wash on row + control hover.
+                                           Never a saturated hover state.       */
+  --surface-active:  var(--slate-75);   /* pressed / selected row.              */
+
+  /* ------------------------------------------------------------------------
+     §3  INK — text colour
+     ------------------------------------------------------------------------
+     Three text levels, and one non-text grey. Every text level clears
+     WCAG AA 4.5:1 on EVERY surface in §2 — checked, not assumed. Ratios in
+     DESIGN.md. If you need a fourth level, you have a hierarchy problem,
+     not a token problem.
+     ---------------------------------------------------------------------- */
+  --ink:           var(--slate-1000);  /* overridden below — see note          */
+  --ink-1:         #111214;            /* primary: headings, prices, values.
+                                          18.7:1 on surface, 16.9:1 on page.    */
+  --ink-2:         var(--slate-600);   /* secondary: body prose, table cells.
+                                          8.8:1 / 7.9:1.                        */
+  --ink-3:         var(--slate-500);   /* muted: labels, captions, units, axis
+                                          tick text, timestamps. 5.9:1 / 5.3:1.
+                                          THIS IS THE FLOOR FOR TEXT.           */
+  --ink-faint:     var(--slate-350);   /* NOT FOR TEXT (2.8:1). Disabled
+                                          controls, decorative glyphs, the
+                                          inactive half of a toggle only.       */
+  --ink-inverse:   #ffffff;            /* text on a filled accent/status mark. */
+
+  /* ------------------------------------------------------------------------
+     §4  LINES, RULES, FOCUS
+     ------------------------------------------------------------------------
+     Everything structural is a 1px hairline. There are no 2px dividers, no
+     dashed rules anywhere (dashes read as "projection" in a data product),
+     and no double borders.
+     ---------------------------------------------------------------------- */
+  --rule:          var(--slate-100);   /* table row dividers, ledger rows,
+                                          the densest separator.               */
+  --rule-strong:   var(--slate-150);   /* card borders, section boundaries.    */
+  --rule-heavy:    var(--slate-200);   /* the one rule under a table head; the
+                                          chart baseline. Use sparingly.       */
+  --focus-ring:    var(--accent);      /* 2px solid + 2px offset. Never remove
+                                          focus; restyle it.                   */
+  --focus-offset:  2px;
+  --focus-width:   2px;
+
+  /* ------------------------------------------------------------------------
+     §5  BRAND ACCENT — teal, RATIONED
+     ------------------------------------------------------------------------
+     Meaning: "live / current / this is the number the page is about."
+     Lineage: Nord Pool's power-market teal, deepened for contrast. Chosen
+     over blue because every comparable in the category (Ornn, Deribit,
+     Linear, generic fintech) defaults to blue, and blue is already spoken
+     for as categorical slot 1 in charts.
+
+     BUDGET: at most ~3 accent marks per viewport. In practice that is the
+     hero rule, the live dot, and the chart's current-value marker.
+     ---------------------------------------------------------------------- */
+  --accent:        #00786c;   /* MARKS ONLY — rules, dots, chart markers,
+                                 filled button backgrounds. 5.4:1 on surface. */
+  --accent-ink:    #00655c;   /* TEXT — links, accented labels. 7.0:1 on
+                                 surface, 6.3:1 on page. Use this, not
+                                 --accent, whenever the teal is a glyph the
+                                 reader must read.                            */
+  --accent-wash:   #dff0ed;   /* the only tinted fill: L1 badge, selected
+                                 state, accent callout rail background.       */
+  --on-accent:     #ffffff;   /* text on an --accent fill. 5.4:1.             */
+
+  /* ------------------------------------------------------------------------
+     §6  STATUS — fixed scale, reserved meaning
+     ------------------------------------------------------------------------
+     These four steps are FIXED and identical in both themes. They are never
+     reused as "series 5", and a categorical series colour is never used for
+     status. Every status mark ships with an icon AND a text label — on the
+     light surface `warning` (1.8:1) and `serious` (2.6:1) are deliberately
+     below 3:1, and the icon+label pairing is the mitigation.
+
+     Each status has THREE tokens with three different jobs:
+       --status-x        the MARK   — dot, icon fill, chart mark. Non-text.
+       --status-x-ink    the TEXT   — AA-safe on --surface and --status-x-bg.
+       --status-x-bg     the WASH   — chip background only. Never a table-cell
+                                      fill: full-cell colour washes are the
+                                      single fastest way to look like a retail
+                                      trading app instead of a benchmark.
+     ---------------------------------------------------------------------- */
+  --status-good:       #0ca30c;
+  --status-good-ink:   #006300;
+  --status-good-bg:    #e2f3e2;
+
+  --status-warning:    #fab219;
+  --status-warning-ink:#7a5200;
+  --status-warning-bg: #fbf0d8;
+
+  --status-serious:    #ec835a;
+  --status-serious-ink:#8f4420;
+  --status-serious-bg: #fbeae2;
+
+  --status-critical:   #d03b3b;
+  --status-critical-ink:#a32222;
+  --status-critical-bg:#fbe6e6;
+
+  --status-neutral:    var(--slate-400);
+  --status-neutral-ink:var(--ink-2);
+  --status-neutral-bg: var(--slate-75);
+
+  /* ---- DELTA -------------------------------------------------------------
+     Price movement. Text-safe steps derived from the status scale — NOT the
+     status marks themselves, which are too light to read as text on white.
+     ALWAYS rendered with a visible +/− sign and a hairline arrow glyph, so
+     the colour is redundant. Never a background wash on the cell.
+     ---------------------------------------------------------------------- */
+  --delta-up:      var(--status-good-ink);   /* 7.5:1 */
+  --delta-down:    var(--status-critical-ink);/* 7.5:1 */
+  --delta-flat:    var(--ink-3);              /* 5.9:1 */
+
+  /* ---- TIER BADGES -------------------------------------------------------
+     L1 = verified transacted price · L2 = published API/list with observed
+     fills · L3 = list price only. This is an ORDINAL scale (the order is the
+     meaning), so it is encoded by ink weight + wash lightness, not by hue —
+     only L1 earns the accent, because L1 is the tier the index trusts.
+     ---------------------------------------------------------------------- */
+  --tier-1-ink:  var(--accent-ink);   --tier-1-bg: var(--accent-wash);
+  --tier-2-ink:  var(--ink-2);        --tier-2-bg: var(--slate-75);
+  --tier-3-ink:  var(--ink-3);        --tier-3-bg: var(--slate-25);
+
+  /* ------------------------------------------------------------------------
+     §6b  CHART CHROME
+     ------------------------------------------------------------------------
+     The non-data ink in a chart. All of it recessive: gridlines one step off
+     the surface, solid hairlines only, never dashed.
+
+     THE HOUSE CHART RULE: a chart is GREYSCALE by default. `--chart-line` is
+     the default single-series stroke. The categorical palette (§6c) comes out
+     only when two or more series genuinely need identity. The accent marks
+     the current value and nothing else.
+     ---------------------------------------------------------------------- */
+  --chart-surface: var(--surface);
+  --chart-grid:    var(--slate-100);  /* 1px solid. Recessive.                */
+  --chart-axis:    var(--slate-200);  /* baseline + axis rule.                */
+  --chart-label:   var(--ink-3);      /* axis tick text — AA-safe, 5.9:1.     */
+  --chart-line:    var(--slate-600);  /* default single series, 2px. 8.8:1.   */
+  --chart-wash:    rgba(69, 75, 84, 0.08); /* area fill under --chart-line.   */
+  --chart-deemph:  var(--slate-400);  /* sparkline body, context series.
+                                         3.14:1 — clears the 3:1 mark floor.  */
+  --chart-marker:  var(--accent);     /* current-value dot + hairline. ONE
+                                         per chart.                           */
+  --chart-ring:    var(--surface);    /* 2px surface ring on overlapping dots */
+  --chart-crosshair: var(--slate-300);/* hover hairline.                      */
+  --chart-gap:     2px;               /* surface gap between touching marks.  */
+
+  /* ------------------------------------------------------------------------
+     §6c  CATEGORICAL PALETTE — fixed order, NEVER cycled
+     ------------------------------------------------------------------------
+     Validated (dataviz validator, both modes, against THIS system's surfaces
+     #ffffff / #17191c): lightness band PASS, chroma floor PASS, CVD
+     separation PASS (worst adjacent ΔE 9.1 light / 8.4 dark, protanopia,
+     Machado 2009 @1.0), normal-vision floor PASS (19.6 / 19.3).
+
+     RULES
+     · Assign in slot order 1,2,3… Colour follows the ENTITY, never its rank —
+       filtering a series out must not repaint the survivors.
+     · There is no slot 9. A ninth series folds into "Other", facets into
+       small multiples, or the chart form changes.
+     · Scatter / bubble / choropleth / small-multiples use the ALL-PAIRS test
+       and are capped at THREE slots. Past three, facet.
+     · LIGHT-MODE RELIEF RULE: slots 3 (2.82:1), 4 (2.17:1) and 5 (2.69:1) sit
+       below 3:1 on white. Wherever they appear, ship visible direct labels or
+       the table view. This is not dismissable.
+     · Text never wears a series colour. A coloured mark sits BESIDE the label.
+     ---------------------------------------------------------------------- */
+  --series-1: #2a78d6;  /* blue    4.42:1 */
+  --series-2: #eb6834;  /* orange  3.20:1 */
+  --series-3: #1baf7a;  /* aqua    2.82:1  ← relief required */
+  --series-4: #eda100;  /* yellow  2.17:1  ← relief required */
+  --series-5: #e87ba4;  /* magenta 2.69:1  ← relief required */
+  --series-6: #008300;  /* green   4.95:1 */
+  --series-7: #4a3aa7;  /* violet  8.56:1 */
+  --series-8: #e34948;  /* red     3.95:1 */
+
+  /* ------------------------------------------------------------------------
+     §6d  SEQUENTIAL RAMP — one hue, light → dark, for MAGNITUDE
+     ------------------------------------------------------------------------
+     Blue. Heatmaps, choropleths, weight-share intensity. For an ORDINAL use
+     (discrete ordered marks) do not go lighter than --seq-250 on light or
+     darker than --seq-600 on dark — those are the 2:1-vs-surface floors.
+     ---------------------------------------------------------------------- */
+  --seq-100: #cde2fb;  --seq-150: #b7d3f6;  --seq-200: #9ec5f4;
+  --seq-250: #86b6ef;  --seq-300: #6da7ec;  --seq-350: #5598e7;
+  --seq-400: #3987e5;  --seq-450: #2a78d6;  --seq-500: #256abf;
+  --seq-550: #1c5cab;  --seq-600: #184f95;  --seq-650: #104281;
+  --seq-700: #0d366b;
+
+  /* ------------------------------------------------------------------------
+     §7  DIVERGING SCALE — the basis ribbon
+     ------------------------------------------------------------------------
+     The signature device. Encodes the EU-vs-global spread: which side of
+     zero, and how far.
+
+       COOL (blue)  = EU DISCOUNT — European compute cheaper than the
+                      global reference.
+       NEUTRAL      = flat. A GREY, never a hue — the midpoint has to read
+                      as "nothing happened".
+       WARM (orange)= EU PREMIUM — European compute dearer.
+
+     Poles are the categorical slot-1 blue and slot-2 orange hues, so the
+     colourblind-safety of those hues carries over. Warm/cool poles read as
+     opposite; blue↔aqua would not. Four equal steps per arm; both arms pass
+     the ordinal check in both modes (monotone lightness, adjacent ΔL ≥ 0.06,
+     near-surface end ≥ 2:1, single hue).
+
+     BINS (absolute basis, $/GPU-hr):  1: <0.10   2: 0.10–0.20
+                                       3: 0.20–0.32   4: ≥0.32
+
+     MANDATORY COMPANIONS: a scale legend, and a table view. Colour is
+     paired with column DIRECTION (up = premium, down = discount) so sign is
+     never carried by hue alone.
+     ---------------------------------------------------------------------- */
+  --div-cool-4: #1c5cab;   /* deepest discount   6.63:1 */
+  --div-cool-3: #2a78d6;   /*                    4.42:1 */
+  --div-cool-2: #5598e7;   /*                    2.99:1 */
+  --div-cool-1: #86b6ef;   /* nearest zero       2.11:1 */
+  --div-mid:    #edeff2;   /* neutral grey midpoint     */
+  --div-warm-1: #e89d83;   /* nearest zero       2.19:1 */
+  --div-warm-2: #da7550;   /*                    3.16:1 */
+  --div-warm-3: #c54e1c;   /*                    4.69:1 */
+  --div-warm-4: #9c390c;   /* deepest premium    6.99:1 */
+  /* Ink for a label set INSIDE a diverging fill — pick by the fill's
+     luminance so it always clears contrast. */
+  --div-ink-on-deep:  #ffffff;   /* on arms 3–4: 6.6:1 / 7.0:1 */
+  --div-ink-on-light: var(--ink-1); /* on arms 1–2: 8.9:1 / 8.6:1 */
+
+  /* ------------------------------------------------------------------------
+     §8  TYPOGRAPHY — three system stacks, three jobs
+     ------------------------------------------------------------------------
+     No webfonts. No @font-face. System stacks only, chosen so the fallback
+     chain lands on a grotesque / a mono / a transitional serif on every
+     platform.
+       SANS  — all UI, all prose. The workhorse.
+       MONO  — EVERY numeral the reader might compare: prices, deltas,
+               weights, timestamps, hashes, versions, axis ticks. This is the
+               institutional tell; proportional figures in a price column is
+               the fastest way to look un-audited.
+       SERIF — editorial display ONLY: methodology and research page
+               headlines, pull quotes. Never on a price, never in a chart,
+               never in the UI. (A serif on a hero figure reads as
+               decoration; the hero price uses MONO.)
+     ---------------------------------------------------------------------- */
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+               Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, "Cascadia Mono",
+               "Segoe UI Mono", "Roboto Mono", Menlo, Consolas,
+               "Liberation Mono", monospace;
+  --font-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Palladio,
+               "Hoefler Text", Georgia, "Times New Roman", serif;
+
+  /* Type scale — 1.200 minor third, anchored at 14px body. Institutional
+     products run one step smaller than consumer products; that is deliberate. */
+  --text-3xs:  10px;   /* table-head labels, flag glyph text. ALL-CAPS only. */
+  --text-2xs:  11px;   /* footnote refs, chip text, axis ticks               */
+  --text-xs:   12px;   /* dense table cells, metadata lines                  */
+  --text-sm:   13px;   /* secondary UI, ticker strip                         */
+  --text-base: 14px;   /* body prose, default UI                             */
+  --text-md:   16px;   /* lead paragraph, sub-index tile value               */
+  --text-lg:   19px;   /* card / section headings                            */
+  --text-xl:   23px;   /* page section headings                              */
+  --text-2xl:  28px;   /* page title                                         */
+  --text-3xl:  34px;   /* editorial display headline (serif)                 */
+  --text-hero: 60px;   /* THE print. Exactly one per view.                   */
+
+  --leading-tight:  1.15;  /* headings, the hero print                       */
+  --leading-snug:   1.35;  /* table cells, tiles, chips                      */
+  --leading-normal: 1.55;  /* UI text                                        */
+  --leading-prose:  1.65;  /* body copy at --measure-prose                   */
+
+  --weight-regular:  400;
+  --weight-medium:   500;
+  --weight-semibold: 600;
+  --weight-bold:     700;
+
+  --tracking-tight:  -0.02em;  /* the hero print + display sizes only        */
+  --tracking-normal: 0;
+  --tracking-wide:   0.06em;   /* small-caps-ish label runs                  */
+  --tracking-caps:   0.09em;   /* --text-3xs ALL-CAPS table heads            */
+
+  /* Numerals. Applied globally to mono in §0 below; stated here so it can be
+     reasoned about as a token. Tabular + fixed decimals means a live cell
+     never reflows on update. */
+  --numeric-table: tabular-nums lining-nums;
+
+  /* ------------------------------------------------------------------------
+     §9  SPACE — 8px base, with a 4px half-step for dense grids
+     ------------------------------------------------------------------------
+     Outer rhythm is 8px. Inside a dense table or ticker the rhythm halves to
+     4px — that nesting is what produces terminal density without the page
+     itself feeling cramped.
+     ---------------------------------------------------------------------- */
+  --space-0:  0;
+  --space-1:  2px;   /* the chart surface-gap; icon nudges                   */
+  --space-2:  4px;   /* dense-grid half-step                                 */
+  --space-3:  8px;   /* BASE                                                 */
+  --space-4:  12px;
+  --space-5:  16px;
+  --space-6:  24px;
+  --space-7:  32px;
+  --space-8:  48px;
+  --space-9:  64px;
+  --space-10: 96px;  /* major section separation                             */
+
+  /* ------------------------------------------------------------------------
+     §10  RADII & BORDER WIDTHS
+     ------------------------------------------------------------------------
+     Nothing rounder than 6px. >8px corner radii are a consumer-SaaS signal;
+     no institutional comparable uses them. Tables and the ticker are square.
+     ---------------------------------------------------------------------- */
+  --radius-0:  0;      /* tables, ticker, full-bleed bands — square          */
+  --radius-xs: 2px;    /* chips, badges, inline code                         */
+  --radius-sm: 3px;    /* buttons, inputs                                    */
+  --radius-md: 6px;    /* cards, panels. THE MAXIMUM.                        */
+  --radius-pill: 999px;/* the live dot only                                  */
+
+  --border-hairline: 1px;
+  --border-marker:   2px;   /* the accent rule on the hero card; focus ring  */
+
+  /* ------------------------------------------------------------------------
+     §11  ELEVATION — exactly one shadow token
+     ------------------------------------------------------------------------
+     Depth in this system is surface + hairline. --shadow-raised exists for
+     genuinely floating layers only: the chart tooltip and a dropdown. A card
+     never has a shadow. If you are reaching for a second shadow, use a
+     hairline instead.
+     ---------------------------------------------------------------------- */
+  --shadow-none:   none;
+  --shadow-raised: 0 2px 8px rgba(17, 18, 20, 0.10),
+                   0 0 0 1px rgba(17, 18, 20, 0.06);
+  /* The same elevation expressed as a filter, for SVG tooltips — box-shadow
+     does not apply inside SVG. Keep the two in step. */
+  --shadow-raised-svg: drop-shadow(0 2px 8px rgba(17, 18, 20, 0.18));
+
+  /* ------------------------------------------------------------------------
+     §12  MOTION
+     ------------------------------------------------------------------------
+     Motion is functional or absent. The only animation in the product is the
+     live-dot pulse and the tick flash. A tick flash is a brief OPACITY change
+     on the changed cell — never a green/red background wash across the row.
+     All of it collapses to nothing under prefers-reduced-motion (§0).
+     ---------------------------------------------------------------------- */
+  --dur-flash: 180ms;  /* the tick flash on an updated cell                  */
+  --dur-fast:  120ms;  /* hover / focus state changes                        */
+  --dur-base:  200ms;  /* disclosure, theme swap                             */
+  --dur-pulse: 2400ms; /* the live dot. Slow enough to be ambient.           */
+  --ease:      cubic-bezier(0.2, 0, 0.2, 1);
+
+  /* ------------------------------------------------------------------------
+     §13  LAYOUT
+     ------------------------------------------------------------------------ */
+  --content-max:   1280px;  /* the 12-column field                           */
+  --measure-prose: 68ch;    /* body copy never exceeds this. Charts and
+                               tables break out to full width.               */
+  --row-h:         36px;    /* standard table row                            */
+  --row-h-dense:   28px;    /* constituents grid, ticker — terminal density  */
+  --strip-h:       34px;    /* the ticker strip                              */
+
+  --z-base:    0;
+  --z-sticky:  10;   /* masthead + ticker                                    */
+  --z-overlay: 20;   /* chart tooltip                                        */
+}
+
+
+/* ==========================================================================
+   DARK — (a) follows the OS, yields to an explicit light stamp
+   Only the tokens that CHANGE are redefined. Type, space, radii, motion and
+   layout are inherited untouched from :root.
+   ========================================================================== */
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+
+    /* §2 surfaces — the plane order inverts: page is darker than card */
+    --page:           var(--slate-925);
+    --surface:        var(--slate-875);
+    --surface-inset:  var(--slate-850);
+    --surface-strip:  var(--slate-925);
+    --surface-chrome: var(--slate-950);
+    --surface-hover:  var(--slate-850);
+    --surface-active: var(--slate-825);
+
+    /* §3 ink — re-selected for the dark surface, not an automatic flip */
+    --ink-1:       #f5f6f7;              /* 16.3:1 surface / 17.5:1 page      */
+    --ink-2:       #c3c8d0;              /* 10.5:1 / 11.2:1                   */
+    --ink-3:       var(--slate-300);     /*  7.4:1 /  8.0:1                   */
+    --ink-faint:   var(--slate-450);     /*  4.5:1 — still non-text by policy */
+    --ink-inverse: #08191c;
+
+    /* §4 lines */
+    --rule:        var(--slate-800);
+    --rule-strong: var(--slate-750);
+    --rule-heavy:  var(--slate-650);
+
+    /* §5 accent — one step, bright enough to carry 3:1 as a mark and
+       4.5:1 as text, so --accent and --accent-ink converge in dark */
+    --accent:      #2fd6c3;   /* 9.7:1 on surface */
+    --accent-ink:  #2fd6c3;   /* 9.7:1 */
+    --accent-wash: #0d2b28;
+    --on-accent:   #08191c;   /* 9.9:1 on the accent fill */
+
+    /* §6 status — the four MARKS are fixed and do not change. Only the
+       text-safe inks and the washes are re-selected for the dark surface. */
+    --status-good-ink:     #0ca30c;  /* 5.3:1 */
+    --status-good-bg:      #0e2413;
+    --status-warning-ink:  #fab219;  /* 9.6:1 */
+    --status-warning-bg:   #2a2109;
+    --status-serious-ink:  #ec835a;  /* 6.7:1 */
+    --status-serious-bg:   #2a1a12;
+    --status-critical-ink: #ef7a7a;  /* 6.5:1 */
+    --status-critical-bg:  #2c1516;
+    --status-neutral:      var(--slate-450);
+    --status-neutral-bg:   var(--slate-825);
+
+    /* §6 tiers */
+    --tier-2-bg: var(--slate-825);
+    --tier-3-bg: var(--slate-850);
+
+    /* §6b chart chrome */
+    --chart-grid:      var(--slate-800);
+    --chart-axis:      var(--slate-650);
+    --chart-line:      var(--ink-2);                  /* 10.5:1 */
+    --chart-wash:      rgba(195, 200, 208, 0.08);
+    --chart-deemph:    var(--slate-450);              /*  4.5:1 */
+    --chart-crosshair: var(--slate-550);
+
+    /* §6c categorical — the same eight hues, RE-STEPPED for the dark
+       surface (not a filter, not an automatic lighten). All eight clear
+       3:1 on #17191c, so the light-mode relief rule does not apply here —
+       but ship the labels anyway so both themes read identically. */
+    --series-1: #3987e5;  /* 4.84:1 */
+    --series-2: #d95926;  /* 4.54:1 */
+    --series-3: #199e70;  /* 5.17:1 */
+    --series-4: #c98500;  /* 5.74:1 */
+    --series-5: #d55181;  /* 4.46:1 */
+    --series-6: #008300;  /* 3.56:1 */
+    --series-7: #9085e9;  /* 5.63:1 */
+    --series-8: #e66767;  /* 5.45:1 */
+
+    /* §7 diverging — the arms flip anchor: the step nearest zero is now the
+       DARKEST, so "nearly flat" still recedes toward the surface. */
+    --div-cool-4: #6da7ec;  /* 7.04:1 */
+    --div-cool-3: #3987e5;  /* 4.84:1 */
+    --div-cool-2: #256abf;  /* 3.26:1 */
+    --div-cool-1: #184f95;  /* 2.17:1 */
+    --div-mid:    #33373d;
+    --div-warm-1: #883008;  /* 2.07:1 */
+    --div-warm-2: #af4517;  /* 3.09:1 */
+    --div-warm-3: #d45e2f;  /* 4.56:1 */
+    --div-warm-4: #e28969;  /* 6.72:1 */
+    --div-ink-on-deep:  var(--ink-1);   /* on arms 3–4 in dark: 7.5:1 / 7.9:1 */
+    --div-ink-on-light: var(--ink-1);
+
+    /* §11 elevation — a dark surface cannot be lifted by a darker shadow, so
+       the ring does the work and the shadow only deepens the ground. */
+    --shadow-raised: 0 2px 10px rgba(0, 0, 0, 0.55),
+                     0 0 0 1px rgba(255, 255, 255, 0.10);
+    --shadow-raised-svg: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.7));
+  }
+}
+
+
+/* ==========================================================================
+   DARK — (b) explicit toggle. Declared AFTER the media block so that
+   data-theme="dark" wins under an OS set to light, and the :not() guard in
+   (a) lets data-theme="light" win under an OS set to dark.
+   Identical body to (a). Keep the two blocks in lockstep.
+   ========================================================================== */
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --page:           var(--slate-925);
+  --surface:        var(--slate-875);
+  --surface-inset:  var(--slate-850);
+  --surface-strip:  var(--slate-925);
+  --surface-chrome: var(--slate-950);
+  --surface-hover:  var(--slate-850);
+  --surface-active: var(--slate-825);
+
+  --ink-1:       #f5f6f7;
+  --ink-2:       #c3c8d0;
+  --ink-3:       var(--slate-300);
+  --ink-faint:   var(--slate-450);
+  --ink-inverse: #08191c;
+
+  --rule:        var(--slate-800);
+  --rule-strong: var(--slate-750);
+  --rule-heavy:  var(--slate-650);
+
+  --accent:      #2fd6c3;
+  --accent-ink:  #2fd6c3;
+  --accent-wash: #0d2b28;
+  --on-accent:   #08191c;
+
+  --status-good-ink:     #0ca30c;
+  --status-good-bg:      #0e2413;
+  --status-warning-ink:  #fab219;
+  --status-warning-bg:   #2a2109;
+  --status-serious-ink:  #ec835a;
+  --status-serious-bg:   #2a1a12;
+  --status-critical-ink: #ef7a7a;
+  --status-critical-bg:  #2c1516;
+  --status-neutral:      var(--slate-450);
+  --status-neutral-bg:   var(--slate-825);
+
+  --tier-2-bg: var(--slate-825);
+  --tier-3-bg: var(--slate-850);
+
+  --chart-grid:      var(--slate-800);
+  --chart-axis:      var(--slate-650);
+  --chart-line:      var(--ink-2);
+  --chart-wash:      rgba(195, 200, 208, 0.08);
+  --chart-deemph:    var(--slate-450);
+  --chart-crosshair: var(--slate-550);
+
+  --series-1: #3987e5;
+  --series-2: #d95926;
+  --series-3: #199e70;
+  --series-4: #c98500;
+  --series-5: #d55181;
+  --series-6: #008300;
+  --series-7: #9085e9;
+  --series-8: #e66767;
+
+  --div-cool-4: #6da7ec;
+  --div-cool-3: #3987e5;
+  --div-cool-2: #256abf;
+  --div-cool-1: #184f95;
+  --div-mid:    #33373d;
+  --div-warm-1: #883008;
+  --div-warm-2: #af4517;
+  --div-warm-3: #d45e2f;
+  --div-warm-4: #e28969;
+  --div-ink-on-deep:  var(--ink-1);
+  --div-ink-on-light: var(--ink-1);
+
+  --shadow-raised: 0 2px 10px rgba(0, 0, 0, 0.55),
+                   0 0 0 1px rgba(255, 255, 255, 0.10);
+  --shadow-raised-svg: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.7));
+}
+
+
+/* ==========================================================================
+   §0  GLOBALS — the small amount of behaviour the tokens imply
+   ========================================================================== */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  /* An explicit token background is mandatory: a transparent body borrows
+     the host's theme and the whole palette comes apart. */
+  background: var(--page);
+  color: var(--ink-2);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  /* The page body never scrolls horizontally. Wide tables and charts scroll
+     inside their own overflow-x container. */
+  overflow-x: hidden;
+}
+
+/* Every numeral the reader might compare is mono, tabular, fixed-width. */
+code, kbd, samp, pre,
+.num, .mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: var(--numeric-table);
+  font-feature-settings: "tnum" 1, "lnum" 1;
+}
+
+:focus-visible {
+  outline: var(--focus-width) solid var(--focus-ring);
+  outline-offset: var(--focus-offset);
+  border-radius: var(--radius-xs);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* forced-colors: let the OS palette through rather than fighting it. The
+   texture channel (45°/135° hatch) is the identity backup here. */
+@media (forced-colors: active) {
+  :root { --shadow-raised: none; }
+  .chip, .badge, .card { border: 1px solid CanvasText; }
+}
+
+
+/* ==========================================================================
+   EU-CRI COMPONENT SHEET
+   Every value below resolves to a token from tokens.css. If you find a raw
+   hex, a raw px font-size, or a second box-shadow in here, it is a bug.
+   ========================================================================== */
+
+/* ---- utilities ---------------------------------------------------------- */
+.wrap      { max-width: var(--content-max); margin-inline: auto; padding-inline: var(--space-5); }
+.scroll-x  { overflow-x: auto; overscroll-behavior-x: contain; min-inline-size: 0; }
+
+/* A grid or flex item defaults to min-width:auto, which is min-CONTENT — so a
+   card holding a 660px-min chart refuses to shrink and pushes the whole page
+   sideways on a phone. Every item that can hold a scroll container is pinned
+   to min-inline-size:0 so the scroll container clips instead of the page. */
+.split > *, .teaser > *, .two > *, .tiles > *, .footer__cols > *,
+.card, .card__body, .nav, .metagrid dd { min-inline-size: 0; }
+.ta-r      { text-align: right; }
+.ta-c      { text-align: center; }
+.strong    { color: var(--ink-1); font-weight: var(--weight-semibold); }
+.u         { color: var(--ink-3); }
+.trunc     { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rule-v    { width: 1px; align-self: stretch; background: var(--rule-strong); }
+.vh        { position:absolute; width:1px; height:1px; margin:-1px; padding:0;
+             overflow:hidden; clip-path: inset(50%); white-space: nowrap; border:0; }
+.eyebrow   { font-size: var(--text-3xs); text-transform: uppercase;
+             letter-spacing: var(--tracking-caps); color: var(--ink-3);
+             font-weight: var(--weight-semibold); }
+.ico       { flex: none; display: block; }
+
+/* ---- links -------------------------------------------------------------- */
+a { color: var(--ink-1); text-decoration-color: var(--rule-heavy);
+    text-underline-offset: 2px; text-decoration-thickness: 1px;
+    transition: color var(--dur-fast) var(--ease), text-decoration-color var(--dur-fast) var(--ease); }
+a:hover { color: var(--accent-ink); text-decoration-color: var(--accent-ink); }
+.link-quiet { color: var(--ink-2); text-decoration: none; }
+.link-quiet:hover { color: var(--accent-ink); text-decoration: underline; }
+
+/* ---- MASTHEAD ----------------------------------------------------------- */
+.masthead { position: sticky; top: 0; z-index: var(--z-sticky); }
+.masthead__bar { background: var(--surface-chrome); border-bottom: var(--border-hairline) solid var(--rule-strong); }
+.masthead__inner { display: flex; align-items: center; gap: var(--space-6); min-height: 56px; }
+.wordmark { display: flex; align-items: center; gap: var(--space-3); text-decoration: none; color: var(--ink-1); flex: none; }
+.wordmark__mark { color: var(--ink-1); }
+.wordmark__text { font-weight: var(--weight-bold); font-size: var(--text-md);
+                  letter-spacing: var(--tracking-tight); }
+.wordmark__sub  { font-size: var(--text-2xs); color: var(--ink-3); border-left: var(--border-hairline) solid var(--rule-strong);
+                  padding-left: var(--space-3); max-width: 18ch; line-height: var(--leading-snug); }
+.nav { display: flex; gap: var(--space-5); margin-inline-start: auto; flex-wrap: wrap; }
+.nav a { font-size: var(--text-sm); color: var(--ink-2); text-decoration: none; padding-block: var(--space-4);
+         border-bottom: var(--border-marker) solid transparent; }
+.nav a:hover { color: var(--ink-1); }
+.nav a[aria-current="page"] { color: var(--ink-1); font-weight: var(--weight-medium); border-bottom-color: var(--ink-1); }
+.masthead__tools { flex: none; }
+
+/* ---- TICKER STRIP ------------------------------------------------------- */
+.ticker { background: var(--surface-strip); border-bottom: var(--border-hairline) solid var(--rule-strong); }
+.ticker__track { display: flex; max-width: var(--content-max); margin-inline: auto; }
+.ticker__item { display: flex; align-items: center; gap: var(--space-3); white-space: nowrap;
+                height: var(--strip-h); padding-inline: var(--space-4);
+                border-right: var(--border-hairline) solid var(--rule); }
+.ticker__item:first-child { padding-inline-start: var(--space-5); }
+.ticker__item--meta { margin-inline-start: auto; border-right: 0; border-left: var(--border-hairline) solid var(--rule); }
+.ticker__sym  { font-size: var(--text-2xs); letter-spacing: var(--tracking-wide);
+                text-transform: uppercase; color: var(--ink-3); font-weight: var(--weight-semibold); }
+.ticker__val  { font-size: var(--text-sm); color: var(--ink-1); font-weight: var(--weight-semibold); }
+.ticker__stamp{ font-size: var(--text-2xs); color: var(--ink-3); letter-spacing: var(--tracking-wide); }
+
+/* the only ambient motion in the product */
+.live-dot { position: relative; inline-size: 7px; block-size: 7px; flex: none;
+            border-radius: var(--radius-pill); background: var(--accent); }
+.live-dot::after { content: ""; position: absolute; inset: -3px; border-radius: inherit;
+                   border: var(--border-hairline) solid var(--accent);
+                   animation: cri-pulse var(--dur-pulse) var(--ease) infinite; }
+@keyframes cri-pulse { 0% { opacity: .8; transform: scale(.6); } 70%,100% { opacity: 0; transform: scale(1.6); } }
+
+/* ---- DELTA -------------------------------------------------------------- */
+.delta { display: inline-flex; align-items: center; gap: var(--space-2);
+         font-size: var(--text-xs); font-weight: var(--weight-medium); }
+.delta .num { font-size: inherit; }
+.delta--up   { color: var(--delta-up); }
+.delta--down { color: var(--delta-down); }
+.delta--flat { color: var(--delta-flat); }
+/* Tick flash: opacity on the changed cell only. Never a row-wide colour wash. */
+@keyframes cri-flash { from { opacity: .35; } to { opacity: 1; } }
+.is-ticked { animation: cri-flash var(--dur-flash) var(--ease) 1; }
+
+/* ---- CHIPS & BADGES ----------------------------------------------------- */
+.chip { display: inline-flex; align-items: center; gap: var(--space-2);
+        padding: 3px var(--space-3); border-radius: var(--radius-xs);
+        font-size: var(--text-2xs); font-weight: var(--weight-medium);
+        line-height: var(--leading-snug); white-space: nowrap; }
+.chip--good     { color: var(--status-good-ink);     background: var(--status-good-bg); }
+.chip--warning  { color: var(--status-warning-ink);  background: var(--status-warning-bg); }
+.chip--serious  { color: var(--status-serious-ink);  background: var(--status-serious-bg); }
+.chip--critical { color: var(--status-critical-ink); background: var(--status-critical-bg); }
+.chip--neutral  { color: var(--status-neutral-ink);  background: var(--status-neutral-bg); }
+
+.badge { display: inline-block; min-inline-size: 26px; padding: 2px var(--space-2);
+         border-radius: var(--radius-xs); font-family: var(--font-mono);
+         font-size: var(--text-3xs); font-weight: var(--weight-semibold);
+         letter-spacing: var(--tracking-wide); text-align: center; }
+.badge--t1 { color: var(--tier-1-ink); background: var(--tier-1-bg); }
+.badge--t2 { color: var(--tier-2-ink); background: var(--tier-2-bg); }
+.badge--t3 { color: var(--tier-3-ink); background: var(--tier-3-bg); }
+
+.flag { display: inline-block; margin-inline-end: var(--space-2);
+        padding: 1px var(--space-2); border: var(--border-hairline) solid var(--rule-strong);
+        border-radius: var(--radius-xs); font-family: var(--font-mono);
+        font-size: var(--text-3xs); letter-spacing: var(--tracking-wide); color: var(--ink-3); }
+
+/* ---- CARDS & SECTIONS --------------------------------------------------- */
+.card { background: var(--surface); border: var(--border-hairline) solid var(--rule-strong);
+        border-radius: var(--radius-md); }
+.card__head { display: flex; align-items: baseline; gap: var(--space-4); flex-wrap: wrap;
+              padding: var(--space-4) var(--space-5);
+              border-bottom: var(--border-hairline) solid var(--rule); }
+.card__title { margin: 0; font-size: var(--text-base); font-weight: var(--weight-semibold); color: var(--ink-1); }
+.card__sub   { margin: 0; font-size: var(--text-xs); color: var(--ink-3); }
+.card__meta  { margin-inline-start: auto; font-size: var(--text-2xs); color: var(--ink-3); }
+.card__body  { padding: var(--space-5); }
+.card__body--flush { padding: 0; }
+
+.section { padding-block: var(--space-8); }
+.section__head { display: flex; align-items: flex-end; gap: var(--space-4); flex-wrap: wrap;
+                 margin-bottom: var(--space-5); padding-bottom: var(--space-3);
+                 border-bottom: var(--border-hairline) solid var(--rule-heavy); }
+.section__h { margin: 0; font-size: var(--text-xl); font-weight: var(--weight-semibold);
+              color: var(--ink-1); letter-spacing: var(--tracking-tight); }
+.section__dek { margin: 0; font-size: var(--text-sm); color: var(--ink-3); max-width: var(--measure-prose); }
+.section__link { margin-inline-start: auto; font-size: var(--text-sm); }
+
+/* ---- HERO PRINT CARD ---------------------------------------------------- */
+/* The one place the accent becomes structure: a 2px rule across the top. */
+.print { display: grid; grid-template-columns: minmax(0,1fr) 300px;
+         background: var(--surface); border: var(--border-hairline) solid var(--rule-strong);
+         border-top: var(--border-marker) solid var(--accent);
+         border-radius: var(--radius-md); overflow: hidden; }
+.print__main { padding: var(--space-6); min-width: 0; }
+.print__head { display: flex; gap: var(--space-5); align-items: flex-start; justify-content: space-between; flex-wrap: wrap; }
+.print__sym  { margin: var(--space-2) 0 0; font-size: var(--text-lg); font-weight: var(--weight-semibold);
+               color: var(--ink-1); font-family: var(--font-mono); letter-spacing: var(--tracking-normal); }
+.print__desc { margin: var(--space-2) 0 0; font-size: var(--text-xs); color: var(--ink-3); max-width: 46ch; }
+
+.print__figure { display: flex; align-items: baseline; gap: var(--space-2); margin-top: var(--space-5); }
+.print__ccy   { font-family: var(--font-mono); font-size: var(--text-2xl); color: var(--ink-3); font-weight: var(--weight-medium); }
+.print__value { font-family: var(--font-mono); font-size: var(--text-hero); line-height: var(--leading-tight);
+                font-weight: var(--weight-semibold); color: var(--ink-1); letter-spacing: var(--tracking-tight); }
+.print__unit  { font-size: var(--text-sm); color: var(--ink-3); }
+
+.print__row { display: flex; align-items: center; gap: var(--space-4); flex-wrap: wrap;
+              margin-top: var(--space-4); font-size: var(--text-xs); }
+.print__abs   { color: var(--delta-up); font-weight: var(--weight-medium); }
+.print__vs    { color: var(--ink-3); }
+.print__range { color: var(--ink-3); }
+.print__chips { display: flex; gap: var(--space-3); flex-wrap: wrap; margin-top: var(--space-5); }
+
+.print__meta { border-left: var(--border-hairline) solid var(--rule); background: var(--surface-inset);
+               padding: var(--space-5) var(--space-5) var(--space-4); }
+.metagrid { margin: 0; display: grid; gap: 0; }
+.metagrid > div { display: flex; justify-content: space-between; gap: var(--space-3);
+                  padding-block: var(--space-3); border-bottom: var(--border-hairline) solid var(--rule); }
+.metagrid > div:last-child { border-bottom: 0; }
+.metagrid dt { font-size: var(--text-2xs); color: var(--ink-3); text-transform: uppercase;
+               letter-spacing: var(--tracking-wide); white-space: nowrap; }
+.metagrid dd { margin: 0; font-size: var(--text-xs); color: var(--ink-2); text-align: right; min-width: 0; }
+
+/* ---- SUB-INDEX TILES ---------------------------------------------------- */
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--space-4); }
+.tile { background: var(--surface); border: var(--border-hairline) solid var(--rule-strong);
+        border-radius: var(--radius-md); padding: var(--space-4) var(--space-5) var(--space-4); }
+.tile__sym  { font-family: var(--font-mono); font-size: var(--text-2xs); letter-spacing: var(--tracking-wide);
+              color: var(--ink-3); font-weight: var(--weight-semibold); }
+.tile__body { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--space-4); margin-top: var(--space-3); }
+.tile__num  { display: flex; align-items: baseline; gap: 1px; }
+.tile__ccy  { font-family: var(--font-mono); font-size: var(--text-md); color: var(--ink-3); }
+.tile__val  { font-family: var(--font-mono); font-size: var(--text-2xl); font-weight: var(--weight-semibold);
+              color: var(--ink-1); line-height: var(--leading-tight); }
+.tile__foot { display: flex; align-items: center; gap: var(--space-3); margin-top: var(--space-3);
+              padding-top: var(--space-3); border-top: var(--border-hairline) solid var(--rule); }
+.tile__note { font-size: var(--text-2xs); color: var(--ink-3); }
+.spark__line { fill: none; stroke: var(--chart-deemph); stroke-width: 1.5;
+               stroke-linecap: round; stroke-linejoin: round; }
+.spark__ring { fill: var(--surface); }
+.spark__dot  { fill: var(--chart-marker); }
+
+/* ---- DENSE GRID (constituents) ------------------------------------------ */
+.grid { inline-size: 100%; min-inline-size: 780px; border-collapse: collapse;
+        font-size: var(--text-xs); background: var(--surface); }
+.grid caption { text-align: left; }
+.grid thead th { position: sticky; top: 0; background: var(--surface-inset); z-index: 1;
+                 font-size: var(--text-3xs); text-transform: uppercase;
+                 letter-spacing: var(--tracking-caps); color: var(--ink-3);
+                 font-weight: var(--weight-semibold); text-align: left;
+                 padding: var(--space-3) var(--space-4);
+                 border-bottom: var(--border-hairline) solid var(--rule-heavy); white-space: nowrap; }
+.grid thead th.ta-r { text-align: right; }
+.grid thead th.ta-c { text-align: center; }
+.grid tbody td, .grid tbody th { padding: 0 var(--space-4); block-size: var(--row-h-dense);
+                                 border-bottom: var(--border-hairline) solid var(--rule);
+                                 color: var(--ink-2); font-weight: var(--weight-regular);
+                                 white-space: nowrap; vertical-align: middle; }
+.grid tbody tr:hover td, .grid tbody tr:hover th { background: var(--surface-hover); }
+.grid__name { text-align: left; color: var(--ink-1); font-weight: var(--weight-medium);
+              font-family: var(--font-mono); }
+.grid tfoot th, .grid tfoot td { padding: var(--space-3) var(--space-4); text-align: left;
+                                 border-top: var(--border-hairline) solid var(--rule-heavy);
+                                 font-size: var(--text-xs); color: var(--ink-2);
+                                 font-weight: var(--weight-semibold); white-space: nowrap; }
+.grid tfoot td.ta-r { text-align: right; }
+.grid__flags { white-space: nowrap; }
+.srclink { display: inline-flex; align-items: center; gap: var(--space-2);
+           font-size: var(--text-2xs); color: var(--ink-3); text-decoration: none;
+           letter-spacing: var(--tracking-wide); }
+.srclink:hover { color: var(--accent-ink); text-decoration: underline; }
+
+/* weight meter: one hue, lighter step of the same ramp as the track */
+.wcell  { display: inline-flex; align-items: center; gap: var(--space-3); justify-content: flex-end; }
+.meter  { inline-size: 52px; block-size: 4px; background: var(--rule); border-radius: var(--radius-xs); overflow: hidden; }
+.meter__fill { display: block; block-size: 100%; background: var(--chart-deemph); }
+
+/* ---- CHARTS ------------------------------------------------------------- */
+.chart { display: block; inline-size: 100%; min-inline-size: 660px; block-size: auto; }
+.ch-grid  { stroke: var(--chart-grid); stroke-width: 1; }      /* solid hairline, never dashed */
+.ch-axis  { stroke: var(--chart-axis); stroke-width: 1; }
+.ch-tick  { fill: var(--chart-label); font-family: var(--font-mono);
+            font-size: 11px; font-variant-numeric: tabular-nums; }
+.ch-tick--pole { font-family: var(--font-sans); font-size: 9px; letter-spacing: .09em;
+                 font-weight: 600; fill: var(--ink-3); }
+.ch-note  { fill: var(--ink-3); font-family: var(--font-sans); font-size: 11px; }
+.ch-cur   { fill: var(--ink-1); font-family: var(--font-mono); font-size: 13px;
+            font-weight: 600; font-variant-numeric: tabular-nums; }
+.ch-line  { fill: none; stroke: var(--chart-line); stroke-width: 2;
+            stroke-linejoin: round; stroke-linecap: round; }
+.ch-area  { fill: var(--chart-wash); stroke: none; }
+.ch-marker-rule { stroke: var(--chart-marker); stroke-width: 1; opacity: .55; }
+.ch-marker-ring { fill: var(--chart-ring); }                    /* 2px surface ring */
+.ch-marker      { fill: var(--chart-marker); }
+
+/* CSS-only crosshair + tooltip. Works with scripting disabled. */
+.hp-hit  { fill: transparent; pointer-events: all; cursor: crosshair; }
+.hp-cross, .hp-dot, .hp-tip, .bp-tip { opacity: 0; pointer-events: none;
+            transition: opacity var(--dur-fast) var(--ease); }
+.hp:hover .hp-cross, .hp:hover .hp-dot, .hp:hover .hp-tip,
+.hp:focus-within .hp-cross, .hp:focus-within .hp-dot, .hp:focus-within .hp-tip { opacity: 1; }
+.hp { outline: none; }
+.hp:focus-visible .hp-box { stroke: var(--focus-ring); stroke-width: 2; }
+.hp-cross { stroke: var(--chart-crosshair); stroke-width: 1; }
+.hp-dot   { fill: var(--chart-line); stroke: var(--chart-ring); stroke-width: 2; }
+.hp-box   { fill: var(--surface); filter: var(--shadow-raised-svg);
+            stroke: var(--rule-strong); stroke-width: 1; }
+.hp-key   { stroke: var(--chart-line); stroke-width: 2; stroke-linecap: round; }
+.hp-val   { fill: var(--ink-1); font-family: var(--font-mono); font-size: 13px;
+            font-weight: 600; font-variant-numeric: tabular-nums; }
+.hp-lab   { fill: var(--ink-3); font-family: var(--font-sans); font-size: 11px; }
+
+/* ---- BASIS RIBBON ------------------------------------------------------- */
+.bp-hit { fill: transparent; pointer-events: all; cursor: pointer; }
+.bp:hover .bp-tip, .bp:focus-within .bp-tip { opacity: 1; }
+.bp { outline: none; }
+.bp:focus-visible .hp-box { stroke: var(--focus-ring); stroke-width: 2; }
+.bcol { transition: opacity var(--dur-fast) var(--ease); }
+.bcols:hover .bcol { opacity: .45; }
+.bp:hover .bcol, .bp:focus-within .bcol { opacity: 1; }
+/* The zero line is the semantic anchor of a diverging chart, not grid — it
+   gets text-weight ink, one step above the ordinary axis. */
+.b-zero { stroke: var(--chart-label); stroke-width: 1; }
+.b-cool-1 { fill: var(--div-cool-1); } .b-cool-2 { fill: var(--div-cool-2); }
+.b-cool-3 { fill: var(--div-cool-3); } .b-cool-4 { fill: var(--div-cool-4); }
+.b-warm-1 { fill: var(--div-warm-1); } .b-warm-2 { fill: var(--div-warm-2); }
+.b-warm-3 { fill: var(--div-warm-3); } .b-warm-4 { fill: var(--div-warm-4); }
+
+.divlegend { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap;
+             font-size: var(--text-2xs); color: var(--ink-3); }
+.divlegend__pole { text-transform: uppercase; letter-spacing: var(--tracking-wide);
+                   font-weight: var(--weight-semibold); }
+.divlegend__ramp { display: inline-flex; gap: var(--chart-gap); }
+.divlegend__ramp i { inline-size: 22px; block-size: 10px; border-radius: 1px; }
+.b-mid { background: var(--div-mid); }
+.divlegend__ramp .b-cool-1 { background: var(--div-cool-1); } .divlegend__ramp .b-cool-2 { background: var(--div-cool-2); }
+.divlegend__ramp .b-cool-3 { background: var(--div-cool-3); } .divlegend__ramp .b-cool-4 { background: var(--div-cool-4); }
+.divlegend__ramp .b-warm-1 { background: var(--div-warm-1); } .divlegend__ramp .b-warm-2 { background: var(--div-warm-2); }
+.divlegend__ramp .b-warm-3 { background: var(--div-warm-3); } .divlegend__ramp .b-warm-4 { background: var(--div-warm-4); }
+.divlegend__scale { flex-basis: 100%; color: var(--ink-3); font-size: var(--text-3xs); }
+
+/* ---- TABLE-VIEW TWIN ---------------------------------------------------- */
+/* Every chart ships one. It is the WCAG-clean equivalent and the relief
+   channel for any mark below 3:1. */
+.tableview { margin-top: var(--space-4); border-top: var(--border-hairline) solid var(--rule); }
+.tableview > summary { cursor: pointer; padding-block: var(--space-3);
+                       font-size: var(--text-2xs); color: var(--ink-3);
+                       text-transform: uppercase; letter-spacing: var(--tracking-wide);
+                       font-weight: var(--weight-semibold); }
+.tableview > summary:hover { color: var(--ink-1); }
+.tableview__scroll { max-block-size: 260px; overflow: auto; border: var(--border-hairline) solid var(--rule); border-radius: var(--radius-xs); }
+.tableview table { inline-size: 100%; border-collapse: collapse; font-size: var(--text-2xs); }
+.tableview th, .tableview td { padding: var(--space-2) var(--space-3);
+                               border-bottom: var(--border-hairline) solid var(--rule);
+                               color: var(--ink-2); text-align: left; white-space: nowrap; }
+.tableview thead th { position: sticky; top: 0; background: var(--surface-inset);
+                      color: var(--ink-3); text-transform: uppercase;
+                      letter-spacing: var(--tracking-wide); font-size: var(--text-3xs); }
+
+/* ---- LEDGER ------------------------------------------------------------- */
+.ledger { list-style: none; margin: 0; padding: 0; counter-reset: none; }
+.ledger__row { display: grid; grid-template-columns: 36px minmax(0,1fr) 88px;
+               gap: var(--space-4); align-items: baseline;
+               padding-block: var(--space-4);
+               border-bottom: var(--border-hairline) solid var(--rule); }
+.ledger__row:last-child { border-bottom: 0; }
+.ledger__n { font-size: var(--text-2xs); color: var(--ink-3); font-weight: var(--weight-semibold); }
+.ledger__t { margin: 0; font-size: var(--text-sm); font-weight: var(--weight-semibold); color: var(--ink-1); }
+.ledger__d { margin: var(--space-2) 0 0; font-size: var(--text-xs); color: var(--ink-2);
+             max-width: var(--measure-prose); line-height: var(--leading-prose); }
+.ledger__v { font-family: var(--font-mono); font-variant-numeric: var(--numeric-table);
+             font-size: var(--text-xs); color: var(--ink-1); text-align: right;
+             font-weight: var(--weight-medium); }
+.fnref { font-family: var(--font-mono); font-size: var(--text-3xs); color: var(--accent-ink);
+         font-weight: var(--weight-semibold); margin-inline-start: 2px; }
+sup.fnref { vertical-align: super; line-height: 0; }
+
+/* ---- FOOTNOTE STRIP ----------------------------------------------------- */
+.fnstrip { background: var(--surface-inset); border: var(--border-hairline) solid var(--rule);
+           border-radius: var(--radius-md); padding: var(--space-5); }
+.fnstrip__h { margin: 0 0 var(--space-3); font-size: var(--text-3xs); text-transform: uppercase;
+              letter-spacing: var(--tracking-caps); color: var(--ink-3); font-weight: var(--weight-semibold); }
+.fnstrip__list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-3); }
+.fnstrip__list li { display: grid; grid-template-columns: 18px minmax(0,1fr); gap: var(--space-3);
+                    font-size: var(--text-xs); color: var(--ink-2);
+                    line-height: var(--leading-prose); max-width: var(--measure-prose); }
+.fnstrip__list .num { color: var(--accent-ink); font-weight: var(--weight-semibold); font-size: var(--text-2xs); }
+
+/* ---- PROSE, CALLOUT, CODE ----------------------------------------------- */
+.prose { max-width: var(--measure-prose); line-height: var(--leading-prose); color: var(--ink-2); }
+.prose p { margin: 0 0 var(--space-4); }
+.display { font-family: var(--font-serif); font-weight: var(--weight-regular);
+           font-size: var(--text-3xl); line-height: var(--leading-tight);
+           color: var(--ink-1); letter-spacing: var(--tracking-tight); margin: 0 0 var(--space-4); }
+.dek { font-size: var(--text-md); color: var(--ink-3); max-width: var(--measure-prose);
+       line-height: var(--leading-prose); margin: 0; }
+.byline { font-family: var(--font-mono); font-size: var(--text-2xs); color: var(--ink-3);
+          letter-spacing: var(--tracking-wide); margin: var(--space-4) 0 0; }
+
+.callout { border-left: var(--border-marker) solid var(--accent);
+           background: var(--surface-inset); padding: var(--space-4) var(--space-5);
+           border-radius: 0 var(--radius-sm) var(--radius-sm) 0; margin: 0; }
+.callout > :first-child { margin-top: 0; }
+.callout > :last-child { margin-bottom: 0; }
+.callout__cite { display: block; margin-top: var(--space-3); font-size: var(--text-2xs);
+                 color: var(--ink-3); font-style: normal; }
+blockquote.callout p { font-size: var(--text-md); color: var(--ink-1); line-height: var(--leading-prose); }
+
+pre.code { margin: 0; background: var(--surface-inset); border: var(--border-hairline) solid var(--rule);
+           border-radius: var(--radius-sm); padding: var(--space-4) var(--space-5);
+           overflow-x: auto; font-size: var(--text-xs); line-height: 1.6; color: var(--ink-2); }
+pre.code .c { color: var(--ink-3); }
+pre.code .k { color: var(--ink-1); font-weight: var(--weight-semibold); }
+code.inline { background: var(--surface-inset); border: var(--border-hairline) solid var(--rule);
+              border-radius: var(--radius-xs); padding: 1px 4px; font-size: .92em; color: var(--ink-1); }
+
+/* ---- CONTROLS ----------------------------------------------------------- */
+.btn { display: inline-flex; align-items: center; gap: var(--space-3);
+       padding: 7px var(--space-4); border-radius: var(--radius-sm);
+       font-family: var(--font-sans); font-size: var(--text-sm);
+       font-weight: var(--weight-medium); line-height: var(--leading-snug);
+       cursor: pointer; border: var(--border-hairline) solid transparent;
+       transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease),
+                   color var(--dur-fast) var(--ease); }
+.btn--primary { background: var(--accent); color: var(--on-accent); }
+.btn--primary:hover { background: var(--accent-ink); }
+.btn--ghost { background: transparent; color: var(--ink-1); border-color: var(--rule-heavy); }
+.btn--ghost:hover { background: var(--surface-hover); border-color: var(--ink-3); }
+.btn[disabled] { cursor: not-allowed; color: var(--ink-faint); background: var(--surface-inset);
+                 border-color: var(--rule); }
+
+/* Rings here are borders, not elevation — the system's one shadow token is
+   reserved for genuinely floating layers (the chart tooltip). */
+.seg { display: inline-flex; margin: 0; padding: 2px; gap: 2px;
+       border: var(--border-hairline) solid var(--rule);
+       background: var(--surface-inset); border-radius: var(--radius-sm); }
+.seg input { position: absolute; opacity: 0; pointer-events: none; }
+.seg label { padding: 4px var(--space-3); border-radius: 2px; cursor: pointer;
+             font-size: var(--text-2xs); font-weight: var(--weight-medium);
+             color: var(--ink-3); letter-spacing: var(--tracking-wide);
+             transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease); }
+.seg label:hover { color: var(--ink-1); }
+.seg input:checked + label { background: var(--surface); color: var(--ink-1);
+                             outline: var(--border-hairline) solid var(--rule-strong); outline-offset: -1px; }
+.seg input:focus-visible + label { outline: var(--focus-width) solid var(--focus-ring); outline-offset: 1px; }
+
+.field { display: grid; gap: var(--space-2); max-width: 320px; }
+.field label { font-size: var(--text-2xs); color: var(--ink-3); text-transform: uppercase;
+               letter-spacing: var(--tracking-wide); font-weight: var(--weight-semibold); }
+.field input { font-family: var(--font-sans); font-size: var(--text-sm); color: var(--ink-1);
+               background: var(--surface); border: var(--border-hairline) solid var(--rule-heavy);
+               border-radius: var(--radius-sm); padding: 7px var(--space-3);
+               transition: border-color var(--dur-fast) var(--ease); }
+.field input.mono { font-family: var(--font-mono); }
+.field input::placeholder { color: var(--ink-faint); }
+.field input:hover { border-color: var(--ink-3); }
+.field input:focus-visible { border-color: var(--accent); outline: var(--focus-width) solid var(--focus-ring); outline-offset: 1px; }
+.field .hint { font-size: var(--text-2xs); color: var(--ink-3); text-transform: none; letter-spacing: 0; }
+
+/* ---- FOOTER ------------------------------------------------------------- */
+.footer { background: var(--surface-chrome); border-top: var(--border-hairline) solid var(--rule-strong);
+          margin-top: var(--space-9); }
+.footer__inner { padding-block: var(--space-7) var(--space-6); }
+.footer__cols { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: var(--space-6);
+                padding-bottom: var(--space-6); border-bottom: var(--border-hairline) solid var(--rule); }
+.footer__tag { margin: var(--space-3) 0 0; font-size: var(--text-xs); color: var(--ink-3); max-width: 34ch; }
+.footer__nav { display: grid; gap: var(--space-2); align-content: start; }
+.footer__nav h4 { margin: 0 0 var(--space-2); font-size: var(--text-3xs); text-transform: uppercase;
+                  letter-spacing: var(--tracking-caps); color: var(--ink-3); font-weight: var(--weight-semibold); }
+.footer__nav a { font-size: var(--text-xs); color: var(--ink-2); text-decoration: none; }
+.footer__nav a:hover { color: var(--accent-ink); text-decoration: underline; }
+.disclaimer { padding-top: var(--space-5); }
+.disclaimer__h { margin: 0 0 var(--space-3); font-size: var(--text-3xs); text-transform: uppercase;
+                 letter-spacing: var(--tracking-caps); color: var(--ink-3); font-weight: var(--weight-semibold); }
+.disclaimer p { margin: 0 0 var(--space-3); font-size: var(--text-2xs); color: var(--ink-3);
+                line-height: var(--leading-prose); max-width: 96ch; }
+.disclaimer strong { color: var(--ink-2); font-weight: var(--weight-semibold); }
+.disclaimer__meta { border-top: var(--border-hairline) solid var(--rule); padding-top: var(--space-3); }
+
+/* ---- RESPONSIVE --------------------------------------------------------- */
+@media (max-width: 1040px) {
+  .print { grid-template-columns: 1fr; }
+  .print__meta { border-left: 0; border-top: var(--border-hairline) solid var(--rule); }
+  .footer__cols { grid-template-columns: 1fr 1fr; }
+  .wordmark__sub { display: none; }
+}
+@media (max-width: 720px) {
+  :root { --text-hero: 44px; }
+  .masthead__inner { flex-wrap: wrap; gap: var(--space-3); padding-block: var(--space-3); }
+  .nav { margin-inline-start: 0; order: 3; flex-basis: 100%; gap: var(--space-4);
+         overflow-x: auto; flex-wrap: nowrap; }
+  .nav a { padding-block: var(--space-2); }
+  .masthead__tools { margin-inline-start: auto; }
+  .footer__cols { grid-template-columns: 1fr; }
+  .section { padding-block: var(--space-6); }
+  .ledger__row { grid-template-columns: 28px minmax(0,1fr); }
+  .ledger__v { grid-column: 2; text-align: left; }
+}
+
+
+.gal { padding-block: var(--space-7); }
+.gal__intro { max-width: var(--measure-prose); }
+.gal__intro h1 { margin: 0 0 var(--space-3); font-size: var(--text-2xl);
+                 letter-spacing: var(--tracking-tight); color: var(--ink-1);
+                 font-weight: var(--weight-semibold); }
+.spec { display: block; font-family: var(--font-mono); font-size: var(--text-3xs);
+        color: var(--ink-3); letter-spacing: var(--tracking-wide);
+        text-transform: uppercase; margin-bottom: var(--space-3); }
+.row { display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center; }
+.stack { display: grid; gap: var(--space-5); }
+.two { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px,1fr)); gap: var(--space-5); align-items: start; }
+.swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px,1fr)); gap: var(--space-3); }
+.sw { border: var(--border-hairline) solid var(--rule); border-radius: var(--radius-xs); overflow: hidden; }
+.sw__chip { block-size: 40px; }
+.sw__meta { padding: var(--space-2) var(--space-3); background: var(--surface); }
+.sw__name { display: block; font-size: var(--text-3xs); color: var(--ink-1); font-weight: var(--weight-semibold); }
+.sw__hex  { display: block; font-family: var(--font-mono); font-size: var(--text-3xs); color: var(--ink-3); }
+@media (max-width: 720px) { .two { grid-template-columns: 1fr; } }
+
+</style>
+</head>
+<body id="top">
+
+
+<header class="masthead">
+  <div class="masthead__bar">
+    <div class="wrap masthead__inner">
+      <a class="wordmark" href="#top">
+        <svg class="wordmark__mark" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">
+          <rect x="1.5" y="1.5" width="21" height="21" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/>
+          <path d="M6 16.5 10 10.5 14 13.5 18 7.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="wordmark__text">EU&#8209;CRI</span>
+        <span class="wordmark__sub">European Compute Reference Index</span>
+      </a>
+      <nav class="nav" aria-label="Primary">
+        <a href="#index" aria-current="page">Index</a><a href="#constituents">Constituents</a><a href="#basis">Basis</a><a href="#methodology">Methodology</a><a href="#research">Research</a><a href="#data">Data&nbsp;access</a>
+      </nav>
+      <div class="masthead__tools">
+        <fieldset class="seg seg--theme">
+          <legend class="vh">Colour theme</legend>
+          <input type="radio" id="th-auto" name="theme" value="auto" checked><label for="th-auto">Auto</label>
+          <input type="radio" id="th-light" name="theme" value="light"><label for="th-light">Light</label>
+          <input type="radio" id="th-dark" name="theme" value="dark"><label for="th-dark">Dark</label>
+        </fieldset>
+      </div>
+    </div>
+  </div>
+  
+<div class="ticker">
+  <div class="ticker__track scroll-x" role="list" aria-label="EU-CRI series, last published values">
+    <div class="ticker__item" role="listitem">
+      <span class="live-dot" aria-hidden="true"></span>
+      <span class="ticker__sym">EU-CRI-H100-EEA</span>
+      <span class="ticker__val num">3.29</span>
+      <span class="delta delta--up"><svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M8 13V3.6M3.9 7.6 8 3.3l4.1 4.3" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="num">+1.20%</span></span>
+    </div><div class="ticker__item" role="listitem">
+      
+      <span class="ticker__sym">EU-CRI-H200-EEA</span>
+      <span class="ticker__val num">4.62</span>
+      <span class="delta delta--up"><svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M8 13V3.6M3.9 7.6 8 3.3l4.1 4.3" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="num">+0.90%</span></span>
+    </div><div class="ticker__item" role="listitem">
+      
+      <span class="ticker__sym">EU-CRI-B200-EEA</span>
+      <span class="ticker__val num">8.14</span>
+      <span class="delta delta--down"><svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M8 3v9.4M3.9 8.4 8 12.7l4.1-4.3" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="num">−1.40%</span></span>
+    </div><div class="ticker__item" role="listitem">
+      
+      <span class="ticker__sym">EU-CRI-SOV</span>
+      <span class="ticker__val num">3.71</span>
+      <span class="delta delta--up"><svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M8 13V3.6M3.9 7.6 8 3.3l4.1 4.3" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="num">+0.30%</span></span>
+    </div><div class="ticker__item" role="listitem">
+      
+      <span class="ticker__sym">EU-CRI-HS</span>
+      <span class="ticker__val num">6.28</span>
+      <span class="delta delta--up"><svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M8 13V3.6M3.9 7.6 8 3.3l4.1 4.3" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="num">+0.20%</span></span>
+    </div><div class="ticker__item" role="listitem">
+      
+      <span class="ticker__sym">SOV BASIS</span>
+      <span class="ticker__val num">+0.42</span>
+      <span class="delta delta--up"><svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M8 13V3.6M3.9 7.6 8 3.3l4.1 4.3" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="num">+7.70%</span></span>
+    </div><div class="ticker__item" role="listitem">
+      
+      <span class="ticker__sym">EEA/US SPREAD</span>
+      <span class="ticker__val num">−0.18</span>
+      <span class="delta delta--down"><svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M8 3v9.4M3.9 8.4 8 12.7l4.1-4.3" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="num">−2.10%</span></span>
+    </div>
+    <div class="ticker__item ticker__item--meta" role="listitem">
+      <span class="ticker__stamp num">AS OF 2026-08-15 12:05:00 UTC</span>
+    </div>
+  </div>
+</div>
+</header>
+<main class="wrap gal">
+  <div class="gal__intro">
+    <div class="eyebrow">EU&#8209;CRI design system</div>
+    <h1>Component gallery</h1>
+    <p class="prose">Every component the index site needs, built against <code class="inline">tokens.css</code> and nothing else.
+    Use the <strong>Auto / Light / Dark</strong> control in the masthead to check both themes &#8212; nothing here is
+    designed for one and tolerated in the other. No external requests: system fonts, inline SVG, no images.</p>
+  </div>
+
+  <!-- ===== 1. MASTHEAD ===== -->
+  <section class="section" aria-labelledby="s-mast">
+    <div class="section__head"><div><h2 class="section__h" id="s-mast">1 &#183; Masthead and ticker strip</h2>
+      <p class="section__dek">A broad flat top nav &#8212; never a hamburger on desktop; hiding navigation reads as a consumer product.
+      The strip below it carries the whole series family so the first viewport contains data, not a marketing hero.</p></div></div>
+    <p class="prose"><span class="spec">Live at the top of this page</span>
+    The live dot is the only ambient animation in the system, and the accent teal appears exactly twice above the fold:
+    the dot, and the rule on the print card. Everything else is slate.</p>
+  </section>
+
+  <!-- ===== 2. HERO PRINT CARD ===== -->
+  <section class="section" aria-labelledby="s-print">
+    <div class="section__head"><div><h2 class="section__h" id="s-print">2 &#183; The print card</h2>
+      <p class="section__dek">One hero figure per view. Mono, tabular, fixed to two decimals so a live update never reflows the line.
+      Currency is a segmented toggle, not a dropdown &#8212; two options should never cost a click to see.</p></div></div>
+    
+<section class="print" aria-labelledby="print-h">
+  <div class="print__main">
+    <div class="print__head">
+      <div>
+        <div class="eyebrow">Headline index</div>
+        <h3 class="print__sym" id="print-h">EU&#8209;CRI&#8209;H100&#8209;EEA</h3>
+        <p class="print__desc">NVIDIA H100 80GB SXM, on&#8209;demand, EU/EEA regions. Tier&#8209;weighted daily reference.</p>
+      </div>
+      <fieldset class="seg seg--ccy">
+        <legend class="vh">Quote currency</legend>
+        <input type="radio" id="ccy-usd" name="ccy" value="usd" checked><label for="ccy-usd">USD</label>
+        <input type="radio" id="ccy-eur" name="ccy" value="eur"><label for="ccy-eur">EUR</label>
+      </fieldset>
+    </div>
+
+    <div class="print__figure">
+      <span class="print__ccy" aria-hidden="true">$</span><span class="print__value num">3.29</span><span class="print__unit">/GPU&#8209;hr</span>
+    </div>
+
+    <div class="print__row">
+      <span class="delta delta--up"><svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M8 13V3.6M3.9 7.6 8 3.3l4.1 4.3" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="num">+1.20%</span></span>
+      <span class="print__abs num">+0.04</span>
+      <span class="print__vs">vs 14 Aug settle</span>
+      <span class="rule-v" aria-hidden="true"></span>
+      <span class="print__range num">30d range 3.11&#8211;3.44</span>
+    </div>
+
+    <div class="print__chips">
+      <span class="chip chip--good"><svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M2.5 8.5 6.2 12.2 13.5 4.4" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Index live</span></span>
+      <span class="chip chip--warning"><svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M8 1.6 15.2 14H0.8Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 6v3.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="8" cy="11.9" r="1" fill="currentColor"/></svg><span>1 of 14 sources stale</span></span>
+      <span class="chip chip--neutral"><svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><rect x="2.8" y="6.9" width="10.4" height="7.3" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M5.4 6.9V4.8a2.6 2.6 0 0 1 5.2 0v2.1" fill="none" stroke="currentColor" stroke-width="1.5"/></svg><span>Hash&#8209;locked <span class="num">v0.2.0</span></span></span>
+    </div>
+  </div>
+
+  <div class="print__meta">
+    <dl class="metagrid">
+      <div><dt>Published</dt><dd class="num">2026&#8209;08&#8209;15 12:05:00 UTC</dd></div>
+      <div><dt>Next fix</dt><dd class="num">2026&#8209;08&#8209;16 12:05:00 UTC</dd></div>
+      <div><dt>Constituents</dt><dd class="num">6 of 14 in&#8209;universe</dd></div>
+      <div><dt>Observations</dt><dd class="num">7,869 / 24h</dd></div>
+      <div><dt>Content hash</dt><dd class="num trunc">sha256:9f4c1d&#8230;a1e7</dd></div>
+      <div><dt>Methodology</dt><dd><a href="#methodology">EU&#8209;CRI&#8209;M v0.2.0 <sup class="fnref">1</sup></a></dd></div>
+    </dl>
+  </div>
+</section>
+  </section>
+
+  <!-- ===== 3. SUB-INDEX TILES ===== -->
+  <section class="section" aria-labelledby="s-tiles">
+    <div class="section__head"><div><h2 class="section__h" id="s-tiles">3 &#183; Sub&#8209;index tiles</h2>
+      <p class="section__dek">Label &#183; value &#183; delta &#183; trend. The sparkline body is the de&#8209;emphasis grey; only the current
+      point wears the accent. A tile is the right form when the story is one number &#8212; a one&#8209;bar bar chart is not.</p></div></div>
+    
+<div class="tiles">
+  <article class="tile">
+    <div class="tile__head"><span class="tile__sym">EU&#8209;CRI&#8209;H200&#8209;EEA</span></div>
+    <div class="tile__body">
+      <div class="tile__num"><span class="tile__ccy" aria-hidden="true">$</span><span class="tile__val num">4.62</span></div>
+      <svg class="spark" viewBox="0 0 96 28" width="96" height="28" aria-hidden="true" focusable="false"><path class="spark__line" d="M4 16.2 L12 11.8 L20 18.4 L28 24 L36 20.7 L44 15.1 L52 8.4 L60 12.9 L68 18.4 L76 14 L84 8.4 L92 4"/><circle class="spark__ring" cx="92" cy="4" r="4.5"/><circle class="spark__dot" cx="92" cy="4" r="2.8"/></svg>
+    </div>
+    <div class="tile__foot"><span class="delta delta--up"><svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M8 13V3.6M3.9 7.6 8 3.3l4.1 4.3" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="num">+0.90%</span></span><span class="tile__note">H200 141GB SXM</span></div>
+  </article><article class="tile">
+    <div class="tile__head"><span class="tile__sym">EU&#8209;CRI&#8209;B200&#8209;EEA</span></div>
+    <div class="tile__body">
+      <div class="tile__num"><span class="tile__ccy" aria-hidden="true">$</span><span class="tile__val num">8.14</span></div>
+      <svg class="spark" viewBox="0 0 96 28" width="96" height="28" aria-hidden="true" focusable="false"><path class="spark__line" d="M4 8.9 L12 11 L20 7.8 L28 4 L36 6.2 L44 10.5 L52 14.8 L60 17.5 L68 13.7 L76 16.4 L84 21.3 L92 24"/><circle class="spark__ring" cx="92" cy="24" r="4.5"/><circle class="spark__dot" cx="92" cy="24" r="2.8"/></svg>
+    </div>
+    <div class="tile__foot"><span class="delta delta--down"><svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M8 3v9.4M3.9 8.4 8 12.7l4.1-4.3" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="num">−1.40%</span></span><span class="tile__note">B200 180GB</span></div>
+  </article><article class="tile">
+    <div class="tile__head"><span class="tile__sym">EU&#8209;CRI&#8209;SOV</span></div>
+    <div class="tile__body">
+      <div class="tile__num"><span class="tile__ccy" aria-hidden="true">$</span><span class="tile__val num">3.71</span></div>
+      <svg class="spark" viewBox="0 0 96 28" width="96" height="28" aria-hidden="true" focusable="false"><path class="spark__line" d="M4 24 L12 22.2 L20 18.5 L28 20.4 L36 15.5 L44 11.9 L52 13.7 L60 10.1 L68 7 L76 8.8 L84 5.2 L92 4"/><circle class="spark__ring" cx="92" cy="4" r="4.5"/><circle class="spark__dot" cx="92" cy="4" r="2.8"/></svg>
+    </div>
+    <div class="tile__foot"><span class="delta delta--up"><svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M8 13V3.6M3.9 7.6 8 3.3l4.1 4.3" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="num">+0.30%</span></span><span class="tile__note">EU-domiciled operators only</span></div>
+  </article><article class="tile">
+    <div class="tile__head"><span class="tile__sym">EU&#8209;CRI&#8209;HS</span></div>
+    <div class="tile__body">
+      <div class="tile__num"><span class="tile__ccy" aria-hidden="true">$</span><span class="tile__val num">6.28</span></div>
+      <svg class="spark" viewBox="0 0 96 28" width="96" height="28" aria-hidden="true" focusable="false"><path class="spark__line" d="M4 24 L12 19.4 L20 22.5 L28 14.8 L36 17.8 L44 11.7 L52 4 L60 8.6 L68 14.8 L76 10.2 L84 5.5 L92 8.6"/><circle class="spark__ring" cx="92" cy="8.6" r="4.5"/><circle class="spark__dot" cx="92" cy="8.6" r="2.8"/></svg>
+    </div>
+    <div class="tile__foot"><span class="delta delta--up"><svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M8 13V3.6M3.9 7.6 8 3.3l4.1 4.3" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="num">+0.20%</span></span><span class="tile__note">Hyperscaler EU regions</span></div>
+  </article>
+</div>
+  </section>
+
+  <!-- ===== 4. CONSTITUENTS GRID ===== -->
+  <section class="section" aria-labelledby="s-grid">
+    <div class="section__head"><div><h2 class="section__h" id="s-grid">4 &#183; Dense constituents grid</h2>
+      <p class="section__dek">28px rows, hairline dividers, no zebra striping &#8212; stripes read as a spreadsheet export rather than a
+      published record. Numerals are mono and tabular; every numeric column is right&#8209;aligned to a fixed decimal.</p></div></div>
+    <div class="card card__body--flush">
+<div class="scroll-x">
+<table class="grid">
+  <caption class="vh">EU-CRI-H100-EEA constituents at the 2026-08-15 fix</caption>
+  <thead>
+    <tr>
+      <th scope="col">Provider</th>
+      <th scope="col">Region</th>
+      <th scope="col" class="ta-c">Tier</th>
+      <th scope="col" class="ta-r">Price <span class="u">USD/GPU&#8209;hr</span></th>
+      <th scope="col" class="ta-r">24h</th>
+      <th scope="col" class="ta-r">Weight</th>
+      <th scope="col" class="ta-r">Obs</th>
+      <th scope="col">Flags</th>
+      <th scope="col" class="ta-r">Source</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row" class="grid__name">seeweb</th>
+      <td class="num u">IT-MIL</td>
+      <td class="ta-c"><span class="badge badge--t2" title="Published price with observed fills">L2</span></td>
+      <td class="ta-r num strong">2.16</td>
+      <td class="ta-r"><span class="delta delta--down"><svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M8 3v9.4M3.9 8.4 8 12.7l4.1-4.3" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="num">−0.90%</span></span></td>
+      <td class="ta-r">
+        <span class="wcell"><span class="num">25.5%</span>
+        <span class="meter" aria-hidden="true"><span class="meter__fill" style="width:96.2%"></span></span></span>
+      </td>
+      <td class="ta-r num">412</td>
+      <td class="grid__flags"><span class="flag" title="Winsorised at the 5th percentile">TRIM</span></td>
+      <td class="ta-r"><a class="srclink" href="#src-seeweb">API<svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M6.5 3H3.2v9.8H13V9.5M9.4 2.6H13.4V6.6M13.2 2.8 7.4 8.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a></td>
+    </tr><tr>
+      <th scope="row" class="grid__name">datacrunch</th>
+      <td class="num u">FI-HEL</td>
+      <td class="ta-c"><span class="badge badge--t2" title="Published price with observed fills">L2</span></td>
+      <td class="ta-r num strong">3.25</td>
+      <td class="ta-r"><span class="delta delta--up"><svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M8 13V3.6M3.9 7.6 8 3.3l4.1 4.3" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="num">+0.30%</span></span></td>
+      <td class="ta-r">
+        <span class="wcell"><span class="num">22.0%</span>
+        <span class="meter" aria-hidden="true"><span class="meter__fill" style="width:83.0%"></span></span></span>
+      </td>
+      <td class="ta-r num">1,208</td>
+      <td class="grid__flags"><span class="u">&#8212;</span></td>
+      <td class="ta-r"><a class="srclink" href="#src-datacrunch">API<svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M6.5 3H3.2v9.8H13V9.5M9.4 2.6H13.4V6.6M13.2 2.8 7.4 8.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a></td>
+    </tr><tr>
+      <th scope="row" class="grid__name">runpod</th>
+      <td class="num u">EU-RO-1</td>
+      <td class="ta-c"><span class="badge badge--t1" title="Verified transacted price">L1</span></td>
+      <td class="ta-r num strong">3.29</td>
+      <td class="ta-r"><span class="delta delta--up"><svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M8 13V3.6M3.9 7.6 8 3.3l4.1 4.3" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="num">+1.20%</span></span></td>
+      <td class="ta-r">
+        <span class="wcell"><span class="num">26.5%</span>
+        <span class="meter" aria-hidden="true"><span class="meter__fill" style="width:100.0%"></span></span></span>
+      </td>
+      <td class="ta-r num">3,940</td>
+      <td class="grid__flags"><span class="flag" title="Settlement-grade transacted feed">SETTLE</span></td>
+      <td class="ta-r"><a class="srclink" href="#src-runpod">API<svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M6.5 3H3.2v9.8H13V9.5M9.4 2.6H13.4V6.6M13.2 2.8 7.4 8.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a></td>
+    </tr><tr>
+      <th scope="row" class="grid__name">nebius</th>
+      <td class="num u">NL-AMS</td>
+      <td class="ta-c"><span class="badge badge--t2" title="Published price with observed fills">L2</span></td>
+      <td class="ta-r num strong">3.85</td>
+      <td class="ta-r"><span class="delta delta--down"><svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M8 3v9.4M3.9 8.4 8 12.7l4.1-4.3" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="num">−0.40%</span></span></td>
+      <td class="ta-r">
+        <span class="wcell"><span class="num">19.5%</span>
+        <span class="meter" aria-hidden="true"><span class="meter__fill" style="width:73.6%"></span></span></span>
+      </td>
+      <td class="ta-r num">2,117</td>
+      <td class="grid__flags"><span class="u">&#8212;</span></td>
+      <td class="ta-r"><a class="srclink" href="#src-nebius">API<svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M6.5 3H3.2v9.8H13V9.5M9.4 2.6H13.4V6.6M13.2 2.8 7.4 8.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a></td>
+    </tr><tr>
+      <th scope="row" class="grid__name">gcp</th>
+      <td class="num u">EU-W4</td>
+      <td class="ta-c"><span class="badge badge--t3" title="List price only">L3</span></td>
+      <td class="ta-r num strong">5.44</td>
+      <td class="ta-r"><span class="delta delta--flat"><svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M3 8h10" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg><span class="num">±0.00%</span></span></td>
+      <td class="ta-r">
+        <span class="wcell"><span class="num">4.0%</span>
+        <span class="meter" aria-hidden="true"><span class="meter__fill" style="width:15.1%"></span></span></span>
+      </td>
+      <td class="ta-r num">96</td>
+      <td class="grid__flags"><span class="flag" title="Weight limited by the L3 hyperscaler cap">CAP</span><span class="flag" title="List price, no observed fills">LIST</span></td>
+      <td class="ta-r"><a class="srclink" href="#src-gcp">API<svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M6.5 3H3.2v9.8H13V9.5M9.4 2.6H13.4V6.6M13.2 2.8 7.4 8.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a></td>
+    </tr><tr>
+      <th scope="row" class="grid__name">aws</th>
+      <td class="num u">EU-N-1</td>
+      <td class="ta-c"><span class="badge badge--t3" title="List price only">L3</span></td>
+      <td class="ta-r num strong">7.36</td>
+      <td class="ta-r"><span class="delta delta--flat"><svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M3 8h10" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg><span class="num">±0.00%</span></span></td>
+      <td class="ta-r">
+        <span class="wcell"><span class="num">2.5%</span>
+        <span class="meter" aria-hidden="true"><span class="meter__fill" style="width:9.4%"></span></span></span>
+      </td>
+      <td class="ta-r num">96</td>
+      <td class="grid__flags"><span class="flag" title="Weight limited by the L3 hyperscaler cap">CAP</span><span class="flag" title="List price, no observed fills">LIST</span></td>
+      <td class="ta-r"><a class="srclink" href="#src-aws">API<svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M6.5 3H3.2v9.8H13V9.5M9.4 2.6H13.4V6.6M13.2 2.8 7.4 8.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a></td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <th scope="row" colspan="3">Tier&#8209;weighted index</th>
+      <td class="ta-r num strong">3.29</td>
+      <td class="ta-r"><span class="delta delta--up"><svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M8 13V3.6M3.9 7.6 8 3.3l4.1 4.3" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="num">+1.20%</span></span></td>
+      <td class="ta-r num strong">100.0%</td>
+      <td class="ta-r num">7,869</td>
+      <td colspan="2" class="u">Winsorised 5th/95th <sup class="fnref">2</sup></td>
+    </tr>
+  </tfoot>
+</table>
+</div></div>
+  </section>
+
+  <!-- ===== 5. CHIPS & BADGES ===== -->
+  <section class="section" aria-labelledby="s-chips">
+    <div class="section__head"><div><h2 class="section__h" id="s-chips">5 &#183; Status chips, tier badges, flags</h2>
+      <p class="section__dek">Every status ships an icon <em>and</em> a label. On the light surface the warning and serious steps sit
+      below 3:1 against white by design &#8212; the icon and the word are the mitigation, so colour never carries the meaning alone.</p></div></div>
+    <div class="two">
+      <div class="card"><div class="card__head"><h3 class="card__title">Status</h3></div><div class="card__body stack">
+        <div class="row"><span class="chip chip--good"><svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M2.5 8.5 6.2 12.2 13.5 4.4" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Index live</span></span><span class="chip chip--warning"><svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M8 1.6 15.2 14H0.8Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 6v3.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="8" cy="11.9" r="1" fill="currentColor"/></svg><span>Source stale</span></span><span class="chip chip--serious"><svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M8 1 15 8 8 15 1 8Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 4.6v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="8" cy="11.2" r="1" fill="currentColor"/></svg><span>Sub&#8209;index degraded</span></span><span class="chip chip--critical"><svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M5.4 1h5.2L14.9 5.4v5.2L10.6 15H5.4L1.1 10.6V5.4Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M5.9 5.9 10.1 10.1M10.1 5.9 5.9 10.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>Publication halted</span></span><span class="chip chip--neutral"><span>Awaiting fix</span></span></div>
+        <p class="prose" style="margin:0"><span class="spec">Reserved meaning</span>These four steps are fixed in both themes and are never reused as a chart series. A series colour is never used for status.</p>
+      </div></div>
+      <div class="card"><div class="card__head"><h3 class="card__title">Tier &amp; flags</h3></div><div class="card__body stack">
+        <div class="row"><span class="badge badge--t1" title="Verified transacted price">L1</span> <span class="u">Verified transacted price</span></div>
+        <div class="row"><span class="badge badge--t2" title="Published price with observed fills">L2</span> <span class="u">Published price, observed fills</span></div>
+        <div class="row"><span class="badge badge--t3" title="List price only">L3</span> <span class="u">List price only</span></div>
+        <div class="row"><span class="flag" title="Winsorised at the 5th percentile">TRIM</span><span class="flag" title="Weight limited by the L3 hyperscaler cap">CAP</span><span class="flag" title="List price, no observed fills">LIST</span><span class="flag" title="Settlement-grade transacted feed">SETTLE</span></div>
+        <p class="prose" style="margin:0"><span class="spec">Ordinal, not categorical</span>Tier order <em>is</em> the meaning, so it is encoded by ink weight and wash lightness &#8212; not by three unrelated hues. Only L1 earns the accent.</p>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- ===== 6. BASIS RIBBON ===== -->
+  <section class="section" aria-labelledby="s-ribbon">
+    <div class="section__head"><div><h2 class="section__h" id="s-ribbon">6 &#183; The basis ribbon</h2>
+      <p class="section__dek">The signature device. A diverging spread series: warm above the line is a European premium, cool below it a
+      European discount, and the midpoint is a grey so &#8220;flat&#8221; reads as nothing happening. Sign is carried by direction as
+      well as hue, magnitude by height as well as bin colour &#8212; so nothing here is colour&#8209;alone.</p></div></div>
+    <div class="card">
+      <div class="card__head">
+        <div><h3 class="card__title">Sovereign basis</h3><p class="card__sub">EU&#8209;CRI&#8209;SOV less EU&#8209;CRI&#8209;H100&#8209;EEA &#183; USD/GPU&#8209;hr &#183; 30 sessions</p></div>
+        <span class="card__meta num">Latest +0.42 &#183; 30d high +0.44</span>
+      </div>
+      <div class="card__body">
+        <div class="scroll-x">
+  <svg class="chart" viewBox="0 0 880 210" role="group"
+       aria-label="Sovereign basis, EU-CRI-SOV less EU-CRI-H100-EEA, 30 sessions to 15 August 2026. Moves from a 0.11 dollar discount to a 0.42 dollar premium.">
+    <g aria-hidden="true"><line class="ch-grid" x1="8" y1="37.4" x2="816" y2="37.4"/><line class="ch-grid" x1="8" y1="68.2" x2="816" y2="68.2"/><line class="ch-grid" x1="8" y1="129.8" x2="816" y2="129.8"/><text class="ch-tick" x="826" y="41.4">+0.40</text><text class="ch-tick" x="826" y="72.2">+0.20</text><text class="ch-tick" x="826" y="103">±0.00</text><text class="ch-tick" x="826" y="133.8">−0.20</text>
+      <text class="ch-tick ch-tick--pole" x="8" y="14">EU PREMIUM &#8593;</text>
+      <text class="ch-tick ch-tick--pole" x="8" y="196">EU DISCOUNT &#8595;</text>
+    </g>
+    <g class="bcols"><g class="bp" tabindex="0" role="img" aria-label="17 Jul 2026: EU discount 0.11 dollars per GPU-hour"><path class="bcol b-cool-2" d="M14 99 L14 112.9 Q14 115.9 17 115.9 L26 115.9 Q29 115.9 29 112.9 L29 99 Z"/><g class="bp-tip" transform="translate(39 119.9)"><rect class="hp-box" width="134" height="46" rx="3"/><text class="hp-val" x="11" y="22">−0.11</text><text class="hp-lab" x="11" y="37">17 Jul &#183; EU discount</text></g><rect class="bp-hit" x="8" y="22" width="26.9" height="154"/></g>
+        <g class="bp" tabindex="0" role="img" aria-label="18 Jul 2026: EU discount 0.08 dollars per GPU-hour"><path class="bcol b-cool-1" d="M40.9 99 L40.9 108.3 Q40.9 111.3 43.9 111.3 L52.9 111.3 Q55.9 111.3 55.9 108.3 L55.9 99 Z"/><g class="bp-tip" transform="translate(65.9 115.3)"><rect class="hp-box" width="134" height="46" rx="3"/><text class="hp-val" x="11" y="22">−0.08</text><text class="hp-lab" x="11" y="37">18 Jul &#183; EU discount</text></g><rect class="bp-hit" x="34.9" y="22" width="26.9" height="154"/></g>
+        <g class="bp" tabindex="0" role="img" aria-label="19 Jul 2026: EU discount 0.05 dollars per GPU-hour"><path class="bcol b-cool-1" d="M67.8 99 L67.8 103.7 Q67.8 106.7 70.8 106.7 L79.8 106.7 Q82.8 106.7 82.8 103.7 L82.8 99 Z"/><g class="bp-tip" transform="translate(92.8 110.7)"><rect class="hp-box" width="134" height="46" rx="3"/><text class="hp-val" x="11" y="22">−0.05</text><text class="hp-lab" x="11" y="37">19 Jul &#183; EU discount</text></g><rect class="bp-hit" x="61.9" y="22" width="26.9" height="154"/></g>
+        <g class="bp" tabindex="0" role="img" aria-label="20 Jul 2026: EU discount 0.02 dollars per GPU-hour"><path class="bcol b-cool-1" d="M94.8 99 L94.8 100.5 Q94.8 102.1 96.3 102.1 L108.3 102.1 Q109.8 102.1 109.8 100.5 L109.8 99 Z"/><g class="bp-tip" transform="translate(119.8 106.1)"><rect class="hp-box" width="134" height="46" rx="3"/><text class="hp-val" x="11" y="22">−0.02</text><text class="hp-lab" x="11" y="37">20 Jul &#183; EU discount</text></g><rect class="bp-hit" x="88.8" y="22" width="26.9" height="154"/></g>
+        <g class="bp" tabindex="0" role="img" aria-label="21 Jul 2026: EU premium 0.01 dollars per GPU-hour"><path class="bcol b-warm-1" d="M121.7 99 L121.7 98 Q121.7 97 122.7 97 L135.7 97 Q136.7 97 136.7 98 L136.7 99 Z"/><g class="bp-tip" transform="translate(146.7 47)"><rect class="hp-box" width="134" height="46" rx="3"/><text class="hp-val" x="11" y="22">+0.01</text><text class="hp-lab" x="11" y="37">21 Jul &#183; EU premium</text></g><rect class="bp-hit" x="115.7" y="22" width="26.9" height="154"/></g>
+        <g class="bp" tabindex="0" role="img" aria-label="22 Jul 2026: EU premium 0.04 dollars per GPU-hour"><path class="bcol b-warm-1" d="M148.6 99 L148.6 95.8 Q148.6 92.8 151.6 92.8 L160.6 92.8 Q163.6 92.8 163.6 95.8 L163.6 99 Z"/><g class="bp-tip" transform="translate(173.6 42.8)"><rect class="hp-box" width="134" height="46" rx="3"/><text class="hp-val" x="11" y="22">+0.04</text><text class="hp-lab" x="11" y="37">22 Jul &#183; EU premium</text></g><rect class="bp-hit" x="142.7" y="22" width="26.9" height="154"/></g>
+        <g class="bp" tabindex="0" role="img" aria-label="23 Jul 2026: EU premium 0.02 dollars per GPU-hour"><path class="bcol b-warm-1" d="M175.6 99 L175.6 97.5 Q175.6 95.9 177.1 95.9 L189.1 95.9 Q190.6 95.9 190.6 97.5 L190.6 99 Z"/><g class="bp-tip" transform="translate(200.6 45.9)"><rect class="hp-box" width="134" height="46" rx="3"/><text class="hp-val" x="11" y="22">+0.02</text><text class="hp-lab" x="11" y="37">23 Jul &#183; EU premium</text></g><rect class="bp-hit" x="169.6" y="22" width="26.9" height="154"/></g>
+        <g class="bp" tabindex="0" role="img" aria-label="24 Jul 2026: EU discount 0.03 dollars per GPU-hour"><path class="bcol b-cool-1" d="M202.5 99 L202.5 101.3 Q202.5 103.6 204.8 103.6 L215.2 103.6 Q217.5 103.6 217.5 101.3 L217.5 99 Z"/><g class="bp-tip" transform="translate(227.5 107.6)"><rect class="hp-box" width="134" height="46" rx="3"/><text class="hp-val" x="11" y="22">−0.03</text><text class="hp-lab" x="11" y="37">24 Jul &#183; EU discount</text></g><rect class="bp-hit" x="196.5" y="22" width="26.9" height="154"/></g>
+        <g class="bp" tabindex="0" role="img" aria-label="25 Jul 2026: EU discount 0.06 dollars per GPU-hour"><path class="bcol b-cool-1" d="M229.4 99 L229.4 105.2 Q229.4 108.2 232.4 108.2 L241.4 108.2 Q244.4 108.2 244.4 105.2 L244.4 99 Z"/><g class="bp-tip" transform="translate(254.4 112.2)"><rect class="hp-box" width="134" height="46" rx="3"/><text class="hp-val" x="11" y="22">−0.06</text><text class="hp-lab" x="11" y="37">25 Jul &#183; EU discount</text></g><rect class="bp-hit" x="223.5" y="22" width="26.9" height="154"/></g>
+        <g class="bp" tabindex="0" role="img" aria-label="26 Jul 2026: EU discount 0.01 dollars per GPU-hour"><path class="bcol b-cool-1" d="M256.4 99 L256.4 100 Q256.4 101 257.4 101 L270.4 101 Q271.4 101 271.4 100 L271.4 99 Z"/><g class="bp-tip" transform="translate(281.4 105)"><rect class="hp-box" width="134" height="46" rx="3"/><text class="hp-val" x="11" y="22">−0.01</text><text class="hp-lab" x="11" y="37">26 Jul &#183; EU discount</text></g><rect class="bp-hit" x="250.4" y="22" width="26.9" height="154"/></g>
+        <g class="bp" tabindex="0" role="img" aria-label="27 Jul 2026: EU premium 0.05 dollars per GPU-hour"><path class="bcol b-warm-1" d="M283.3 99 L283.3 94.3 Q283.3 91.3 286.3 91.3 L295.3 91.3 Q298.3 91.3 298.3 94.3 L298.3 99 Z"/><g class="bp-tip" transform="translate(308.3 41.3)"><rect class="hp-box" width="134" height="46" rx="3"/><text class="hp-val" x="11" y="22">+0.05</text><text class="hp-lab" x="11" y="37">27 Jul &#183; EU premium</text></g><rect class="bp-hit" x="277.3" y="22" width="26.9" height="154"/></g>
+        <g class="bp" tabindex="0" role="img" aria-label="28 Jul 2026: EU premium 0.09 dollars per GPU-hour"><path class="bcol b-warm-1" d="M310.2 99 L310.2 88.1 Q310.2 85.1 313.2 85.1 L322.2 85.1 Q325.2 85.1 325.2 88.1 L325.2 99 Z"/><g class="bp-tip" transform="translate(335.2 35.1)"><rect class="hp-box" width="134" height="46" rx="3"/><text class="hp-val" x="11" y="22">+0.09</text><text class="hp-lab" x="11" y="37">28 Jul &#183; EU premium</text></g><rect class="bp-hit" x="304.3" y="22" width="26.9" height="154"/></g>
+        <g class="bp" tabindex="0" role="img" aria-label="29 Jul 2026: EU premium 0.13 dollars per GPU-hour"><path class="bcol b-warm-2" d="M337.2 99 L337.2 82 Q337.2 79 340.2 79 L349.2 79 Q352.2 79 352.2 82 L352.2 99 Z"/><g class="bp-tip" transform="translate(362.2 29)"><rect class="hp-box" width="134" height="46" rx="3"/><text class="hp-val" x="11" y="22">+0.13</text><text class="hp-lab" x="11" y="37">29 Jul &#183; EU premium</text></g><rect class="bp-hit" x="331.2" y="22" width="26.9" height="154"/></g>
+        <g class="bp" tabindex="0" role="img" aria-label="30 Jul 2026: EU premium 0.11 dollars per GPU-hour"><path class="bcol b-warm-2" d="M364.1 99 L364.1 85.1 Q364.1 82.1 367.1 82.1 L376.1 82.1 Q379.1 82.1 379.1 85.1 L379.1 99 Z"/><g class="bp-tip" transform="translate(389.1 32.1)"><rect class="hp-box" width="134" height="46" rx="3"/><text class="hp-val" x="11" y="22">+0.11</text><text class="hp-lab" x="11" y="37">30 Jul &#183; EU premium</text></g><rect class="bp-hit" x="358.1" y="22" width="26.9" height="154"/></g>
+        <g class="bp" tabindex="0" role="img" aria-label="31 Jul 2026: EU premium 0.07 dollars per GPU-hour"><path class="bcol b-warm-1" d="M391 99 L391 91.2 Q391 88.2 394 88.2 L403 88.2 Q406 88.2 406 91.2 L406 99 Z"/><g class="bp-tip" transform="translate(416 38.2)"><rect class="hp-box" width="134" height="46" rx="3"/><text class="hp-val" x="11" y="22">+0.07</text><text class="hp-lab" x="11" y="37">31 Jul &#183; EU premium</text></g><rect class="bp-hit" x="385.1" y="22" width="26.9" height="154"/></g>
+        <g class="bp" tabindex="0" role="img" aria-label="1 Aug 2026: EU premium 0.03 dollars per GPU-hour"><path class="bcol b-warm-1" d="M418 99 L418 96.7 Q418 94.4 420.3 94.4 L430.7 94.4 Q433 94.4 433 96.7 L433 99 Z"/><g class="bp-tip" transform="translate(443 44.4)"><rect class="hp-box" width="134" height="46" rx="3"/><text class="hp-val" x="11" y="22">+0.03</text><text class="hp-lab" x="11" y="37">1 Aug &#183; EU premium</text></g><rect class="bp-hit" x="412" y="22" width="26.9" height="154"/></g>
+        <g class="bp" tabindex="0" role="img" aria-label="2 Aug 2026: EU premium 0.08 dollars per GPU-hour"><path class="bcol b-warm-1" d="M444.9 99 L444.9 89.7 Q444.9 86.7 447.9 86.7 L456.9 86.7 Q459.9 86.7 459.9 89.7 L459.9 99 Z"/><g class="bp-tip" transform="translate(469.9 36.7)"><rect class="hp-box" width="134" height="46" rx="3"/><text class="hp-val" x="11" y="22">+0.08</text><text class="hp-lab" x="11" y="37">2 Aug &#183; EU premium</text></g><rect class="bp-hit" x="438.9" y="22" width="26.9" height="154"/></g>
+        <g class="bp" tabindex="0" role="img" aria-label="3 Aug 2026: EU premium 0.14 dollars per GPU-hour"><path class="bcol b-warm-2" d="M471.8 99 L471.8 80.4 Q471.8 77.4 474.8 77.4 L483.8 77.4 Q486.8 77.4 486.8 80.4 L486.8 99 Z"/><g class="bp-tip" transform="translate(496.8 27.4)"><rect class="hp-box" width="134" height="46" rx="3"/><text class="hp-val" x="11" y="22">+0.14</text><text class="hp-lab" x="11" y="37">3 Aug &#183; EU premium</text></g><rect class="bp-hit" x="465.9" y="22" width="26.9" height="154"/></g>
+        <g class="bp" tabindex="0" role="img" aria-label="4 Aug 2026: EU premium 0.19 dollars per GPU-hour"><path class="bcol b-warm-2" d="M498.8 99 L498.8 72.7 Q498.8 69.7 501.8 69.7 L510.8 69.7 Q513.8 69.7 513.8 72.7 L513.8 99 Z"/><g class="bp-tip" transform="translate(523.8 24)"><rect class="hp-box" width="134" height="46" rx="3"/><text class="hp-val" x="11" y="22">+0.19</text><text class="hp-lab" x="11" y="37">4 Aug &#183; EU premium</text></g><rect class="bp-hit" x="492.8" y="22" width="26.9" height="154"/></g>
+        <g class="bp" tabindex="0" role="img" aria-label="5 Aug 2026: EU premium 0.22 dollars per GPU-hour"><path class="bcol b-warm-3" d="M525.7 99 L525.7 68.1 Q525.7 65.1 528.7 65.1 L537.7 65.1 Q540.7 65.1 540.7 68.1 L540.7 99 Z"/><g class="bp-tip" transform="translate(550.7 24)"><rect class="hp-box" width="134" height="46" rx="3"/><text class="hp-val" x="11" y="22">+0.22</text><text class="hp-lab" x="11" y="37">5 Aug &#183; EU premium</text></g><rect class="bp-hit" x="519.7" y="22" width="26.9" height="154"/></g>
+        <g class="bp" tabindex="0" role="img" aria-label="6 Aug 2026: EU premium 0.18 dollars per GPU-hour"><path class="bcol b-warm-2" d="M552.6 99 L552.6 74.3 Q552.6 71.3 555.6 71.3 L564.6 71.3 Q567.6 71.3 567.6 74.3 L567.6 99 Z"/><g class="bp-tip" transform="translate(406.6 24)"><rect class="hp-box" width="134" height="46" rx="3"/><text class="hp-val" x="11" y="22">+0.18</text><text class="hp-lab" x="11" y="37">6 Aug &#183; EU premium</text></g><rect class="bp-hit" x="546.7" y="22" width="26.9" height="154"/></g>
+        <g class="bp" tabindex="0" role="img" aria-label="7 Aug 2026: EU premium 0.24 dollars per GPU-hour"><path class="bcol b-warm-3" d="M579.6 99 L579.6 65 Q579.6 62 582.6 62 L591.6 62 Q594.6 62 594.6 65 L594.6 99 Z"/><g class="bp-tip" transform="translate(433.6 24)"><rect class="hp-box" width="134" height="46" rx="3"/><text class="hp-val" x="11" y="22">+0.24</text><text class="hp-lab" x="11" y="37">7 Aug &#183; EU premium</text></g><rect class="bp-hit" x="573.6" y="22" width="26.9" height="154"/></g>
+        <g class="bp" tabindex="0" role="img" aria-label="8 Aug 2026: EU premium 0.29 dollars per GPU-hour"><path class="bcol b-warm-3" d="M606.5 99 L606.5 57.3 Q606.5 54.3 609.5 54.3 L618.5 54.3 Q621.5 54.3 621.5 57.3 L621.5 99 Z"/><g class="bp-tip" transform="translate(460.5 24)"><rect class="hp-box" width="134" height="46" rx="3"/><text class="hp-val" x="11" y="22">+0.29</text><text class="hp-lab" x="11" y="37">8 Aug &#183; EU premium</text></g><rect class="bp-hit" x="600.5" y="22" width="26.9" height="154"/></g>
+        <g class="bp" tabindex="0" role="img" aria-label="9 Aug 2026: EU premium 0.26 dollars per GPU-hour"><path class="bcol b-warm-3" d="M633.4 99 L633.4 62 Q633.4 59 636.4 59 L645.4 59 Q648.4 59 648.4 62 L648.4 99 Z"/><g class="bp-tip" transform="translate(487.4 24)"><rect class="hp-box" width="134" height="46" rx="3"/><text class="hp-val" x="11" y="22">+0.26</text><text class="hp-lab" x="11" y="37">9 Aug &#183; EU premium</text></g><rect class="bp-hit" x="627.5" y="22" width="26.9" height="154"/></g>
+        <g class="bp" tabindex="0" role="img" aria-label="10 Aug 2026: EU premium 0.31 dollars per GPU-hour"><path class="bcol b-warm-3" d="M660.4 99 L660.4 54.3 Q660.4 51.3 663.4 51.3 L672.4 51.3 Q675.4 51.3 675.4 54.3 L675.4 99 Z"/><g class="bp-tip" transform="translate(514.4 24)"><rect class="hp-box" width="134" height="46" rx="3"/><text class="hp-val" x="11" y="22">+0.31</text><text class="hp-lab" x="11" y="37">10 Aug &#183; EU premium</text></g><rect class="bp-hit" x="654.4" y="22" width="26.9" height="154"/></g>
+        <g class="bp" tabindex="0" role="img" aria-label="11 Aug 2026: EU premium 0.36 dollars per GPU-hour"><path class="bcol b-warm-4" d="M687.3 99 L687.3 46.6 Q687.3 43.6 690.3 43.6 L699.3 43.6 Q702.3 43.6 702.3 46.6 L702.3 99 Z"/><g class="bp-tip" transform="translate(541.3 24)"><rect class="hp-box" width="134" height="46" rx="3"/><text class="hp-val" x="11" y="22">+0.36</text><text class="hp-lab" x="11" y="37">11 Aug &#183; EU premium</text></g><rect class="bp-hit" x="681.3" y="22" width="26.9" height="154"/></g>
+        <g class="bp" tabindex="0" role="img" aria-label="12 Aug 2026: EU premium 0.33 dollars per GPU-hour"><path class="bcol b-warm-4" d="M714.2 99 L714.2 51.2 Q714.2 48.2 717.2 48.2 L726.2 48.2 Q729.2 48.2 729.2 51.2 L729.2 99 Z"/><g class="bp-tip" transform="translate(568.2 24)"><rect class="hp-box" width="134" height="46" rx="3"/><text class="hp-val" x="11" y="22">+0.33</text><text class="hp-lab" x="11" y="37">12 Aug &#183; EU premium</text></g><rect class="bp-hit" x="708.3" y="22" width="26.9" height="154"/></g>
+        <g class="bp" tabindex="0" role="img" aria-label="13 Aug 2026: EU premium 0.38 dollars per GPU-hour"><path class="bcol b-warm-4" d="M741.2 99 L741.2 43.5 Q741.2 40.5 744.2 40.5 L753.2 40.5 Q756.2 40.5 756.2 43.5 L756.2 99 Z"/><g class="bp-tip" transform="translate(595.2 24)"><rect class="hp-box" width="134" height="46" rx="3"/><text class="hp-val" x="11" y="22">+0.38</text><text class="hp-lab" x="11" y="37">13 Aug &#183; EU premium</text></g><rect class="bp-hit" x="735.2" y="22" width="26.9" height="154"/></g>
+        <g class="bp" tabindex="0" role="img" aria-label="14 Aug 2026: EU premium 0.44 dollars per GPU-hour"><path class="bcol b-warm-4" d="M768.1 99 L768.1 34.2 Q768.1 31.2 771.1 31.2 L780.1 31.2 Q783.1 31.2 783.1 34.2 L783.1 99 Z"/><g class="bp-tip" transform="translate(622.1 24)"><rect class="hp-box" width="134" height="46" rx="3"/><text class="hp-val" x="11" y="22">+0.44</text><text class="hp-lab" x="11" y="37">14 Aug &#183; EU premium</text></g><rect class="bp-hit" x="762.1" y="22" width="26.9" height="154"/></g>
+        <g class="bp" tabindex="0" role="img" aria-label="15 Aug 2026: EU premium 0.42 dollars per GPU-hour"><path class="bcol b-warm-4" d="M795 99 L795 37.3 Q795 34.3 798 34.3 L807 34.3 Q810 34.3 810 37.3 L810 99 Z"/><g class="bp-tip" transform="translate(649 24)"><rect class="hp-box" width="134" height="46" rx="3"/><text class="hp-val" x="11" y="22">+0.42</text><text class="hp-lab" x="11" y="37">15 Aug &#183; EU premium</text></g><rect class="bp-hit" x="789.1" y="22" width="26.9" height="154"/></g></g>
+    <line class="b-zero" x1="8" y1="99" x2="816" y2="99"/>
+    <g aria-hidden="true">
+      <line class="ch-marker-rule" x1="8" y1="34.3" x2="792" y2="34.3"/>
+      <text class="ch-cur" x="802.5" y="21.2" text-anchor="middle">+0.42</text>
+      <text class="ch-tick" x="816" y="196" text-anchor="end">17 Jul &#8211; 15 Aug 2026</text>
+    </g>
+  </svg>
+</div>
+        
+<div class="divlegend" role="img" aria-label="Scale: cool blue is an EU discount, grey is flat, warm orange is an EU premium; four bins per arm from under 0.10 to 0.32 dollars and above.">
+  <span class="divlegend__pole">EU discount</span>
+  <span class="divlegend__ramp" aria-hidden="true">
+    <i class="b-cool-4"></i><i class="b-cool-3"></i><i class="b-cool-2"></i><i class="b-cool-1"></i><i class="b-mid"></i><i class="b-warm-1"></i><i class="b-warm-2"></i><i class="b-warm-3"></i><i class="b-warm-4"></i>
+  </span>
+  <span class="divlegend__pole">EU premium</span>
+  <span class="divlegend__scale num" aria-hidden="true">&#8722;0.32 &#183; &#8722;0.20 &#183; &#8722;0.10 &#183; 0 &#183; +0.10 &#183; +0.20 &#183; +0.32</span>
+</div>
+        <details class="tableview"><summary>Table view &#8212; 30 sessions</summary>
+          <div class="tableview__scroll"><table><thead><tr><th>Session</th><th class="ta-r">Basis</th><th>Side</th><th class="ta-r">Bin</th></tr></thead><tbody><tr><td class="num">17 Jul 2026</td><td class="num ta-r">−0.11</td><td>EU discount</td><td class="num ta-r">bin 2</td></tr><tr><td class="num">18 Jul 2026</td><td class="num ta-r">−0.08</td><td>EU discount</td><td class="num ta-r">bin 1</td></tr><tr><td class="num">19 Jul 2026</td><td class="num ta-r">−0.05</td><td>EU discount</td><td class="num ta-r">bin 1</td></tr><tr><td class="num">20 Jul 2026</td><td class="num ta-r">−0.02</td><td>EU discount</td><td class="num ta-r">bin 1</td></tr><tr><td class="num">21 Jul 2026</td><td class="num ta-r">+0.01</td><td>EU premium</td><td class="num ta-r">bin 1</td></tr><tr><td class="num">22 Jul 2026</td><td class="num ta-r">+0.04</td><td>EU premium</td><td class="num ta-r">bin 1</td></tr><tr><td class="num">23 Jul 2026</td><td class="num ta-r">+0.02</td><td>EU premium</td><td class="num ta-r">bin 1</td></tr><tr><td class="num">24 Jul 2026</td><td class="num ta-r">−0.03</td><td>EU discount</td><td class="num ta-r">bin 1</td></tr><tr><td class="num">25 Jul 2026</td><td class="num ta-r">−0.06</td><td>EU discount</td><td class="num ta-r">bin 1</td></tr><tr><td class="num">26 Jul 2026</td><td class="num ta-r">−0.01</td><td>EU discount</td><td class="num ta-r">bin 1</td></tr><tr><td class="num">27 Jul 2026</td><td class="num ta-r">+0.05</td><td>EU premium</td><td class="num ta-r">bin 1</td></tr><tr><td class="num">28 Jul 2026</td><td class="num ta-r">+0.09</td><td>EU premium</td><td class="num ta-r">bin 1</td></tr><tr><td class="num">29 Jul 2026</td><td class="num ta-r">+0.13</td><td>EU premium</td><td class="num ta-r">bin 2</td></tr><tr><td class="num">30 Jul 2026</td><td class="num ta-r">+0.11</td><td>EU premium</td><td class="num ta-r">bin 2</td></tr><tr><td class="num">31 Jul 2026</td><td class="num ta-r">+0.07</td><td>EU premium</td><td class="num ta-r">bin 1</td></tr><tr><td class="num">1 Aug 2026</td><td class="num ta-r">+0.03</td><td>EU premium</td><td class="num ta-r">bin 1</td></tr><tr><td class="num">2 Aug 2026</td><td class="num ta-r">+0.08</td><td>EU premium</td><td class="num ta-r">bin 1</td></tr><tr><td class="num">3 Aug 2026</td><td class="num ta-r">+0.14</td><td>EU premium</td><td class="num ta-r">bin 2</td></tr><tr><td class="num">4 Aug 2026</td><td class="num ta-r">+0.19</td><td>EU premium</td><td class="num ta-r">bin 2</td></tr><tr><td class="num">5 Aug 2026</td><td class="num ta-r">+0.22</td><td>EU premium</td><td class="num ta-r">bin 3</td></tr><tr><td class="num">6 Aug 2026</td><td class="num ta-r">+0.18</td><td>EU premium</td><td class="num ta-r">bin 2</td></tr><tr><td class="num">7 Aug 2026</td><td class="num ta-r">+0.24</td><td>EU premium</td><td class="num ta-r">bin 3</td></tr><tr><td class="num">8 Aug 2026</td><td class="num ta-r">+0.29</td><td>EU premium</td><td class="num ta-r">bin 3</td></tr><tr><td class="num">9 Aug 2026</td><td class="num ta-r">+0.26</td><td>EU premium</td><td class="num ta-r">bin 3</td></tr><tr><td class="num">10 Aug 2026</td><td class="num ta-r">+0.31</td><td>EU premium</td><td class="num ta-r">bin 3</td></tr><tr><td class="num">11 Aug 2026</td><td class="num ta-r">+0.36</td><td>EU premium</td><td class="num ta-r">bin 4</td></tr><tr><td class="num">12 Aug 2026</td><td class="num ta-r">+0.33</td><td>EU premium</td><td class="num ta-r">bin 4</td></tr><tr><td class="num">13 Aug 2026</td><td class="num ta-r">+0.38</td><td>EU premium</td><td class="num ta-r">bin 4</td></tr><tr><td class="num">14 Aug 2026</td><td class="num ta-r">+0.44</td><td>EU premium</td><td class="num ta-r">bin 4</td></tr><tr><td class="num">15 Aug 2026</td><td class="num ta-r">+0.42</td><td>EU premium</td><td class="num ta-r">bin 4</td></tr></tbody></table></div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 7. TIME SERIES ===== -->
+  <section class="section" aria-labelledby="s-chart">
+    <div class="section__head"><div><h2 class="section__h" id="s-chart">7 &#183; Time&#8209;series chart</h2>
+      <p class="section__dek">Hand&#8209;rolled SVG, no libraries. Charts are greyscale by default: the categorical palette only comes out
+      when two or more series genuinely need identity. A single series needs no legend &#8212; the title says what is plotted.
+      Hover or tab through the plot for the crosshair readout; it is CSS&#8209;only and works with scripting off.</p></div></div>
+    <div class="card">
+      <div class="card__head">
+        <div><h3 class="card__title">EU&#8209;CRI&#8209;H100&#8209;EEA</h3><p class="card__sub">USD per GPU&#8209;hour &#183; 30 sessions to 15 Aug 2026 &#183; 12:00 UTC fixes</p></div>
+        <span class="card__meta num">Last 3.29 &#183; high 3.44 &#183; low 3.11</span>
+      </div>
+      <div class="card__body">
+        <div class="scroll-x">
+  <svg class="chart" viewBox="0 0 880 300" role="group"
+       aria-label="EU-CRI-H100-EEA, 30 sessions to 15 August 2026. Ranges 3.11 to 3.44 US dollars per GPU-hour; current 3.29.">
+    <g aria-hidden="true"><line class="ch-grid" x1="8" y1="16" x2="816" y2="16"/><line class="ch-grid" x1="8" y1="79" x2="816" y2="79"/><line class="ch-grid" x1="8" y1="142" x2="816" y2="142"/><line class="ch-grid" x1="8" y1="205" x2="816" y2="205"/><line class="ch-grid" x1="8" y1="268" x2="816" y2="268"/><line class="ch-axis" x1="8" y1="268" x2="816" y2="268"/></g>
+    <path class="ch-line" d="M8 95.8 L35.9 83.2 L63.7 104.2 L91.6 116.8 L119.4 108.4 L147.3 129.4 L175.2 142 L203 137.8 L230.9 154.6 L258.8 175.6 L286.6 192.4 L314.5 179.8 L342.3 163 L370.2 150.4 L398.1 167.2 L425.9 188.2 L453.8 205 L481.7 217.6 L509.5 200.8 L537.4 184 L565.2 171.4 L593.1 188.2 L621 209.2 L648.8 221.8 L676.7 213.4 L704.6 196.6 L732.4 175.6 L760.3 158.8 L788.1 137.8 L816 146.2"/>
+    <g aria-hidden="true"><text class="ch-tick" x="826" y="20">$3.60</text><text class="ch-tick" x="826" y="83">$3.45</text><text class="ch-tick" x="826" y="146">$3.30</text><text class="ch-tick" x="826" y="209">$3.15</text><text class="ch-tick" x="826" y="272">$3.00</text><text class="ch-tick" x="8" y="288" text-anchor="start">17 Jul</text><text class="ch-tick" x="203" y="288" text-anchor="middle">24 Jul</text><text class="ch-tick" x="398.1" y="288" text-anchor="middle">31 Jul</text><text class="ch-tick" x="593.1" y="288" text-anchor="middle">7 Aug</text><text class="ch-tick" x="816" y="288" text-anchor="end">15 Aug</text><text class="ch-note" x="648.8" y="239.8" text-anchor="middle">30-day low $3.11</text><text class="ch-cur" x="808" y="134.2" text-anchor="end">$3.29</text></g>
+    <line class="ch-marker-rule" x1="8" y1="146.2" x2="816" y2="146.2"/>
+    <circle class="ch-marker-ring" cx="816" cy="146.2" r="6"/>
+    <circle class="ch-marker" cx="816" cy="146.2" r="4"/>
+    <g class="hp-layer">
+        <g class="hp" tabindex="0" role="img" aria-label="17 Jul 2026: 3.41 US dollars per GPU-hour"><line class="hp-cross" x1="8" y1="16" x2="8" y2="268"/><circle class="hp-dot" cx="8" cy="95.8" r="4.5"/><g class="hp-tip" transform="translate(20 71.8)"><rect class="hp-box" width="152" height="46" rx="3"/><line class="hp-key" x1="11" y1="18" x2="25" y2="18"/><text class="hp-val" x="31" y="22">$3.41</text><text class="hp-lab" x="11" y="37">17 Jul 2026 &#183; 12:00 UTC</text></g><rect class="hp-hit" x="-5.9" y="16" width="27.9" height="252"/></g>
+        <g class="hp" tabindex="0" role="img" aria-label="18 Jul 2026: 3.44 US dollars per GPU-hour"><line class="hp-cross" x1="35.9" y1="16" x2="35.9" y2="268"/><circle class="hp-dot" cx="35.9" cy="83.2" r="4.5"/><g class="hp-tip" transform="translate(47.9 59.2)"><rect class="hp-box" width="152" height="46" rx="3"/><line class="hp-key" x1="11" y1="18" x2="25" y2="18"/><text class="hp-val" x="31" y="22">$3.44</text><text class="hp-lab" x="11" y="37">18 Jul 2026 &#183; 12:00 UTC</text></g><rect class="hp-hit" x="22" y="16" width="27.9" height="252"/></g>
+        <g class="hp" tabindex="0" role="img" aria-label="19 Jul 2026: 3.39 US dollars per GPU-hour"><line class="hp-cross" x1="63.7" y1="16" x2="63.7" y2="268"/><circle class="hp-dot" cx="63.7" cy="104.2" r="4.5"/><g class="hp-tip" transform="translate(75.7 80.2)"><rect class="hp-box" width="152" height="46" rx="3"/><line class="hp-key" x1="11" y1="18" x2="25" y2="18"/><text class="hp-val" x="31" y="22">$3.39</text><text class="hp-lab" x="11" y="37">19 Jul 2026 &#183; 12:00 UTC</text></g><rect class="hp-hit" x="49.8" y="16" width="27.9" height="252"/></g>
+        <g class="hp" tabindex="0" role="img" aria-label="20 Jul 2026: 3.36 US dollars per GPU-hour"><line class="hp-cross" x1="91.6" y1="16" x2="91.6" y2="268"/><circle class="hp-dot" cx="91.6" cy="116.8" r="4.5"/><g class="hp-tip" transform="translate(103.6 92.8)"><rect class="hp-box" width="152" height="46" rx="3"/><line class="hp-key" x1="11" y1="18" x2="25" y2="18"/><text class="hp-val" x="31" y="22">$3.36</text><text class="hp-lab" x="11" y="37">20 Jul 2026 &#183; 12:00 UTC</text></g><rect class="hp-hit" x="77.7" y="16" width="27.9" height="252"/></g>
+        <g class="hp" tabindex="0" role="img" aria-label="21 Jul 2026: 3.38 US dollars per GPU-hour"><line class="hp-cross" x1="119.4" y1="16" x2="119.4" y2="268"/><circle class="hp-dot" cx="119.4" cy="108.4" r="4.5"/><g class="hp-tip" transform="translate(131.4 84.4)"><rect class="hp-box" width="152" height="46" rx="3"/><line class="hp-key" x1="11" y1="18" x2="25" y2="18"/><text class="hp-val" x="31" y="22">$3.38</text><text class="hp-lab" x="11" y="37">21 Jul 2026 &#183; 12:00 UTC</text></g><rect class="hp-hit" x="105.5" y="16" width="27.9" height="252"/></g>
+        <g class="hp" tabindex="0" role="img" aria-label="22 Jul 2026: 3.33 US dollars per GPU-hour"><line class="hp-cross" x1="147.3" y1="16" x2="147.3" y2="268"/><circle class="hp-dot" cx="147.3" cy="129.4" r="4.5"/><g class="hp-tip" transform="translate(159.3 105.4)"><rect class="hp-box" width="152" height="46" rx="3"/><line class="hp-key" x1="11" y1="18" x2="25" y2="18"/><text class="hp-val" x="31" y="22">$3.33</text><text class="hp-lab" x="11" y="37">22 Jul 2026 &#183; 12:00 UTC</text></g><rect class="hp-hit" x="133.4" y="16" width="27.9" height="252"/></g>
+        <g class="hp" tabindex="0" role="img" aria-label="23 Jul 2026: 3.30 US dollars per GPU-hour"><line class="hp-cross" x1="175.2" y1="16" x2="175.2" y2="268"/><circle class="hp-dot" cx="175.2" cy="142" r="4.5"/><g class="hp-tip" transform="translate(187.2 118)"><rect class="hp-box" width="152" height="46" rx="3"/><line class="hp-key" x1="11" y1="18" x2="25" y2="18"/><text class="hp-val" x="31" y="22">$3.30</text><text class="hp-lab" x="11" y="37">23 Jul 2026 &#183; 12:00 UTC</text></g><rect class="hp-hit" x="161.3" y="16" width="27.9" height="252"/></g>
+        <g class="hp" tabindex="0" role="img" aria-label="24 Jul 2026: 3.31 US dollars per GPU-hour"><line class="hp-cross" x1="203" y1="16" x2="203" y2="268"/><circle class="hp-dot" cx="203" cy="137.8" r="4.5"/><g class="hp-tip" transform="translate(215 113.8)"><rect class="hp-box" width="152" height="46" rx="3"/><line class="hp-key" x1="11" y1="18" x2="25" y2="18"/><text class="hp-val" x="31" y="22">$3.31</text><text class="hp-lab" x="11" y="37">24 Jul 2026 &#183; 12:00 UTC</text></g><rect class="hp-hit" x="189.1" y="16" width="27.9" height="252"/></g>
+        <g class="hp" tabindex="0" role="img" aria-label="25 Jul 2026: 3.27 US dollars per GPU-hour"><line class="hp-cross" x1="230.9" y1="16" x2="230.9" y2="268"/><circle class="hp-dot" cx="230.9" cy="154.6" r="4.5"/><g class="hp-tip" transform="translate(242.9 130.6)"><rect class="hp-box" width="152" height="46" rx="3"/><line class="hp-key" x1="11" y1="18" x2="25" y2="18"/><text class="hp-val" x="31" y="22">$3.27</text><text class="hp-lab" x="11" y="37">25 Jul 2026 &#183; 12:00 UTC</text></g><rect class="hp-hit" x="217" y="16" width="27.9" height="252"/></g>
+        <g class="hp" tabindex="0" role="img" aria-label="26 Jul 2026: 3.22 US dollars per GPU-hour"><line class="hp-cross" x1="258.8" y1="16" x2="258.8" y2="268"/><circle class="hp-dot" cx="258.8" cy="175.6" r="4.5"/><g class="hp-tip" transform="translate(270.8 151.6)"><rect class="hp-box" width="152" height="46" rx="3"/><line class="hp-key" x1="11" y1="18" x2="25" y2="18"/><text class="hp-val" x="31" y="22">$3.22</text><text class="hp-lab" x="11" y="37">26 Jul 2026 &#183; 12:00 UTC</text></g><rect class="hp-hit" x="244.9" y="16" width="27.9" height="252"/></g>
+        <g class="hp" tabindex="0" role="img" aria-label="27 Jul 2026: 3.18 US dollars per GPU-hour"><line class="hp-cross" x1="286.6" y1="16" x2="286.6" y2="268"/><circle class="hp-dot" cx="286.6" cy="192.4" r="4.5"/><g class="hp-tip" transform="translate(298.6 168.4)"><rect class="hp-box" width="152" height="46" rx="3"/><line class="hp-key" x1="11" y1="18" x2="25" y2="18"/><text class="hp-val" x="31" y="22">$3.18</text><text class="hp-lab" x="11" y="37">27 Jul 2026 &#183; 12:00 UTC</text></g><rect class="hp-hit" x="272.7" y="16" width="27.9" height="252"/></g>
+        <g class="hp" tabindex="0" role="img" aria-label="28 Jul 2026: 3.21 US dollars per GPU-hour"><line class="hp-cross" x1="314.5" y1="16" x2="314.5" y2="268"/><circle class="hp-dot" cx="314.5" cy="179.8" r="4.5"/><g class="hp-tip" transform="translate(326.5 155.8)"><rect class="hp-box" width="152" height="46" rx="3"/><line class="hp-key" x1="11" y1="18" x2="25" y2="18"/><text class="hp-val" x="31" y="22">$3.21</text><text class="hp-lab" x="11" y="37">28 Jul 2026 &#183; 12:00 UTC</text></g><rect class="hp-hit" x="300.6" y="16" width="27.9" height="252"/></g>
+        <g class="hp" tabindex="0" role="img" aria-label="29 Jul 2026: 3.25 US dollars per GPU-hour"><line class="hp-cross" x1="342.3" y1="16" x2="342.3" y2="268"/><circle class="hp-dot" cx="342.3" cy="163" r="4.5"/><g class="hp-tip" transform="translate(354.3 139)"><rect class="hp-box" width="152" height="46" rx="3"/><line class="hp-key" x1="11" y1="18" x2="25" y2="18"/><text class="hp-val" x="31" y="22">$3.25</text><text class="hp-lab" x="11" y="37">29 Jul 2026 &#183; 12:00 UTC</text></g><rect class="hp-hit" x="328.4" y="16" width="27.9" height="252"/></g>
+        <g class="hp" tabindex="0" role="img" aria-label="30 Jul 2026: 3.28 US dollars per GPU-hour"><line class="hp-cross" x1="370.2" y1="16" x2="370.2" y2="268"/><circle class="hp-dot" cx="370.2" cy="150.4" r="4.5"/><g class="hp-tip" transform="translate(382.2 126.4)"><rect class="hp-box" width="152" height="46" rx="3"/><line class="hp-key" x1="11" y1="18" x2="25" y2="18"/><text class="hp-val" x="31" y="22">$3.28</text><text class="hp-lab" x="11" y="37">30 Jul 2026 &#183; 12:00 UTC</text></g><rect class="hp-hit" x="356.3" y="16" width="27.9" height="252"/></g>
+        <g class="hp" tabindex="0" role="img" aria-label="31 Jul 2026: 3.24 US dollars per GPU-hour"><line class="hp-cross" x1="398.1" y1="16" x2="398.1" y2="268"/><circle class="hp-dot" cx="398.1" cy="167.2" r="4.5"/><g class="hp-tip" transform="translate(410.1 143.2)"><rect class="hp-box" width="152" height="46" rx="3"/><line class="hp-key" x1="11" y1="18" x2="25" y2="18"/><text class="hp-val" x="31" y="22">$3.24</text><text class="hp-lab" x="11" y="37">31 Jul 2026 &#183; 12:00 UTC</text></g><rect class="hp-hit" x="384.2" y="16" width="27.9" height="252"/></g>
+        <g class="hp" tabindex="0" role="img" aria-label="1 Aug 2026: 3.19 US dollars per GPU-hour"><line class="hp-cross" x1="425.9" y1="16" x2="425.9" y2="268"/><circle class="hp-dot" cx="425.9" cy="188.2" r="4.5"/><g class="hp-tip" transform="translate(437.9 164.2)"><rect class="hp-box" width="152" height="46" rx="3"/><line class="hp-key" x1="11" y1="18" x2="25" y2="18"/><text class="hp-val" x="31" y="22">$3.19</text><text class="hp-lab" x="11" y="37">1 Aug 2026 &#183; 12:00 UTC</text></g><rect class="hp-hit" x="412" y="16" width="27.9" height="252"/></g>
+        <g class="hp" tabindex="0" role="img" aria-label="2 Aug 2026: 3.15 US dollars per GPU-hour"><line class="hp-cross" x1="453.8" y1="16" x2="453.8" y2="268"/><circle class="hp-dot" cx="453.8" cy="205" r="4.5"/><g class="hp-tip" transform="translate(465.8 181)"><rect class="hp-box" width="152" height="46" rx="3"/><line class="hp-key" x1="11" y1="18" x2="25" y2="18"/><text class="hp-val" x="31" y="22">$3.15</text><text class="hp-lab" x="11" y="37">2 Aug 2026 &#183; 12:00 UTC</text></g><rect class="hp-hit" x="439.9" y="16" width="27.9" height="252"/></g>
+        <g class="hp" tabindex="0" role="img" aria-label="3 Aug 2026: 3.12 US dollars per GPU-hour"><line class="hp-cross" x1="481.7" y1="16" x2="481.7" y2="268"/><circle class="hp-dot" cx="481.7" cy="217.6" r="4.5"/><g class="hp-tip" transform="translate(493.7 193.6)"><rect class="hp-box" width="152" height="46" rx="3"/><line class="hp-key" x1="11" y1="18" x2="25" y2="18"/><text class="hp-val" x="31" y="22">$3.12</text><text class="hp-lab" x="11" y="37">3 Aug 2026 &#183; 12:00 UTC</text></g><rect class="hp-hit" x="467.8" y="16" width="27.9" height="252"/></g>
+        <g class="hp" tabindex="0" role="img" aria-label="4 Aug 2026: 3.16 US dollars per GPU-hour"><line class="hp-cross" x1="509.5" y1="16" x2="509.5" y2="268"/><circle class="hp-dot" cx="509.5" cy="200.8" r="4.5"/><g class="hp-tip" transform="translate(521.5 176.8)"><rect class="hp-box" width="152" height="46" rx="3"/><line class="hp-key" x1="11" y1="18" x2="25" y2="18"/><text class="hp-val" x="31" y="22">$3.16</text><text class="hp-lab" x="11" y="37">4 Aug 2026 &#183; 12:00 UTC</text></g><rect class="hp-hit" x="495.6" y="16" width="27.9" height="252"/></g>
+        <g class="hp" tabindex="0" role="img" aria-label="5 Aug 2026: 3.20 US dollars per GPU-hour"><line class="hp-cross" x1="537.4" y1="16" x2="537.4" y2="268"/><circle class="hp-dot" cx="537.4" cy="184" r="4.5"/><g class="hp-tip" transform="translate(549.4 160)"><rect class="hp-box" width="152" height="46" rx="3"/><line class="hp-key" x1="11" y1="18" x2="25" y2="18"/><text class="hp-val" x="31" y="22">$3.20</text><text class="hp-lab" x="11" y="37">5 Aug 2026 &#183; 12:00 UTC</text></g><rect class="hp-hit" x="523.5" y="16" width="27.9" height="252"/></g>
+        <g class="hp" tabindex="0" role="img" aria-label="6 Aug 2026: 3.23 US dollars per GPU-hour"><line class="hp-cross" x1="565.2" y1="16" x2="565.2" y2="268"/><circle class="hp-dot" cx="565.2" cy="171.4" r="4.5"/><g class="hp-tip" transform="translate(401.2 147.4)"><rect class="hp-box" width="152" height="46" rx="3"/><line class="hp-key" x1="11" y1="18" x2="25" y2="18"/><text class="hp-val" x="31" y="22">$3.23</text><text class="hp-lab" x="11" y="37">6 Aug 2026 &#183; 12:00 UTC</text></g><rect class="hp-hit" x="551.3" y="16" width="27.9" height="252"/></g>
+        <g class="hp" tabindex="0" role="img" aria-label="7 Aug 2026: 3.19 US dollars per GPU-hour"><line class="hp-cross" x1="593.1" y1="16" x2="593.1" y2="268"/><circle class="hp-dot" cx="593.1" cy="188.2" r="4.5"/><g class="hp-tip" transform="translate(429.1 164.2)"><rect class="hp-box" width="152" height="46" rx="3"/><line class="hp-key" x1="11" y1="18" x2="25" y2="18"/><text class="hp-val" x="31" y="22">$3.19</text><text class="hp-lab" x="11" y="37">7 Aug 2026 &#183; 12:00 UTC</text></g><rect class="hp-hit" x="579.2" y="16" width="27.9" height="252"/></g>
+        <g class="hp" tabindex="0" role="img" aria-label="8 Aug 2026: 3.14 US dollars per GPU-hour"><line class="hp-cross" x1="621" y1="16" x2="621" y2="268"/><circle class="hp-dot" cx="621" cy="209.2" r="4.5"/><g class="hp-tip" transform="translate(457 185.2)"><rect class="hp-box" width="152" height="46" rx="3"/><line class="hp-key" x1="11" y1="18" x2="25" y2="18"/><text class="hp-val" x="31" y="22">$3.14</text><text class="hp-lab" x="11" y="37">8 Aug 2026 &#183; 12:00 UTC</text></g><rect class="hp-hit" x="607.1" y="16" width="27.9" height="252"/></g>
+        <g class="hp" tabindex="0" role="img" aria-label="9 Aug 2026: 3.11 US dollars per GPU-hour"><line class="hp-cross" x1="648.8" y1="16" x2="648.8" y2="268"/><circle class="hp-dot" cx="648.8" cy="221.8" r="4.5"/><g class="hp-tip" transform="translate(484.8 197.8)"><rect class="hp-box" width="152" height="46" rx="3"/><line class="hp-key" x1="11" y1="18" x2="25" y2="18"/><text class="hp-val" x="31" y="22">$3.11</text><text class="hp-lab" x="11" y="37">9 Aug 2026 &#183; 12:00 UTC</text></g><rect class="hp-hit" x="634.9" y="16" width="27.9" height="252"/></g>
+        <g class="hp" tabindex="0" role="img" aria-label="10 Aug 2026: 3.13 US dollars per GPU-hour"><line class="hp-cross" x1="676.7" y1="16" x2="676.7" y2="268"/><circle class="hp-dot" cx="676.7" cy="213.4" r="4.5"/><g class="hp-tip" transform="translate(512.7 189.4)"><rect class="hp-box" width="152" height="46" rx="3"/><line class="hp-key" x1="11" y1="18" x2="25" y2="18"/><text class="hp-val" x="31" y="22">$3.13</text><text class="hp-lab" x="11" y="37">10 Aug 2026 &#183; 12:00 UTC</text></g><rect class="hp-hit" x="662.8" y="16" width="27.9" height="252"/></g>
+        <g class="hp" tabindex="0" role="img" aria-label="11 Aug 2026: 3.17 US dollars per GPU-hour"><line class="hp-cross" x1="704.6" y1="16" x2="704.6" y2="268"/><circle class="hp-dot" cx="704.6" cy="196.6" r="4.5"/><g class="hp-tip" transform="translate(540.6 172.6)"><rect class="hp-box" width="152" height="46" rx="3"/><line class="hp-key" x1="11" y1="18" x2="25" y2="18"/><text class="hp-val" x="31" y="22">$3.17</text><text class="hp-lab" x="11" y="37">11 Aug 2026 &#183; 12:00 UTC</text></g><rect class="hp-hit" x="690.7" y="16" width="27.9" height="252"/></g>
+        <g class="hp" tabindex="0" role="img" aria-label="12 Aug 2026: 3.22 US dollars per GPU-hour"><line class="hp-cross" x1="732.4" y1="16" x2="732.4" y2="268"/><circle class="hp-dot" cx="732.4" cy="175.6" r="4.5"/><g class="hp-tip" transform="translate(568.4 151.6)"><rect class="hp-box" width="152" height="46" rx="3"/><line class="hp-key" x1="11" y1="18" x2="25" y2="18"/><text class="hp-val" x="31" y="22">$3.22</text><text class="hp-lab" x="11" y="37">12 Aug 2026 &#183; 12:00 UTC</text></g><rect class="hp-hit" x="718.5" y="16" width="27.9" height="252"/></g>
+        <g class="hp" tabindex="0" role="img" aria-label="13 Aug 2026: 3.26 US dollars per GPU-hour"><line class="hp-cross" x1="760.3" y1="16" x2="760.3" y2="268"/><circle class="hp-dot" cx="760.3" cy="158.8" r="4.5"/><g class="hp-tip" transform="translate(596.3 134.8)"><rect class="hp-box" width="152" height="46" rx="3"/><line class="hp-key" x1="11" y1="18" x2="25" y2="18"/><text class="hp-val" x="31" y="22">$3.26</text><text class="hp-lab" x="11" y="37">13 Aug 2026 &#183; 12:00 UTC</text></g><rect class="hp-hit" x="746.4" y="16" width="27.9" height="252"/></g>
+        <g class="hp" tabindex="0" role="img" aria-label="14 Aug 2026: 3.31 US dollars per GPU-hour"><line class="hp-cross" x1="788.1" y1="16" x2="788.1" y2="268"/><circle class="hp-dot" cx="788.1" cy="137.8" r="4.5"/><g class="hp-tip" transform="translate(624.1 113.8)"><rect class="hp-box" width="152" height="46" rx="3"/><line class="hp-key" x1="11" y1="18" x2="25" y2="18"/><text class="hp-val" x="31" y="22">$3.31</text><text class="hp-lab" x="11" y="37">14 Aug 2026 &#183; 12:00 UTC</text></g><rect class="hp-hit" x="774.2" y="16" width="27.9" height="252"/></g>
+        <g class="hp" tabindex="0" role="img" aria-label="15 Aug 2026: 3.29 US dollars per GPU-hour"><line class="hp-cross" x1="816" y1="16" x2="816" y2="268"/><circle class="hp-dot" cx="816" cy="146.2" r="4.5"/><g class="hp-tip" transform="translate(652 122.2)"><rect class="hp-box" width="152" height="46" rx="3"/><line class="hp-key" x1="11" y1="18" x2="25" y2="18"/><text class="hp-val" x="31" y="22">$3.29</text><text class="hp-lab" x="11" y="37">15 Aug 2026 &#183; 12:00 UTC</text></g><rect class="hp-hit" x="802.1" y="16" width="27.9" height="252"/></g>
+    </g>
+  </svg>
+</div>
+        <details class="tableview"><summary>Table view &#8212; 30 sessions</summary>
+          <div class="tableview__scroll"><table><thead><tr><th>Session</th><th class="ta-r">Fix</th><th class="ta-r">Change</th></tr></thead><tbody><tr><td class="num">17 Jul 2026</td><td class="num ta-r">3.41</td><td class="num ta-r">—</td></tr><tr><td class="num">18 Jul 2026</td><td class="num ta-r">3.44</td><td class="num ta-r">+0.03</td></tr><tr><td class="num">19 Jul 2026</td><td class="num ta-r">3.39</td><td class="num ta-r">−0.05</td></tr><tr><td class="num">20 Jul 2026</td><td class="num ta-r">3.36</td><td class="num ta-r">−0.03</td></tr><tr><td class="num">21 Jul 2026</td><td class="num ta-r">3.38</td><td class="num ta-r">+0.02</td></tr><tr><td class="num">22 Jul 2026</td><td class="num ta-r">3.33</td><td class="num ta-r">−0.05</td></tr><tr><td class="num">23 Jul 2026</td><td class="num ta-r">3.30</td><td class="num ta-r">−0.03</td></tr><tr><td class="num">24 Jul 2026</td><td class="num ta-r">3.31</td><td class="num ta-r">+0.01</td></tr><tr><td class="num">25 Jul 2026</td><td class="num ta-r">3.27</td><td class="num ta-r">−0.04</td></tr><tr><td class="num">26 Jul 2026</td><td class="num ta-r">3.22</td><td class="num ta-r">−0.05</td></tr><tr><td class="num">27 Jul 2026</td><td class="num ta-r">3.18</td><td class="num ta-r">−0.04</td></tr><tr><td class="num">28 Jul 2026</td><td class="num ta-r">3.21</td><td class="num ta-r">+0.03</td></tr><tr><td class="num">29 Jul 2026</td><td class="num ta-r">3.25</td><td class="num ta-r">+0.04</td></tr><tr><td class="num">30 Jul 2026</td><td class="num ta-r">3.28</td><td class="num ta-r">+0.03</td></tr><tr><td class="num">31 Jul 2026</td><td class="num ta-r">3.24</td><td class="num ta-r">−0.04</td></tr><tr><td class="num">1 Aug 2026</td><td class="num ta-r">3.19</td><td class="num ta-r">−0.05</td></tr><tr><td class="num">2 Aug 2026</td><td class="num ta-r">3.15</td><td class="num ta-r">−0.04</td></tr><tr><td class="num">3 Aug 2026</td><td class="num ta-r">3.12</td><td class="num ta-r">−0.03</td></tr><tr><td class="num">4 Aug 2026</td><td class="num ta-r">3.16</td><td class="num ta-r">+0.04</td></tr><tr><td class="num">5 Aug 2026</td><td class="num ta-r">3.20</td><td class="num ta-r">+0.04</td></tr><tr><td class="num">6 Aug 2026</td><td class="num ta-r">3.23</td><td class="num ta-r">+0.03</td></tr><tr><td class="num">7 Aug 2026</td><td class="num ta-r">3.19</td><td class="num ta-r">−0.04</td></tr><tr><td class="num">8 Aug 2026</td><td class="num ta-r">3.14</td><td class="num ta-r">−0.05</td></tr><tr><td class="num">9 Aug 2026</td><td class="num ta-r">3.11</td><td class="num ta-r">−0.03</td></tr><tr><td class="num">10 Aug 2026</td><td class="num ta-r">3.13</td><td class="num ta-r">+0.02</td></tr><tr><td class="num">11 Aug 2026</td><td class="num ta-r">3.17</td><td class="num ta-r">+0.04</td></tr><tr><td class="num">12 Aug 2026</td><td class="num ta-r">3.22</td><td class="num ta-r">+0.05</td></tr><tr><td class="num">13 Aug 2026</td><td class="num ta-r">3.26</td><td class="num ta-r">+0.04</td></tr><tr><td class="num">14 Aug 2026</td><td class="num ta-r">3.31</td><td class="num ta-r">+0.05</td></tr><tr><td class="num">15 Aug 2026</td><td class="num ta-r">3.29</td><td class="num ta-r">−0.02</td></tr></tbody></table></div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 8. LEDGER ===== -->
+  <section class="section" aria-labelledby="s-ledger">
+    <div class="section__head"><div><h2 class="section__h" id="s-ledger">8 &#183; Methodology ledger rows</h2>
+      <p class="section__dek">The page that proves the numbers is a different content type from the page that shows them.
+      Numbered rows, hairline dividers, right&#8209;aligned tabular numerals, marginalia footnote references &#8212; it should read
+      like a settlement statement, not a blog post.</p></div></div>
+    <div class="card"><div class="card__head">
+      <div><h3 class="card__title">EU&#8209;CRI&#8209;M &#183; construction</h3><p class="card__sub">Hash&#8209;locked. A change to any row requires a new version.</p></div>
+      <span class="card__meta num">v0.2.0 &#183; sha256:9f4c1d&#8230;a1e7</span></div>
+      <div class="card__body">
+<ol class="ledger">
+  <li class="ledger__row">
+    <span class="ledger__n num">01</span>
+    <div class="ledger__body">
+      <h4 class="ledger__t">Source universe<sup class="fnref">1</sup></h4>
+      <p class="ledger__d">Providers operating an EEA&#8209;resident GPU region with a machine&#8209;readable price surface and a published SKU mapping.</p>
+    </div>
+    <span class="ledger__v num">14 sources</span>
+  </li><li class="ledger__row">
+    <span class="ledger__n num">02</span>
+    <div class="ledger__body">
+      <h4 class="ledger__t">Observation window</h4>
+      <p class="ledger__d">Rolling 24 hours to the 12:00 UTC fix. Observations outside the window are discarded, not carried.</p>
+    </div>
+    <span class="ledger__v num">24 h</span>
+  </li><li class="ledger__row">
+    <span class="ledger__n num">03</span>
+    <div class="ledger__body">
+      <h4 class="ledger__t">Outlier treatment<sup class="fnref">2</sup></h4>
+      <p class="ledger__d">Winsorise at the 5th and 95th percentile of the tier&#8209;weighted distribution before aggregation.</p>
+    </div>
+    <span class="ledger__v num">&#177;5%</span>
+  </li><li class="ledger__row">
+    <span class="ledger__n num">04</span>
+    <div class="ledger__body">
+      <h4 class="ledger__t">Tier weighting</h4>
+      <p class="ledger__d">L1 verified transacted &#215;1.00 &#183; L2 published with observed fills &#215;0.60 &#183; L3 list price &#215;0.15.</p>
+    </div>
+    <span class="ledger__v num">3 tiers</span>
+  </li><li class="ledger__row">
+    <span class="ledger__n num">05</span>
+    <div class="ledger__body">
+      <h4 class="ledger__t">Hyperscaler cap<sup class="fnref">3</sup></h4>
+      <p class="ledger__d">Combined L3 weight is capped so that list&#8209;price sources cannot set the fix.</p>
+    </div>
+    <span class="ledger__v num">6.5%</span>
+  </li><li class="ledger__row">
+    <span class="ledger__n num">06</span>
+    <div class="ledger__body">
+      <h4 class="ledger__t">Index formula</h4>
+      <p class="ledger__d">Tier&#8209;weighted arithmetic mean of the winsorised observation set, rounded half&#8209;up to two decimals.</p>
+    </div>
+    <span class="ledger__v num">&#8212;</span>
+  </li><li class="ledger__row">
+    <span class="ledger__n num">07</span>
+    <div class="ledger__body">
+      <h4 class="ledger__t">Publication &amp; lock</h4>
+      <p class="ledger__d">Published daily at 12:05 UTC. The methodology document and the constituent set are hash&#8209;locked; a change to either requires a new version.</p>
+    </div>
+    <span class="ledger__v num">v0.2.0</span>
+  </li>
+</ol></div>
+    </div>
+    <div style="margin-top:var(--space-5)">
+<aside class="fnstrip" aria-label="Footnotes">
+  <h3 class="fnstrip__h">Notes</h3>
+  <ol class="fnstrip__list">
+    <li id="fn1"><span class="num">1</span> The in&#8209;universe source list is versioned alongside the methodology. Additions take effect at the first fix after a 5&#8209;session notice period.</li>
+    <li id="fn2"><span class="num">2</span> Winsorisation replaces tail observations with the boundary value rather than dropping them, so the observation count in the constituents table is unchanged by the treatment.</li>
+    <li id="fn3"><span class="num">3</span> The cap binds today: uncapped, the combined L3 weight would be 11.4%. The 4.9pp difference is redistributed pro&#8209;rata across L1 and L2.</li>
+  </ol>
+</aside></div>
+  </section>
+
+  <!-- ===== 9. EDITORIAL ===== -->
+  <section class="section" aria-labelledby="s-ed">
+    <div class="section__head"><div><h2 class="section__h" id="s-ed">9 &#183; Editorial, callout, code</h2>
+      <p class="section__dek">The serif appears here and only here: research and methodology display type. It never touches a price,
+      a chart, or the UI.</p></div></div>
+    <div class="two">
+      <div class="stack">
+        <div>
+          <h3 class="display">Why a European compute benchmark needs a basis, not a level</h3>
+          <p class="dek">The level is already contested by two US venues. The spread between them and the EEA is not published anywhere.</p>
+          <p class="byline">15 Aug 2026 &#183; v0.2.0 &#183; EU&#8209;CRI Research</p>
+        </div>
+        <blockquote class="callout">
+          <p>Group less important information in a more muted tone while drawing attention to the relevant data with a more striking or contrasting colour.</p>
+          <cite class="callout__cite">Financial Times &#183; Visual Vocabulary, the rationing rule this system follows</cite>
+        </blockquote>
+      </div>
+      <div class="stack">
+        <pre class="code"><code><span class="c"># Daily fix, hash-locked, no auth required</span>
+<span class="k">GET</span> /v1/index/EU-CRI-H100-EEA?on=2026-08-15
+
+{
+  <span class="k">"symbol"</span>: "EU-CRI-H100-EEA",
+  <span class="k">"fix"</span>:    3.29,
+  <span class="k">"ccy"</span>:    "USD",
+  <span class="k">"unit"</span>:   "gpu_hour",
+  <span class="k">"asof"</span>:   "2026-08-15T12:05:00Z",
+  <span class="k">"method"</span>: "EU-CRI-M/0.2.0",
+  <span class="k">"hash"</span>:   "sha256:9f4c1d...a1e7"
+}</code></pre>
+        <p class="prose" style="margin:0"><span class="spec">Inline code</span>
+        Every published value carries its <code class="inline">method</code> and <code class="inline">hash</code>. Surfacing the
+        content hash <em>is</em> the credibility device; it is not decoration.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 10. CONTROLS ===== -->
+  <section class="section" aria-labelledby="s-ctrl">
+    <div class="section__head"><div><h2 class="section__h" id="s-ctrl">10 &#183; Controls</h2>
+      <p class="section__dek">One filled button per view, maximum. Radii cap at 6px, there is no gradient anywhere, and the only
+      shadow token in the system is reserved for genuinely floating layers &#8212; the chart tooltip and a dropdown.</p></div></div>
+    <div class="two">
+      <div class="card"><div class="card__head"><h3 class="card__title">Buttons and links</h3></div><div class="card__body stack">
+        <div class="row">
+          <button class="btn btn--primary" type="button">Download CSV</button>
+          <button class="btn btn--ghost" type="button">View methodology</button>
+          <button class="btn btn--ghost" type="button" disabled>Awaiting fix</button>
+        </div>
+        <div class="row"><a href="#s-ctrl">A standard link</a> <span class="u">&#183;</span> <a class="link-quiet" href="#s-ctrl">A quiet link</a>
+        <span class="u">&#183;</span> <a class="srclink" href="#s-ctrl">Source API<svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M6.5 3H3.2v9.8H13V9.5M9.4 2.6H13.4V6.6M13.2 2.8 7.4 8.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div>
+        <div class="row"><fieldset class="seg"><legend class="vh">Range</legend>
+          <input type="radio" id="r7" name="range"><label for="r7">7D</label>
+          <input type="radio" id="r30" name="range" checked><label for="r30">30D</label>
+          <input type="radio" id="r90" name="range"><label for="r90">90D</label>
+          <input type="radio" id="rytd" name="range"><label for="rytd">YTD</label>
+        </fieldset></div>
+      </div></div>
+      <div class="card"><div class="card__head"><h3 class="card__title">Form input</h3></div><div class="card__body stack">
+        <div class="field">
+          <label for="q">Filter constituents</label>
+          <input id="q" type="search" placeholder="provider, region, or tier" autocomplete="off">
+          <span class="hint">Filters scope every chart, stat, and table below them &#8212; never one card.</span>
+        </div>
+        <div class="field">
+          <label for="k">API key</label>
+          <input id="k" type="text" class="mono" value="cri_live_7f3a91c4" readonly>
+        </div>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- ===== 11. PALETTE ===== -->
+  <section class="section" aria-labelledby="s-pal">
+    <div class="section__head"><div><h2 class="section__h" id="s-pal">11 &#183; Palettes in situ</h2>
+      <p class="section__dek">Ratios shown are against the card surface in the theme you are currently viewing.
+      The categorical order is fixed and never cycled; there is no slot 9.</p></div></div>
+    <div class="stack">
+      <div><span class="spec">Categorical &#8212; fixed order, validated in both modes</span>
+        <div class="swatches"><div class="sw"><div class="sw__chip" style="background:var(--series-1)"></div>
+    <div class="sw__meta"><span class="sw__name">Slot 1</span><span class="sw__hex">4.42 / 4.84</span></div></div><div class="sw"><div class="sw__chip" style="background:var(--series-2)"></div>
+    <div class="sw__meta"><span class="sw__name">Slot 2</span><span class="sw__hex">3.20 / 4.54</span></div></div><div class="sw"><div class="sw__chip" style="background:var(--series-3)"></div>
+    <div class="sw__meta"><span class="sw__name">Slot 3</span><span class="sw__hex">2.82 / 5.17</span></div></div><div class="sw"><div class="sw__chip" style="background:var(--series-4)"></div>
+    <div class="sw__meta"><span class="sw__name">Slot 4</span><span class="sw__hex">2.17 / 5.74</span></div></div><div class="sw"><div class="sw__chip" style="background:var(--series-5)"></div>
+    <div class="sw__meta"><span class="sw__name">Slot 5</span><span class="sw__hex">2.69 / 4.46</span></div></div><div class="sw"><div class="sw__chip" style="background:var(--series-6)"></div>
+    <div class="sw__meta"><span class="sw__name">Slot 6</span><span class="sw__hex">4.95 / 3.56</span></div></div><div class="sw"><div class="sw__chip" style="background:var(--series-7)"></div>
+    <div class="sw__meta"><span class="sw__name">Slot 7</span><span class="sw__hex">8.56 / 5.63</span></div></div><div class="sw"><div class="sw__chip" style="background:var(--series-8)"></div>
+    <div class="sw__meta"><span class="sw__name">Slot 8</span><span class="sw__hex">3.95 / 5.45</span></div></div></div>
+      </div>
+      <div><span class="spec">Diverging &#8212; the basis ribbon only</span>
+        <div class="swatches"><div class="sw"><div class="sw__chip" style="background:var(--div-cool-4)"></div>
+    <div class="sw__meta"><span class="sw__name">cool-4</span><span class="sw__hex"></span></div></div><div class="sw"><div class="sw__chip" style="background:var(--div-cool-3)"></div>
+    <div class="sw__meta"><span class="sw__name">cool-3</span><span class="sw__hex"></span></div></div><div class="sw"><div class="sw__chip" style="background:var(--div-cool-2)"></div>
+    <div class="sw__meta"><span class="sw__name">cool-2</span><span class="sw__hex"></span></div></div><div class="sw"><div class="sw__chip" style="background:var(--div-cool-1)"></div>
+    <div class="sw__meta"><span class="sw__name">cool-1</span><span class="sw__hex"></span></div></div><div class="sw"><div class="sw__chip" style="background:var(--div-mid)"></div>
+    <div class="sw__meta"><span class="sw__name">mid</span><span class="sw__hex"></span></div></div><div class="sw"><div class="sw__chip" style="background:var(--div-warm-1)"></div>
+    <div class="sw__meta"><span class="sw__name">warm-1</span><span class="sw__hex"></span></div></div><div class="sw"><div class="sw__chip" style="background:var(--div-warm-2)"></div>
+    <div class="sw__meta"><span class="sw__name">warm-2</span><span class="sw__hex"></span></div></div><div class="sw"><div class="sw__chip" style="background:var(--div-warm-3)"></div>
+    <div class="sw__meta"><span class="sw__name">warm-3</span><span class="sw__hex"></span></div></div><div class="sw"><div class="sw__chip" style="background:var(--div-warm-4)"></div>
+    <div class="sw__meta"><span class="sw__name">warm-4</span><span class="sw__hex"></span></div></div></div>
+      </div>
+      <div><span class="spec">Status &#8212; fixed, never a series</span>
+        <div class="swatches"><div class="sw"><div class="sw__chip" style="background:var(--status-good)"></div>
+    <div class="sw__meta"><span class="sw__name">good</span><span class="sw__hex"></span></div></div><div class="sw"><div class="sw__chip" style="background:var(--status-warning)"></div>
+    <div class="sw__meta"><span class="sw__name">warning</span><span class="sw__hex"></span></div></div><div class="sw"><div class="sw__chip" style="background:var(--status-serious)"></div>
+    <div class="sw__meta"><span class="sw__name">serious</span><span class="sw__hex"></span></div></div><div class="sw"><div class="sw__chip" style="background:var(--status-critical)"></div>
+    <div class="sw__meta"><span class="sw__name">critical</span><span class="sw__hex"></span></div></div></div>
+      </div>
+      <div><span class="spec">Neutral cool&#8209;slate ramp &#8212; the base carries no hue</span>
+        <div class="swatches"><div class="sw"><div class="sw__chip" style="background:var(--slate-0)"></div>
+    <div class="sw__meta"><span class="sw__name">slate-0</span><span class="sw__hex"></span></div></div><div class="sw"><div class="sw__chip" style="background:var(--slate-50)"></div>
+    <div class="sw__meta"><span class="sw__name">slate-50</span><span class="sw__hex"></span></div></div><div class="sw"><div class="sw__chip" style="background:var(--slate-100)"></div>
+    <div class="sw__meta"><span class="sw__name">slate-100</span><span class="sw__hex"></span></div></div><div class="sw"><div class="sw__chip" style="background:var(--slate-200)"></div>
+    <div class="sw__meta"><span class="sw__name">slate-200</span><span class="sw__hex"></span></div></div><div class="sw"><div class="sw__chip" style="background:var(--slate-350)"></div>
+    <div class="sw__meta"><span class="sw__name">slate-350</span><span class="sw__hex"></span></div></div><div class="sw"><div class="sw__chip" style="background:var(--slate-500)"></div>
+    <div class="sw__meta"><span class="sw__name">slate-500</span><span class="sw__hex"></span></div></div><div class="sw"><div class="sw__chip" style="background:var(--slate-600)"></div>
+    <div class="sw__meta"><span class="sw__name">slate-600</span><span class="sw__hex"></span></div></div><div class="sw"><div class="sw__chip" style="background:var(--slate-800)"></div>
+    <div class="sw__meta"><span class="sw__name">slate-800</span><span class="sw__hex"></span></div></div><div class="sw"><div class="sw__chip" style="background:var(--slate-875)"></div>
+    <div class="sw__meta"><span class="sw__name">slate-875</span><span class="sw__hex"></span></div></div><div class="sw"><div class="sw__chip" style="background:var(--slate-925)"></div>
+    <div class="sw__meta"><span class="sw__name">slate-925</span><span class="sw__hex"></span></div></div><div class="sw"><div class="sw__chip" style="background:var(--slate-1000)"></div>
+    <div class="sw__meta"><span class="sw__name">slate-1000</span><span class="sw__hex"></span></div></div></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap footer__inner">
+    <div class="footer__cols">
+      <div class="footer__brand">
+        <span class="wordmark__text">EU&#8209;CRI</span>
+        <p class="footer__tag">The European basis benchmark for AI compute. Published daily at 12:05 UTC.</p>
+      </div>
+      <nav class="footer__nav" aria-label="Footer">
+        <h4>Index</h4><a href="#index">Headline &amp; sub&#8209;indices</a><a href="#constituents">Constituents</a><a href="#basis">Basis series</a>
+      </nav>
+      <nav class="footer__nav" aria-label="Footer, governance">
+        <h4>Governance</h4><a href="#methodology">Methodology v0.2.0</a><a href="#changelog">Version history</a><a href="#oversight">Oversight &amp; complaints</a>
+      </nav>
+      <nav class="footer__nav" aria-label="Footer, access">
+        <h4>Access</h4><a href="#data">API &amp; CSV</a><a href="#licence">Licensing</a><a href="#contact">Contact</a>
+      </nav>
+    </div>
+    <div class="disclaimer">
+      <h4 class="disclaimer__h">Important information</h4>
+      <p>EU&#8209;CRI is an <strong>informational reference index</strong> published for research and price&#8209;discovery purposes. It is <strong>not</strong> a regulated benchmark within the meaning of Regulation (EU) 2016/1011 (the Benchmarks Regulation), is <strong>not</strong> administered by an authorised benchmark administrator, and is <strong>not</strong> intended or authorised for use as a reference rate in any financial instrument, financial contract, or to measure the performance of an investment fund.</p>
+      <p>Nothing on this page is investment, legal, tax, or accounting advice, nor an offer or solicitation to buy or sell anything. Index values are derived from third&#8209;party price surfaces believed to be reliable but are <strong>not independently verified</strong>; observed prices may differ materially from prices actually obtainable. Past values are not indicative of future values. The publisher accepts no liability for any loss arising from reliance on this index, and gives no warranty, express or implied, as to accuracy, completeness, timeliness, or fitness for any purpose.</p>
+      <p class="disclaimer__meta num">EU&#8209;CRI&#8209;M v0.2.0 &#183; content hash sha256:9f4c1d&#8230;a1e7 &#183; &#169; 2026 &#183; All series are quoted in USD unless otherwise stated; EUR quotes are converted at the ECB reference rate published on the fix date.</p>
+    </div>
+  </div>
+</footer>
+<script>
+  /* Theme toggle. Inline, not an external request. The tokens follow the OS
+     by default, so if a CSP forbids inline script the page still themes
+     correctly — it just loses the manual override. */
+  (function () {
+    var root = document.documentElement;
+    document.addEventListener('change', function (e) {
+      var t = e.target;
+      if (!t || t.name !== 'theme') return;
+      if (t.value === 'auto') root.removeAttribute('data-theme');
+      else root.setAttribute('data-theme', t.value);
+    });
+  })();
+</script>
+</body>
+</html>

@@ -1,24 +1,25 @@
 """EU-CRI index calculation (methodology-hashed: changes require a version bump).
 
 Pure functions — no database access — so the whole calculation is golden-file testable.
-Implements METHODOLOGY.md §3 exactly:
+Implements METHODOLOGY.md §3 exactly.
 
-1. representative price per provider = min surviving executable ask, else min list price
-2. staleness exclusion for static entries (> staleness.exclude_days)
-3. winsorise at nearest-rank p5/p95, clamping to the boundary value
-4. weight per provider = the effective review weight (weights.py) when a weight review
-   is in effect; providers absent from the review enter at the default weight, flagged
-   'no_weight_history'. Without a review (bootstrap), the same-day capacity rule applies.
-5. concentration cap: no constituent above max_weight_share_pct of total weight; excess
-   redistributed pro-rata; included constituents' final weights are shares summing to 100
-6. lower weighted median: first price whose cumulative share reaches 50% of total
-7. publish gate: fewer than min_providers included -> value None, 'insufficient_sources'
+v0.3.0 aggregates over **offers**, not over one representative price per provider. That
+single change is what makes the estimator sound. A weighted median over ~6 providers has
+∂I/∂p = 1 for exactly one constituent and 0 for every other, and steps discontinuously when
+the 50% crossing point moves between names — measured on the real panel, +10% on four of six
+constituents moved the print by 0.00%. A weighted median over many GPU-count-weighted offers
+is the SOFR construction: dense enough to be locally smooth, and it always lands on a price
+someone actually quoted (which, on this bimodal panel, a mean provably does not — the mean
+falls in the empty interval between the neocloud and hyperscaler clusters).
+
+Concentration is controlled in two stages so density does not become capture:
+offers are weighted by capacity within a provider, then each provider's *aggregate* share
+is capped and redistributed pro-rata, then that share is spread back over its offers.
 """
 
 from __future__ import annotations
 
-import math
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from datetime import date as date_type
 from datetime import datetime
 
@@ -28,34 +29,36 @@ from eucri.normalise import NormalisedObs
 from eucri.weights import apply_concentration_cap
 
 
-def nearest_rank(sorted_values: list[float], pct: float) -> float:
-    """Nearest-rank percentile: value at rank ceil(pct/100 * n), 1-indexed."""
-    if not sorted_values:
+def trim_clamp(values: Sequence[float], k: int) -> tuple[list[float], float, float]:
+    """Clamp the k highest and k lowest values to the k-th order statistic from each end.
+
+    Count-based, not percentile-based. Nearest-rank percentile winsorising is *inert* at
+    this panel size: at n=6 both p5/p95 and p10/p90 resolve to (min, max) and clamp
+    nothing, so the shipped `winsorise_pct: [5, 95]` was a no-op for the entire history of
+    the index. A count-based trim binds at every n.
+    """
+    if not values:
         raise ValueError("empty value list")
-    rank = max(1, math.ceil(pct / 100.0 * len(sorted_values)))
-    return sorted_values[min(rank, len(sorted_values)) - 1]
-
-
-def winsorise(
-    values: list[float], pct_lo: float, pct_hi: float
-) -> tuple[list[float], float, float]:
-    """Clamp values outside [p_lo, p_hi] to the boundary. Returns (clamped, lo, hi)."""
     ordered = sorted(values)
-    lo = nearest_rank(ordered, pct_lo)
-    hi = nearest_rank(ordered, pct_hi)
+    if k <= 0:
+        return list(values), ordered[0], ordered[-1]
+    k = min(k, (len(ordered) - 1) // 2)
+    lo, hi = ordered[k], ordered[len(ordered) - 1 - k]
     return [min(max(v, lo), hi) for v in values], lo, hi
 
 
-def weighted_median(pairs: list[tuple[float, float]]) -> float:
+def weighted_median(pairs: Sequence[tuple[float, float]]) -> float:
     """Lower weighted median of (price, weight) pairs.
 
-    Sort by price ascending (caller guarantees a deterministic secondary order);
-    return the first price at which cumulative weight >= 50% of total weight.
+    Sort by price ascending; return the first price at which cumulative weight reaches 50%
+    of total weight. Callers guarantee a deterministic secondary order.
     """
     if not pairs:
-        raise ValueError("empty constituent list")
+        raise ValueError("empty observation list")
     ordered = sorted(pairs, key=lambda p: p[0])
     total = sum(w for _, w in ordered)
+    if total <= 0:
+        raise ValueError("non-positive total weight")
     cumulative = 0.0
     for price, weight in ordered:
         cumulative += weight
@@ -66,172 +69,197 @@ def weighted_median(pairs: list[tuple[float, float]]) -> float:
 
 def _staleness_days(last_verified: str, on_date: str) -> int:
     lv = datetime.strptime(last_verified, "%Y-%m-%d").date()
-    d = date_type.fromisoformat(on_date)
-    return (d - lv).days
+    return (date_type.fromisoformat(on_date) - lv).days
 
 
-def representative_constituents(
-    observations: list[NormalisedObs],
+def _offer_capacity(obs: NormalisedObs, factors: Factors) -> float:
+    """Capacity a single offer contributes.
+
+    Observable only for offers that state their size; a catalog row that does not is
+    given the default, because its multiplicity is region enumeration, not inventory.
+    """
+    if obs.gpu_count is None:
+        return float(factors.weights.default_capacity)
+    return float(min(obs.gpu_count, factors.weights.capacity_cap))
+
+
+def provider_offers(
+    observations: Sequence[NormalisedObs],
     factors: Factors,
     on_date: str,
-    provider_weights: Mapping[str, float] | None = None,
-) -> list[Constituent]:
-    """One candidate constituent per provider, with exclusions recorded, not dropped.
+    population: frozenset[str] | None = None,
+) -> tuple[dict[str, list[NormalisedObs]], dict[str, str]]:
+    """Group qualifying offers by provider, and record why any provider was excluded.
 
-    provider_weights is the effective review weight set (raw weights from weights.py).
-    None means no review is in effect (bootstrap): weight falls back to the same-day
-    capacity rule. A provider missing from a supplied review set enters at the default
-    weight for its tier and is flagged 'no_weight_history'.
+    `population` restricts to a set of market segments — the tier-segregation control.
+    The constituent distribution is bimodal (measured separation 5.4 sd between the
+    neocloud/marketplace cluster and the hyperscaler cluster), so series draw from one
+    side of that gap, never across it.
     """
-    by_provider: dict[str, list[NormalisedObs]] = {}
+    kept: dict[str, list[NormalisedObs]] = {}
+    excluded: dict[str, str] = {}
     for obs in observations:
-        by_provider.setdefault(obs.provider, []).append(obs)
-
-    constituents: list[Constituent] = []
-    for provider in sorted(by_provider):
-        group = by_provider[provider]
-        executable = [o for o in group if o.tier == "executable"]
-        chosen_pool = executable if executable else group
-        best = min(chosen_pool, key=lambda o: o.price_usd)
-        tier = best.tier
-
-        flags = ""
-        if provider_weights is None:
-            # bootstrap: same-day capacity. Capacity is only truly observable for
-            # executable marketplace listings (real rentable machines); a list-price
-            # catalog row discloses none — its multiplicity is region enumeration,
-            # not inventory. So: executable = sum of listed GPUs (capped), list =
-            # default_capacity.
-            if tier == "executable":
-                counts = [o.gpu_count for o in chosen_pool if o.gpu_count is not None]
-                capacity = sum(counts) if counts else factors.weights.default_capacity
-            else:
-                capacity = factors.weights.default_capacity
-            weight = float(min(capacity, factors.weights.capacity_cap))
-            if tier == "executable":
-                weight *= factors.weights.executable_multiplier
-        else:
-            review = provider_weights.get(provider)
-            if review is None:
-                mult = factors.weights.executable_multiplier if tier == "executable" else 1.0
-                weight = float(factors.weights.default_capacity) * mult
-                flags = "no_weight_history"
-            else:
-                weight = float(review)
-
-        exclusion: str | None = None
-        if best.last_verified is not None:
-            if _staleness_days(best.last_verified, on_date) > factors.staleness.exclude_days:
-                exclusion = "stale"
-
-        constituents.append(
-            Constituent(
-                provider=provider,
-                source=best.source,
-                tier=tier,
-                price_usd=best.price_usd,
-                weight=weight,
-                included=exclusion is None,
-                exclusion_reason=exclusion,
-                flags=flags,
-            )
-        )
-    return constituents
+        if population is not None and obs.segment not in population:
+            excluded.setdefault(obs.provider, "out_of_population")
+            continue
+        if obs.last_verified is not None and (
+            _staleness_days(obs.last_verified, on_date) > factors.staleness.exclude_days
+        ):
+            excluded.setdefault(obs.provider, "stale")
+            continue
+        kept.setdefault(obs.provider, []).append(obs)
+    for provider in kept:
+        excluded.pop(provider, None)  # a provider with any surviving offer is not excluded
+    return kept, excluded
 
 
 def compute_print(
     date: str,
     series: str,
-    observations: list[NormalisedObs],
+    observations: Sequence[NormalisedObs],
     factors: Factors,
     fx: tuple[float, str] | None,
-    prev_prices: dict[str, float] | None = None,
+    population: frozenset[str] | None = None,
+    prev_prices: Mapping[str, float] | None = None,
     provider_weights: Mapping[str, float] | None = None,
 ) -> IndexPrint:
     """Compute one print. prev_prices (provider -> last included price) drives jump flags."""
-    candidates = representative_constituents(observations, factors, date, provider_weights)
-    included = [c for c in candidates if c.included]
+    kept, excluded = provider_offers(observations, factors, date, population)
 
-    # jump flags: >jump_flag_pct% day-over-day move flags for review, never excludes
-    flagged: list[Constituent] = []
-    prev = prev_prices or {}
-    for c in candidates:
-        flags = c.flags
-        last = prev.get(c.provider)
-        if (
-            c.included
-            and last is not None
-            and last > 0
-            and abs(c.price_usd - last) / last * 100.0 > factors.jump_flag_pct
-        ):
-            flags = "jump" if not flags else f"{flags},jump"
-        flagged.append(
+    n_providers = len(kept)
+    n_offers = sum(len(v) for v in kept.values())
+    n_executable = sum(
+        1 for offers in kept.values() for o in offers if o.tier == "executable"
+    )
+
+    def gapped(flag: str) -> IndexPrint:
+        audit = tuple(
             Constituent(
-                provider=c.provider, source=c.source, tier=c.tier, price_usd=c.price_usd,
-                weight=c.weight, included=c.included,
-                exclusion_reason=c.exclusion_reason, flags=flags,
+                provider=p, source=offers[0].source, tier=offers[0].tier,
+                price_usd=min(o.price_usd for o in offers),
+                weight=0.0, included=False, exclusion_reason="insufficient_sources",
             )
+            for p, offers in sorted(kept.items())
+        ) + tuple(
+            Constituent(
+                provider=p, source="", tier="", price_usd=0.0, weight=0.0,
+                included=False, exclusion_reason=reason,
+            )
+            for p, reason in sorted(excluded.items())
         )
-    candidates = flagged
-    included = [c for c in candidates if c.included]
-
-    n_sources = len(included)
-    n_executable = sum(1 for c in included if c.tier == "executable")
-
-    if n_sources < factors.aggregation.min_providers:
         return IndexPrint(
             date=date, series=series, value_usd=None, value_eur=None,
             fx_rate=fx[0] if fx else None, fx_date=fx[1] if fx else None,
-            n_sources=n_sources, n_executable=n_executable,
-            flags="insufficient_sources", constituents=tuple(candidates),
+            n_sources=n_providers, n_executable=n_executable,
+            flags=flag, constituents=audit,
         )
 
-    prices = [c.price_usd for c in included]
-    clamped, lo, hi = winsorise(
-        prices, factors.aggregation.winsorise_pct[0], factors.aggregation.winsorise_pct[1]
-    )
-    clamp_map = dict(zip([c.provider for c in included], clamped, strict=True))
+    if n_providers < factors.aggregation.min_providers:
+        return gapped("insufficient_sources")
+    if n_offers < factors.aggregation.min_offers:
+        return gapped("insufficient_offers")
 
-    # deterministic order: (clamped price, provider name); then cap concentration and
-    # normalise the included weights into shares summing to 100
-    ordered = sorted(included, key=lambda c: (clamp_map[c.provider], c.provider))
+    # --- stage 1: raw provider weight -------------------------------------------------
+    # v0.3.0 weights a provider by TIER ONLY, not by capacity. Capacity is unobservable
+    # for every list source — they disclose a rate card, not inventory — so the old
+    # `default_capacity: 8` made AWS and Seeweb identical while giving vast.ai, which
+    # honestly discloses a real 2-GPU offer, a *lower* weight than either. That inverted
+    # the very hierarchy the executable multiplier exists to express. Capacity still
+    # drives weighting where it is genuinely observed: between offers within a provider
+    # (stage 2). A provider absent from an effective review is not penalised, because
+    # under a tier-only rule there is no history to be missing.
+    raw_weight: dict[str, float] = {}
+    provider_flags: dict[str, str] = {}
+    for provider, offers in kept.items():
+        executable = any(o.tier == "executable" for o in offers)
+        raw_weight[provider] = (
+            factors.weights.executable_multiplier if executable else 1.0
+        )
+
+    ordered_providers = sorted(kept)
     shares, capped_idx = apply_concentration_cap(
-        [c.weight for c in ordered], factors.weights.max_weight_share_pct
+        [raw_weight[p] for p in ordered_providers], factors.weights.max_weight_share_pct
     )
-    share_info = {
-        c.provider: (round(share, 6), i in capped_idx)
-        for i, (c, share) in enumerate(zip(ordered, shares, strict=True))
-    }
+    provider_share = dict(zip(ordered_providers, shares, strict=True))
+    for i, provider in enumerate(ordered_providers):
+        if i in capped_idx:
+            existing = provider_flags.get(provider, "")
+            provider_flags[provider] = (
+                "weight_capped" if not existing else f"{existing},weight_capped"
+            )
+
+    # --- stage 2: spread each provider's share over its offers ------------------------
+    offer_pairs: list[tuple[float, float, str]] = []  # (price, weight, provider)
+    for provider in ordered_providers:
+        offers = kept[provider]
+        caps = [_offer_capacity(o, factors) for o in offers]
+        total_cap = sum(caps) or float(len(offers))
+        share = provider_share[provider]
+        for obs, cap in zip(offers, caps, strict=True):
+            offer_pairs.append((obs.price_usd, share * (cap / total_cap), provider))
+
+    # --- trim, then weighted median over offers ---------------------------------------
+    k = factors.aggregation.trim_for(len(offer_pairs))
+    clamped, lo, hi = trim_clamp([p for p, _, _ in offer_pairs], k)
     value_usd = weighted_median(
-        [(clamp_map[c.provider], share) for c, share in zip(ordered, shares, strict=True)]
+        sorted(
+            ((c, w) for c, (_, w, _) in zip(clamped, offer_pairs, strict=True)),
+            key=lambda t: t[0],
+        )
     )
     value_eur = round(value_usd / fx[0], 6) if fx else None
 
-    # audit rows: included constituents carry their final print share; excluded ones
-    # keep the raw pre-cap weight they would have carried
+    # --- audit rows: one per provider, carrying its aggregate share -------------------
+    prev = prev_prices or {}
     audit: list[Constituent] = []
-    for c in candidates:
-        if not c.included:
-            audit.append(c)
-            continue
-        clamped_price = clamp_map[c.provider]
-        reason = c.exclusion_reason
-        if clamped_price != c.price_usd:
-            reason = "winsorised"  # included=1: value clamped, constituent stays in
-        share, was_capped = share_info[c.provider]
-        flags = c.flags
-        if was_capped:
-            flags = "weight_capped" if not flags else f"{flags},weight_capped"
+    for provider in ordered_providers:
+        offers = kept[provider]
+        idx = [i for i, (_, _, p) in enumerate(offer_pairs) if p == provider]
+        # audit shows the price the provider ACTUALLY quoted, never the clamped value —
+        # the clamp is recorded as a reason instead, so the trim is visible not silent
+        rep = (
+            weighted_median([(offer_pairs[i][0], offer_pairs[i][1]) for i in idx])
+            if idx
+            else min(o.price_usd for o in offers)
+        )
+        flags = provider_flags.get(provider, "")
+        last = prev.get(provider)
+        if last is not None and last > 0 and abs(rep - last) / last * 100.0 > factors.jump_flag_pct:
+            flags = "jump" if not flags else f"{flags},jump"
+        reason = None
+        if any(clamped[i] != offer_pairs[i][0] for i in idx):
+            reason = "trimmed"
         audit.append(
             Constituent(
-                provider=c.provider, source=c.source, tier=c.tier, price_usd=c.price_usd,
-                weight=share, included=True, exclusion_reason=reason, flags=flags,
+                provider=provider,
+                source=offers[0].source,
+                tier="executable" if any(o.tier == "executable" for o in offers) else "list",
+                price_usd=round(rep, 6),
+                weight=round(provider_share[provider], 6),
+                included=True,
+                exclusion_reason=reason,
+                flags=flags,
             )
         )
+    for provider, reason in sorted(excluded.items()):
+        audit.append(
+            Constituent(
+                provider=provider, source="", tier="", price_usd=0.0, weight=0.0,
+                included=False, exclusion_reason=reason,
+            )
+        )
+
+    executable_share = sum(
+        w for _, w, p in offer_pairs
+        if any(o.tier == "executable" for o in kept[p])
+    )
+    flags = ""
+    if executable_share <= 0:
+        flags = "no_executable_input"  # a list-price-only print, and it says so
 
     return IndexPrint(
         date=date, series=series, value_usd=round(value_usd, 6), value_eur=value_eur,
         fx_rate=fx[0] if fx else None, fx_date=fx[1] if fx else None,
-        n_sources=n_sources, n_executable=n_executable, flags="",
+        n_sources=n_providers, n_executable=n_executable, flags=flags,
         constituents=tuple(audit),
     )

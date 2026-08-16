@@ -1,23 +1,23 @@
-# EU-CRI weekly — 2026-08-15
+# EU-CRI weekly — 2026-08-16
 
 **EU-CRI-H100: $3.29 / GPU-hour** (€2.84 at ECB 1.1567 on 2026-08-14)
 
-Week-over-week: +0.0% · Month-over-month: n/a · Constituents: 6 (1 executable-quote)
-
-7-day mean: $3.29
+Week-over-week: +0.0% · Month-over-month: n/a · Constituents: 5 (1 executable-quote)
 
 <!-- EDITORIAL: lead commentary -->
 
-Dispersion: cheapest constituent $2.16, dearest $7.36 — a 3.4x spread for the same reference unit.
+Dispersion: cheapest constituent $2.16, dearest $3.85 — a 1.8x spread for the same reference unit.
 
 | provider | tier | $/GPU-hr | weight |
 |---|---|---|---|
-| seeweb | list | $2.16 | 15 |
-| datacrunch | list | $3.25 | 15 |
-| runpod | executable | $3.29 | 23 |
-| nebius | list | $3.85 | 15 |
-| gcp | list | $5.44 | 15 |
-| aws | list | $7.36 | 15 |
+| seeweb | list | $2.16 | 19 |
+| datacrunch | list | $3.25 | 19 |
+| runpod | executable | $3.29 | 25 |
+| scaleway | list | $3.83 | 19 |
+| nebius | list | $3.85 | 19 |
+| aws |  | $0.00 | 0 | *(excluded: out_of_population)*
+| azure |  | $0.00 | 0 | *(excluded: out_of_population)*
+| gcp |  | $0.00 | 0 | *(excluded: out_of_population)*
 
 ![EU-CRI-H100 headline](charts/headline_7d.png)
 ![Constituent dispersion](charts/dispersion.png)
@@ -26,6 +26,6 @@ Dispersion: cheapest constituent $2.16, dearest $7.36 — a 3.4x spread for the 
 
 ---
 
-*Methodology v0.2.0-dev — full methodology, constituent-level audit trail, and source code are public in the repository. Corrections are published as flagged revisions, never silently.*
+*Methodology v0.3.0-dev — full methodology, constituent-level audit trail, and source code are public in the repository. Corrections are published as flagged revisions, never silently.*
 
 *EU-CRI is a research publication. It is not investment advice and is not administered as a benchmark under EU Regulation 2016/1011; it may not be used as a reference price in financial instruments.*

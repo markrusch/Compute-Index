@@ -25,9 +25,14 @@ log = logging.getLogger("eucri.outputs.webdata")
 REPO_ROOT = Path(__file__).resolve().parents[3]
 OUT_PATH = REPO_ROOT / "site" / "data" / "latest.json"
 
+# Every series the pipeline can publish. The dashboard renders a tile per sub-index and
+# must be able to show a GAP honestly, so a series with no value still belongs in the
+# snapshot — omitting it would make a gapped series indistinguishable from one that was
+# never computed.
 ALL_SERIES = [
     "EU-CRI-H100", "EU-CRI-H100-7D", "EU-CRI-H100-SOV", "EU-CRI-H100-MKT",
-    "EU-CRI-H100-CLOUD", "EU-CRI-A100", "EU-CRI-B200", COMPOSITE,
+    "EU-CRI-H100-NC", "EU-CRI-H100-HS", "EU-CRI-H100-CLOUD", "EU-CRI-H100-PCIE",
+    "EU-CRI-H200", "EU-CRI-B200", "EU-CRI-B300", "EU-CRI-A100", COMPOSITE,
 ]
 
 
@@ -72,7 +77,7 @@ def _load_source_links() -> dict:
     return yaml.safe_load(path.read_text(encoding="utf-8")) or {}
 
 
-def _provider_links() -> dict[str, dict]:
+def provider_links() -> dict[str, dict]:
     """provider -> {url, note}. Static-yaml providers' own url wins (authoritative)."""
     links = _load_source_links()
     out: dict[str, dict] = {
@@ -85,7 +90,7 @@ def _provider_links() -> dict[str, dict]:
     return out
 
 
-def _sources_panel() -> list[dict]:
+def sources_panel() -> list[dict]:
     """Collector-level catalogue for the dashboard's Sources panel."""
     links = _load_source_links()
     return [
@@ -136,7 +141,7 @@ def _constituents(conn: sqlite3.Connection, series: str, date: str) -> list[dict
         " ORDER BY included DESC, price_usd",
         (date, series, row["rev"]),
     ).fetchall()
-    links = _provider_links()
+    links = provider_links()
     return [
         {
             "provider": c["provider"], "source": c["source"], "tier": c["tier"],
@@ -206,7 +211,7 @@ def generate(conn: sqlite3.Connection) -> Path:
         "series": _series_snapshot(conn),
         "constituents": {},
         "weight_review": None,
-        "sources": _sources_panel(),
+        "sources": sources_panel(),
     }
     if head is not None:
         for series in SERIES_BY_CLASS.values():

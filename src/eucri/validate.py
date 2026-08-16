@@ -13,7 +13,7 @@ import statistics
 from pathlib import Path
 
 from eucri import config
-from eucri.commands import HEADLINE, _observations_for_date, _review_weights
+from eucri.commands import HEADLINE, _observations_for_date
 from eucri.index import compute_print
 from eucri.normalise import normalise_observations
 
@@ -32,21 +32,19 @@ def dropout_sensitivity(conn: sqlite3.Connection, utc_date: str) -> list[dict]:
         o for o in normalise_observations(rows, factors)
         if o.model_class == factors.headline_class
     ]
-    rw = _review_weights(conn, utc_date, factors)
-    provider_weights = None
-    if rw is not None:
-        provider_weights = {
-            p: r.weight
-            for p, r in rw.provider_by_class.get(factors.headline_class, {}).items()
-        }
-    base = compute_print(utc_date, HEADLINE, normalised, factors, None, None, provider_weights)
+    population = factors.population_for("headline")
+    base = compute_print(
+        utc_date, HEADLINE, normalised, factors, None, population=population
+    )
     results: list[dict] = []
     if base.value_usd is None:
         log.warning("dropout: no base value on %s (%s)", utc_date, base.flags)
         return results
     for source in sorted({o.source for o in normalised}):
         subset = [o for o in normalised if o.source != source]
-        alt = compute_print(utc_date, HEADLINE, subset, factors, None, None, provider_weights)
+        alt = compute_print(
+            utc_date, HEADLINE, subset, factors, None, population=population
+        )
         if alt.value_usd is None:
             deviation = None  # dropping this source gaps the print entirely
         else:

@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>EU-CRI — European Compute Reference Index — 2026-08-16</title>
-<meta name="description" content="EU-CRI: a daily, reproducible reference price for renting AI compute delivered from the EU/EEA. Weighted median over offers, published with its full constituent set.">
+<title>Methodology v0.3.0-dev — EU-CRI</title>
+<meta name="description" content="The exact EU-CRI construction: unit definition, market segmentation, weighting, trim, weighted median over offers, and the publication gate.">
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f3f3f3">
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#101113">
@@ -1399,7 +1399,7 @@ figure.fig figcaption b { color: var(--ink-2); font-weight: var(--weight-semibol
         <span class="wordmark__text">EU&#8209;CRI</span>
         <span class="wordmark__sub">European Compute Reference Index</span>
       </a>
-      <nav class="nav" aria-label="Primary"><a href="index.html" aria-current="page">Index</a><a href="methodology.html">Methodology</a><a href="research.html">Research</a><a href="governance.html">Governance</a></nav>
+      <nav class="nav" aria-label="Primary"><a href="index.html">Index</a><a href="methodology.html" aria-current="page">Methodology</a><a href="research.html">Research</a><a href="governance.html">Governance</a></nav>
       <div class="masthead__tools">
         <fieldset class="seg seg--theme">
           <legend class="vh">Colour theme</legend>
@@ -1413,187 +1413,252 @@ figure.fig figcaption b { color: var(--ink-2); font-weight: var(--weight-semibol
       </div>
     </div>
   </div>
-<div class="ticker"><div class="ticker__track scroll-x" role="list" aria-label="EU-CRI series, last published values"><div class="ticker__item" role="listitem"><span class="live-dot" aria-hidden="true"></span><span class="ticker__sym">H100</span><span class="ticker__val num">3.29</span><span class="delta delta--up"><svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M8 13V3.6M3.9 7.6 8 3.3l4.1 4.3" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="num">+1.23%</span></span></div><div class="ticker__item" role="listitem"><span class="ticker__sym">H100-7D</span><span class="ticker__val u">&#8212;</span><span class="ticker__stamp">GAP</span></div><div class="ticker__item" role="listitem"><span class="ticker__sym">H100-CLOUD</span><span class="ticker__val num">3.85</span><span class="delta delta--flat"><svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M3 8h10" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg><span class="num">&#177;0.00%</span></span></div><div class="ticker__item" role="listitem"><span class="ticker__sym">H100-MKT</span><span class="ticker__val u">&#8212;</span><span class="ticker__stamp">GAP</span></div><div class="ticker__item" role="listitem"><span class="ticker__sym">COMPUTE</span><span class="ticker__val num">101.2</span><span class="delta delta--up"><svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M8 13V3.6M3.9 7.6 8 3.3l4.1 4.3" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="num">+1.23%</span></span></div><div class="ticker__item ticker__item--meta" role="listitem"><span class="ticker__stamp num" id="asof" data-generated="2026-08-16T09:40:56Z">AS OF 2026-08-16 09:40:56 UTC</span></div></div></div></header>
+</header>
 <main class="wrap" id="main">
-  <h1 class="vh">EU-CRI — European Compute Reference Index, daily print for
-  2026-08-16</h1>
+  <div class="pagehead">
+    <div class="eyebrow">EU-CRI-M</div>
+    <h1 class="pagehead__h pagehead__h--display">Methodology</h1>
+    <p class="pagehead__dek">Everything that can change a published print, and the exact
+    order it is applied in. The document below is generated from
+    <code class="inline">config/factors.yaml</code>; the parameter ledger is read from the
+    same file at build time, so neither can drift from the calculation.</p>
+    <div class="pagehead__meta">
+      <span>Version <span class="num">v0.3.0-dev</span></span>
+      <span id="lock">Lock <span class="num">sha256:64d7f6cd88fc3e46&#8230;</span></span>
+      <span>Print date <span class="num">2026-08-16</span></span>
+      <span><a href="governance.html">Change procedure</a></span>
+    </div>
+  </div>
+  <div class="doc">
+    <nav class="toc" aria-label="On this page"><h2 class="toc__h">On this page</h2><ol class="toc__list"><li><a href="#1-unit-definition">1. Unit definition</a></li><li><a href="#2-data-hierarchy-and-market-segments-iosco-p8">2. Data hierarchy and market segments (IOSCO P8)</a></li><li><a href="#3-aggregation-exact-algorithm">3. Aggregation (exact algorithm)</a></li><li class="is-sub"><a href="#31-continuity-series">3.1 Continuity series</a></li><li class="is-sub"><a href="#32-eu-cri-compute-chain-linked-class-composite">3.2 EU-CRI-COMPUTE (chain-linked class composite)</a></li><li><a href="#4-series">4. Series</a></li><li><a href="#5-revisions-and-corrections">5. Revisions and corrections</a></li><li><a href="#6-changes-to-this-methodology">6. Changes to this methodology</a></li><li><a href="#7-current-parameters-configfactorsyaml-verbatim">7. Current parameters (config/factors.yaml, verbatim)</a></li><li><a href="#8-iosco-principles-mapping">8. IOSCO Principles mapping</a></li></ol></nav>
+    <div>
+      <section aria-labelledby="ledger-h" style="margin-bottom:var(--space-8)">
+        <div class="card">
+          <div class="card__head">
+            <div><h2 class="card__title" id="ledger-h">EU-CRI-M &#183; construction</h2>
+            <p class="card__sub">Hash-locked. A change to any row requires a version bump, a
+            CHANGELOG entry, and one publication's notice.</p></div>
+            <span class="card__meta num">v0.3.0-dev &#183;
+            sha256:64d7f6cd&#8230;</span>
+          </div>
+          <div class="card__body"><ol class="ledger"><li class="ledger__row ledger__row--head"><span>#</span><span>Step</span><span class="ledger__v">Parameter</span></li><li class="ledger__row"><span class="ledger__n num">01</span><div class="ledger__body"><h4 class="ledger__t">Reference unit</h4><p class="ledger__d">One H100 SXM GPU-hour, on-demand, delivered from the EU/EEA, per GPU, ex-VAT, excluding storage and metered egress. A class prices its reference variant only.</p></div><span class="ledger__v num">6 classes</span></li><li class="ledger__row"><span class="ledger__n num">02</span><div class="ledger__body"><h4 class="ledger__t">Unit filters</h4><p class="ledger__d">Offers below 2 GPUs are excluded rather than normalised: the per-GPU discount saturates at 2 GPUs, while a 1-GPU offer carries a small-order premium. Sanity band $0.25&#8211;$25.00. Excluded tiers: interruptible, spot, community.</p></div><span class="ledger__v num">&#8805;2 GPU</span></li><li class="ledger__row"><span class="ledger__n num">03</span><div class="ledger__body"><h4 class="ledger__t">Market segment</h4><p class="ledger__d">The constituent distribution is bimodal, so series never average across the neocloud/hyperscaler gap. The headline draws from marketplace, neocloud.</p></div><span class="ledger__v num">3 segments</span></li><li class="ledger__row"><span class="ledger__n num">04</span><div class="ledger__body"><h4 class="ledger__t">Staleness</h4><p class="ledger__d">Manually verified static entries warn at 45 days and are excluded at 90.</p></div><span class="ledger__v num">90 d</span></li><li class="ledger__row"><span class="ledger__n num">05</span><div class="ledger__body"><h4 class="ledger__t">Provider weight</h4><p class="ledger__d">A provider with any executable offer is weighted 2&#215; a list-only provider. Capacity does not enter at provider level: it is unobservable for every list source.</p></div><span class="ledger__v num">&#215;2.0</span></li><li class="ledger__row"><span class="ledger__n num">06</span><div class="ledger__body"><h4 class="ledger__t">Concentration cap</h4><p class="ledger__d">No provider may exceed this share of total weight; the excess is redistributed pro-rata to a fixed point. Mathematically inert at n=4; binds from n=5. Every print publishes whether it bound.</p></div><span class="ledger__v num">25%</span></li><li class="ledger__row"><span class="ledger__n num">07</span><div class="ledger__body"><h4 class="ledger__t">Offer spread</h4><p class="ledger__d">Each provider's share is spread across its own offers in proportion to observed capacity, capped at 64 GPUs, defaulting to 8 where capacity is unobservable.</p></div><span class="ledger__v num">cap 64</span></li><li class="ledger__row"><span class="ledger__n num">08</span><div class="ledger__body"><h4 class="ledger__t">Trim</h4><p class="ledger__d">Count-based: clamp the k highest and k lowest offer prices to the k-th order statistic. Percentile winsorising is inert at this panel size — at n=6 both p5/p95 and p10/p90 resolve to (min, max) and clamp nothing.</p></div><span class="ledger__v num">n&#8805;5&#8594;k=1 · n&#8805;10&#8594;k=2 · n&#8805;20&#8594;k=3</span></li><li class="ledger__row"><span class="ledger__n num">09</span><div class="ledger__body"><h4 class="ledger__t">Estimator</h4><p class="ledger__d">Weighted median over offers: the first price at which cumulative weight reaches 50%. It always lands on a price someone actually quoted.</p></div><span class="ledger__v num">over offers</span></li><li class="ledger__row"><span class="ledger__n num">10</span><div class="ledger__body"><h4 class="ledger__t">Publication gate</h4><p class="ledger__d">Fewer than 5 qualifying providers or fewer than 5 qualifying offers publishes no value, flagged <code class="inline">insufficient_sources</code> / <code class="inline">insufficient_offers</code>. There is no fallback waterfall.</p></div><span class="ledger__v num">&#8805;5 / &#8805;5</span></li><li class="ledger__row"><span class="ledger__n num">11</span><div class="ledger__body"><h4 class="ledger__t">EUR companion</h4><p class="ledger__d">USD value divided by the most recent ECB reference rate dated on or before the print date, refused beyond 7 days old. The ECB publishes after the cut-off, so the EUR leg is T&#8722;1 by construction.</p></div><span class="ledger__v num">&#8804;7 d</span></li><li class="ledger__row"><span class="ledger__n num">12</span><div class="ledger__body"><h4 class="ledger__t">Smoothing companion</h4><p class="ledger__d">The headline's 7-day mean, requiring at least 4 non-null days. Published beside the headline, never as it.</p></div><span class="ledger__v num">7 d</span></li><li class="ledger__row"><span class="ledger__n num">13</span><div class="ledger__body"><h4 class="ledger__t">Composite</h4><p class="ledger__d">Chain-linked over class sub-indices from a base of 100, class shares floored at 5% and capped at 75%. A class that gaps drops out of that day's link.</p></div><span class="ledger__v num">base 100</span></li><li class="ledger__row"><span class="ledger__n num">14</span><div class="ledger__body"><h4 class="ledger__t">Quality flag</h4><p class="ledger__d">A constituent moving more than 30% day-over-day is flagged for review and is never silently excluded.</p></div><span class="ledger__v num">30%</span></li><li class="ledger__row"><span class="ledger__n num">15</span><div class="ledger__body"><h4 class="ledger__t">Revisions</h4><p class="ledger__d">Observations and prints are append-only, enforced by database triggers. An error is corrected as a new revision flagged <code class="inline">correction</code>; prior revisions stay queryable forever.</p></div><span class="ledger__v num">append-only</span></li></ol></div>
+        </div>
+      </section>
+      <section aria-labelledby="audit-h" style="margin-bottom:var(--space-8)">
+        <div class="card">
+          <div class="card__head"><div>
+            <h2 class="card__title" id="audit-h">Audit and governance hooks</h2>
+            <p class="card__sub">How a third party checks this print without asking
+            us</p></div></div>
+          <div class="card__body stack">
+            <pre class="code"><code># the full constituent set behind any print
+python -m eucri.run constituents --date 2026-08-16 --series EU-CRI-H100
 
-  <section class="section" aria-labelledby="print-h" style="padding-block:var(--space-6)">
-    <section class="print" aria-labelledby="print-h">
-  <div class="print__main">
-    <div class="print__head">
-      <div>
-        <div class="eyebrow">Headline index</div>
-        <h2 class="print__sym" id="print-h">EU&#8209;CRI&#8209;H100</h2>
-        <p class="print__desc">NVIDIA H100 SXM 80GB, on-demand, EU/EEA regions. Weighted median over offers, per GPU-hour, ex-VAT.</p>
-      </div>
-      <fieldset class="seg seg--ccy"><legend class="vh">Quote currency</legend><input type="radio" id="ccy-usd" name="ccy" value="usd" checked><label for="ccy-usd">USD</label><input type="radio" id="ccy-eur" name="ccy" value="eur"><label for="ccy-eur">EUR</label></fieldset>
-    </div>
-    <div class="print__figure"><span class="print__ccy ccy-usd" aria-hidden="true">$</span><span class="print__ccy ccy-eur" aria-hidden="true">&#8364;</span><span class="print__value num ccy-usd" id="hero-usd">3.29</span><span class="print__value num ccy-eur" id="hero-eur">2.84</span><span class="print__unit">/GPU&#8209;hr</span></div>
-    <div class="print__row"><span class="delta delta--up"><svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M8 13V3.6M3.9 7.6 8 3.3l4.1 4.3" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="num">+1.23%</span></span><span class="print__abs num">+0.04</span><span class="print__vs">vs 10 Aug 2026 print (6 sessions back)</span></div>
-    <div class="print__chips"><span class="chip chip--good"><svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M2.5 8.5 6.2 12.2 13.5 4.4" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Index live &#183; 5 of 5 providers</span></span><span class="chip chip--neutral"><svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><rect x="2.8" y="6.9" width="10.4" height="7.3" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M5.4 6.9V4.8a2.6 2.6 0 0 1 5.2 0v2.1" fill="none" stroke="currentColor" stroke-width="1.5"/></svg><span>Hash&#8209;locked <span class="num">v0.3.0-dev</span></span></span><span class="chip chip--neutral"><span>1 executable input</span></span></div>
-  </div>
-  <div class="print__meta">
-    <dl class="metagrid">
-      <div><dt>Print date</dt><dd class="num">2026-08-16</dd></div>
-      <div><dt>EUR companion</dt><dd class="num">&#8364;2.844298</dd></div>
-      <div><dt>ECB EUR/USD</dt><dd class="num">1.1567 @ 2026-08-14</dd></div>
-      <div><dt>Providers</dt><dd class="num">5 in panel</dd></div>
-      <div><dt>Estimator</dt><dd>weighted median</dd>
-      </div>
-      <div><dt>Methodology</dt><dd><a href="methodology.html">EU&#8209;CRI&#8209;M
-        v0.3.0-dev</a></dd></div>
-    </dl>
-  </div>
-</section>
-  </section>
+# the weight review in effect on a date, recomputed from stored observations
+python -m eucri.run weights --date 2026-08-16
 
-  <section class="section" aria-labelledby="s-sub">
-    <div class="section__head"><div>
-      <h2 class="section__h" id="s-sub">Sub-indices</h2>
-      <p class="section__dek">One tile per published series. A series below the provider gate
-      keeps its slot and shows a gap with the reason — the last good value is never promoted
-      into the current slot.</p></div></div>
-    <div class="tiles"><article class="tile tile--gap"><div class="tile__head"><span class="tile__sym">H200</span><span class="tile__note">H200 SXM 141GB</span></div><div class="tile__body"><div class="tile__gap"><span class="tile__dash">&#8212;&#8212;</span><span class="tile__last">never published</span></div></div><div class="tile__foot"><span class="chip chip--warning"><svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M2.5 8h3M10.5 8h3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>below the provider gate</span></span></div></article><article class="tile tile--gap"><div class="tile__head"><span class="tile__sym">B300</span><span class="tile__note">B300 SXM</span></div><div class="tile__body"><div class="tile__gap"><span class="tile__dash">&#8212;&#8212;</span><span class="tile__last">never published</span></div></div><div class="tile__foot"><span class="chip chip--warning"><svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M2.5 8h3M10.5 8h3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>below the provider gate</span></span></div></article><article class="tile tile--gap"><div class="tile__head"><span class="tile__sym">A100</span><span class="tile__note">A100 SXM 80GB</span></div><div class="tile__body"><div class="tile__gap"><span class="tile__dash">&#8212;&#8212;</span><span class="tile__last">never published</span></div></div><div class="tile__foot"><span class="chip chip--warning"><svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M2.5 8h3M10.5 8h3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>below the provider gate</span></span></div></article><article class="tile tile--gap"><div class="tile__head"><span class="tile__sym">H100-PCIE</span><span class="tile__note">H100 PCIe — priced as its own class</span></div><div class="tile__body"><div class="tile__gap"><span class="tile__dash">&#8212;&#8212;</span><span class="tile__last">never published</span></div></div><div class="tile__foot"><span class="chip chip--warning"><svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M2.5 8h3M10.5 8h3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>below the provider gate</span></span></div></article><article class="tile tile--gap"><div class="tile__head"><span class="tile__sym">H100-SOV</span><span class="tile__note">EU/EEA-headquartered operators</span></div><div class="tile__body"><div class="tile__gap"><span class="tile__dash">&#8212;&#8212;</span><span class="tile__last">never published</span></div></div><div class="tile__foot"><span class="chip chip--warning"><svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M2.5 8h3M10.5 8h3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>below the provider gate</span></span></div></article><article class="tile tile--gap"><div class="tile__head"><span class="tile__sym">H100-MKT</span><span class="tile__note">Marketplace segment only</span></div><div class="tile__body"><div class="tile__gap"><span class="tile__dash">&#8212;&#8212;</span><span class="tile__last">never published</span></div></div><div class="tile__foot"><span class="chip chip--warning"><svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M2.5 8h3M10.5 8h3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>below the provider gate</span></span></div></article><article class="tile tile--gap"><div class="tile__head"><span class="tile__sym">H100-NC</span><span class="tile__note">Neocloud segment only</span></div><div class="tile__body"><div class="tile__gap"><span class="tile__dash">&#8212;&#8212;</span><span class="tile__last">never published</span></div></div><div class="tile__foot"><span class="chip chip--warning"><svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M2.5 8h3M10.5 8h3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>below the provider gate</span></span></div></article><article class="tile tile--gap"><div class="tile__head"><span class="tile__sym">H100-HS</span><span class="tile__note">Hyperscaler catalog segment</span></div><div class="tile__body"><div class="tile__gap"><span class="tile__dash">&#8212;&#8212;</span><span class="tile__last">never published</span></div></div><div class="tile__foot"><span class="chip chip--warning"><svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M2.5 8h3M10.5 8h3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>below the provider gate</span></span></div></article></div>
-  </section>
+# regenerate this document and the lock from config
+python -m eucri.run docs</code></pre>
+            <ol class="ledger">
+              <li class="ledger__row"><span class="ledger__n num">A1</span>
+                <div class="ledger__body"><h4 class="ledger__t">Methodology lock</h4>
+                <p class="ledger__d">A sha256 over factors.yaml, sovereign.yaml, index.py,
+                normalise.py and weights.py. CI fails whenever the working tree stops matching
+                it.<span class="ledger__k">sha256:64d7f6cd88fc3e468ff4036fc8638394971eaafe1c0232b0295b9e9e3b72e372</span></p></div>
+                <span class="ledger__v num">v0.3.0-dev</span></li>
+              <li class="ledger__row"><span class="ledger__n num">A2</span>
+                <div class="ledger__body"><h4 class="ledger__t">Machine-readable prints</h4>
+                <p class="ledger__d">The full published history, latest revision per date and
+                series, plus today's snapshot with its constituent set.</p></div>
+                <span class="ledger__v num"><a href="data/index_history.csv">CSV</a> &#183;
+                <a href="data/latest.json">JSON</a></span></li>
+              <li class="ledger__row"><span class="ledger__n num">A3</span>
+                <div class="ledger__body"><h4 class="ledger__t">Complaints</h4>
+                <p class="ledger__d">Any print may be challenged. Acknowledged within 7 days;
+                the outcome is published with the next print, whether it is a correction or a
+                rationale for no change.</p></div>
+                <span class="ledger__v num"><a href="governance.html#6-complaints">P13</a>
+                </span></li>
+            </ol>
+          </div>
+        </div>
+      </section>
+      <div class="md"><h2 id="eu-cri-methodology-v030-dev">EU-CRI Methodology — v0.3.0-dev</h2>
+<p>EU-CRI (EU Compute Reference Index) is a daily reference price for renting AI compute delivered from data centres physically located in the EU/EEA. Headline series: <strong>EU-CRI-H100</strong>, in USD per GPU-hour with a EUR companion at the ECB reference rate.</p>
+<blockquote class="callout"><p><strong>EU-CRI is a price-transparency benchmark, not a settlement benchmark.</strong> Every print is reproducible by any third party from public sources using the published code. It is not transaction-based and must not be referenced in a financial contract. The conditions that would have to be met before settlement use is credible are published in §9.</p></blockquote>
+<h3 id="1-unit-definition">1. Unit definition</h3>
+<p>One EU-CRI-H100 unit = one NVIDIA <strong>H100_SXM</strong> 80GB GPU-hour, <strong>on_demand</strong> (no term commitment), datacenter-hosted, delivered from the EU/EEA, per-GPU, <strong>ex-VAT</strong>, excluding storage and metered egress.</p>
+<p>A class prices its <strong>reference variant only</strong>. Cross-variant normalisation by assumed factors was removed in v0.3.0: H100 SXM and H100 PCIe are different products, and H100→H200 normalisers disagree in <em>sign</em> depending on whether you divide by BF16 PFLOPs (+31%) or HBM bandwidth (−9%). A variant may enter a class only under a factor <strong>measured</strong> from same-venue, same-day, same-SKU pairs.</p>
+<div class="scroll-x"><table class="md-table"><thead><tr><th scope="col">Class</th><th scope="col">Reference variant</th><th scope="col">Variants (factor)</th></tr></thead><tbody><tr><td><code class="inline">H100</code></td><td>H100_SXM</td><td>H100_SXM (x1)</td></tr><tr><td><code class="inline">H200</code></td><td>H200_SXM</td><td>H200_SXM (x1)</td></tr><tr><td><code class="inline">B200</code></td><td>B200_SXM</td><td>B200_SXM (x1)</td></tr><tr><td><code class="inline">B300</code></td><td>B300_SXM</td><td>B300_SXM (x1)</td></tr><tr><td><code class="inline">A100</code></td><td>A100_SXM</td><td>A100_SXM (x1)</td></tr><tr><td><code class="inline">H100P</code></td><td>H100_PCIE</td><td>H100_PCIE (x1)</td></tr></tbody></table></div>
+<p>Excluded outright: variants not listed above, community/consumer hosts, interruptible/spot tiers (interruptible, spot, community), term-committed prices, offers below <strong>2 GPUs</strong>, prices outside the sanity band [$0.25, $25.00] per GPU-hour.</p>
+<p><strong>Why the node floor is 2, not 8.</strong> Measured within one venue on one day, the per-GPU discount saturates at 2 GPUs (1×=1.000, 2×=0.951, 4×=0.916, 8×=0.916), so 2/4/8-GPU offers are mutually comparable within ~4% and need no adjustment, while the 1-GPU offer carries a ~9% small-order premium and is excluded rather than normalised away. The former 8-GPU floor admitted marketplace inventory on 1 collection day in 10 and discarded essentially all of the index&#x27;s price discovery.</p>
+<h3 id="2-data-hierarchy-and-market-segments-iosco-p8">2. Data hierarchy and market segments (IOSCO P8)</h3>
+<p>Executable marketplace asks are preferred over list prices and carry a <strong>2×</strong> weight multiplier. Overlay data (power prices) never enters the calculation. Competitor indices are never ingested.</p>
+<p>The constituent distribution is <strong>bimodal</strong> — measured separation of 5.4 standard deviations between the neocloud/marketplace cluster and the hyperscaler catalog cluster. Averaging across that gap yields a number no one quotes, so series are segregated by market segment and never drawn across it:</p>
+<div class="scroll-x"><table class="md-table"><thead><tr><th scope="col">Series</th><th scope="col">Population</th></tr></thead><tbody><tr><td><code class="inline">EU-CRI-H100</code> (headline)</td><td>marketplace, neocloud</td></tr><tr><td><code class="inline">EU-CRI-H100-MKT</code></td><td>marketplace</td></tr><tr><td><code class="inline">EU-CRI-H100-HS</code></td><td>hyperscaler</td></tr><tr><td><code class="inline">EU-CRI-H100-SOV</code></td><td>marketplace, neocloud (further filtered by config/sovereign.yaml)</td></tr></tbody></table></div>
+<h3 id="3-aggregation-exact-algorithm">3. Aggregation (exact algorithm)</h3>
+<p>Per UTC day and series. <strong>The unit of aggregation is the offer, not the provider.</strong></p>
+<ol><li>Collect all observations for the day passing the unit filters above, restricted to the series&#x27; market-segment population.</li><li>Static (manually verified) entries older than 90 days are excluded as stale (warning from 45 days).</li><li><strong>Provider weight</strong> = 2 if the provider has any executable offer, else 1. Capacity does <em>not</em> enter here: it is unobservable for every list source, so a capacity term at provider level is fiction that made a rate card disclosing nothing outrank a marketplace disclosing a real 2-GPU offer.</li><li><strong>Concentration cap</strong>: no provider may exceed 25% of total weight; excess is redistributed pro-rata, iterated to a fixed point (the cap relaxes to 100/n when n providers cannot satisfy it). Note this cap is mathematically inert at n=4 — it forces exactly equal shares — and binds only for n≥5. Every print publishes whether it bound.</li><li><strong>Spread each provider&#x27;s share across its own offers</strong> in proportion to offer capacity. Capacity is genuinely observable <em>here</em>, between offers from the same venue.</li><li><strong>Trim</strong>: clamp the k highest and k lowest offer prices to the k-th order statistic from each end, k by panel size (n≥5 → k=1; n≥10 → k=2; n≥20 → k=3). Count-based, because nearest-rank percentile winsorising is inert at this panel size — at n=6 both p5/p95 and p10/p90 resolve to (min, max) and clamp nothing.</li><li><strong>Weighted median over offers</strong>: sort by price ascending; the value is the first price at which cumulative weight reaches 50%. A median over ~6 providers has a delta of 1.0 to one constituent and 0.0 to every other; a median over many capacity-weighted offers is locally smooth and always lands on a price someone actually quoted.</li><li><strong>Publish gate</strong>: fewer than 5 qualifying providers or fewer than 5 qualifying offers → no value is published, flagged <code class="inline">insufficient_sources</code> / <code class="inline">insufficient_offers</code>. There is no fallback waterfall. A gap is credible; a fabricated print is fatal.</li><li>EUR companion = USD value ÷ the most recent ECB EUR/USD reference rate <strong>dated on or before the print date</strong>. The ECB publishes ~14:00 UTC, after the 11:00 UTC cut-off, so the EUR leg is <strong>T-1 by construction</strong> and says so rather than pretending otherwise. Providers quoting natively in EUR are converted from their native amount at print time.</li><li>Headline companion: 7-day mean of daily prints (requires ≥4 non-null days).</li></ol>
+<p>Constituent prices moving more than 30% day-over-day are flagged (<code class="inline">jump</code>) for manual review but are <strong>not</strong> excluded. A print with no executable input is flagged <code class="inline">no_executable_input</code> — a list-price-only print says so on its face.</p>
+<h4 id="31-continuity-series">3.1 Continuity series</h4>
+<p>The headline is the <strong>raw daily cross-section</strong>, not a chain-linked level. A Laspeyres link with a same-day divisor reset contributes exactly zero return on panel entry and exit, which makes in-panel up-moves permanent while down-moves taken via exit and re-entry are laundered out — a ratchet worth roughly +7.8% per cycle for a constituent at the 25% cap. A chained level is published <em>beside</em> the headline as a labelled companion, and the divergence between them is a published health metric with a 5% review trigger.</p>
+<h4 id="32-eu-cri-compute-chain-linked-class-composite">3.2 EU-CRI-COMPUTE (chain-linked class composite)</h4>
+<p>The composite aggregates the class series into one level (base 100 at its first print), <strong>chain-linked</strong> so that reweighting never jumps the published level:</p>
+<ul><li>At each weight review, <strong>class basket shares</strong> = each class&#x27;s share of total observed qualifying capacity over the window. With ≥2 eligible classes, shares are capped at 75% and floored at 5% (pro-rata redistribution, as in §3 step 6).</li><li>Daily: composite(t) = composite(t−1) × Σ share × (class(t) / class(t−1)), summed over classes with a published value on both endpoints, shares renormalised over those classes. A class that gaps drops out of that day&#x27;s link; if no class links, the composite gaps (<code class="inline">no_linkable_series</code>).</li><li>As the observed market migrates across hardware generations (H100 → B200), the basket follows mechanically — no methodology change required.</li></ul>
+<h3 id="4-series">4. Series</h3>
+<div class="scroll-x"><table class="md-table"><thead><tr><th scope="col">Series</th><th scope="col">Constituents</th></tr></thead><tbody><tr><td><code class="inline">EU-CRI-H100</code></td><td>all qualifying H100-class providers (headline)</td></tr><tr><td><code class="inline">EU-CRI-H100-7D</code></td><td>7-day mean of the headline</td></tr><tr><td><code class="inline">EU-CRI-H100-SOV</code></td><td>EU/EEA-headquartered operators: datacrunch, genesis_cloud, hetzner, leaseweb, nebius, ovhcloud, scaleway, seeweb</td></tr><tr><td><code class="inline">EU-CRI-H100-MKT</code></td><td>executable-tier (marketplace) sources only</td></tr><tr><td><code class="inline">EU-CRI-H100-CLOUD</code></td><td>list-tier (cloud) sources only</td></tr><tr><td><code class="inline">EU-CRI-A100</code>, <code class="inline">EU-CRI-B200</code></td><td>class series; published once ≥5 sources exist (gapped, with audit trail, before that)</td></tr><tr><td><code class="inline">EU-CRI-COMPUTE</code></td><td>chain-linked composite of class series (§3.2); a level, not a $/hr price</td></tr></tbody></table></div>
+<h3 id="5-revisions-and-corrections">5. Revisions and corrections</h3>
+<p>Raw observations and published prints are append-only (enforced by database triggers). Errors are corrected in the next print as a <strong>new revision</strong> flagged <code class="inline">correction</code>; prior revisions remain queryable forever. The full constituent set for any print is available via <code class="inline">python -m eucri.run constituents --date YYYY-MM-DD</code>.</p>
+<h3 id="6-changes-to-this-methodology">6. Changes to this methodology</h3>
+<p>Any change to the parameters below or the calculation code requires a version bump, a CHANGELOG entry, and one publication&#x27;s notice before taking effect — enforced mechanically via <code class="inline">METHODOLOGY.lock</code> in CI. See GOVERNANCE.md.</p>
+<h3 id="7-current-parameters-configfactorsyaml-verbatim">7. Current parameters (config/factors.yaml, verbatim)</h3>
+<pre class="code" data-lang="yaml"><code># EU-CRI methodology parameters. Every number that affects a published print lives here.
+# Changing anything in this file (or sovereign.yaml, index.py, normalise.py, weights.py)
+# requires a methodology_version bump + CHANGELOG entry - enforced by CI (see GOVERNANCE.md).
+methodology_version: &quot;0.3.0-dev&quot;   # &#x27;-dev&#x27; relaxes the lock guard pre-launch; drop it at launch
 
-  <section class="section" aria-labelledby="s-chart">
-    <div class="section__head"><div>
-      <h2 class="section__h" id="s-chart">Headline, 30 sessions</h2>
-      <p class="section__dek">Truncated y-axis, so this is a line and never an area fill.
-      Hover or tab through the plot for the crosshair readout; it is CSS-only and works with
-      scripting disabled.</p></div></div>
-    <div class="card">
-  <div class="card__head">
-    <div><h3 class="card__title">EU&#8209;CRI&#8209;H100</h3>
-    <p class="card__sub">USD per GPU-hour &#183; 30 sessions to
-    16 Aug 2026 &#183; 4 published, 26
-    gapped</p></div>
-    <span class="card__meta num">Last $3.29 &#183; high $3.29 &#183; low $2.99</span>
-  </div>
-  <div class="card__body">
-    <div class="scroll-x"><svg class="chart" viewBox="0 0 880 300" role="group" aria-label="EU-CRI-H100, 30 sessions to 16 Aug 2026. 4 published, 26 gapped. Latest $3.29."><g aria-hidden="true"><line class="ch-grid" x1="8.0" y1="268.0" x2="816.0" y2="268.0"/><line class="ch-grid" x1="8.0" y1="184.0" x2="816.0" y2="184.0"/><line class="ch-grid" x1="8.0" y1="100.0" x2="816.0" y2="100.0"/><line class="ch-grid" x1="8.0" y1="16.0" x2="816.0" y2="16.0"/><line class="ch-axis" x1="8.0" y1="268.0" x2="816.0" y2="268.0"/></g><circle class="ch-marker-ring" cx="8.0" cy="188.2" r="4.5"/><circle cx="8.0" cy="188.2" r="2.6" fill="var(--chart-line)"/><circle class="ch-marker-ring" cx="593.1" cy="79.0" r="4.5"/><circle cx="593.1" cy="79.0" r="2.6" fill="var(--chart-line)"/><circle class="ch-marker-ring" cx="648.8" cy="79.0" r="4.5"/><circle cx="648.8" cy="79.0" r="2.6" fill="var(--chart-line)"/><circle class="ch-marker-ring" cx="816.0" cy="62.2" r="4.5"/><circle cx="816.0" cy="62.2" r="2.6" fill="var(--chart-line)"/><g aria-hidden="true"><line class="ch-gapmark" x1="35.9" y1="264.0" x2="35.9" y2="272.0"/><line class="ch-gapmark" x1="63.7" y1="264.0" x2="63.7" y2="272.0"/><line class="ch-gapmark" x1="91.6" y1="264.0" x2="91.6" y2="272.0"/><line class="ch-gapmark" x1="119.4" y1="264.0" x2="119.4" y2="272.0"/><line class="ch-gapmark" x1="147.3" y1="264.0" x2="147.3" y2="272.0"/><line class="ch-gapmark" x1="175.2" y1="264.0" x2="175.2" y2="272.0"/><line class="ch-gapmark" x1="203.0" y1="264.0" x2="203.0" y2="272.0"/><line class="ch-gapmark" x1="230.9" y1="264.0" x2="230.9" y2="272.0"/><line class="ch-gapmark" x1="258.8" y1="264.0" x2="258.8" y2="272.0"/><line class="ch-gapmark" x1="286.6" y1="264.0" x2="286.6" y2="272.0"/><line class="ch-gapmark" x1="314.5" y1="264.0" x2="314.5" y2="272.0"/><line class="ch-gapmark" x1="342.3" y1="264.0" x2="342.3" y2="272.0"/><line class="ch-gapmark" x1="370.2" y1="264.0" x2="370.2" y2="272.0"/><line class="ch-gapmark" x1="398.1" y1="264.0" x2="398.1" y2="272.0"/><line class="ch-gapmark" x1="425.9" y1="264.0" x2="425.9" y2="272.0"/><line class="ch-gapmark" x1="453.8" y1="264.0" x2="453.8" y2="272.0"/><line class="ch-gapmark" x1="481.7" y1="264.0" x2="481.7" y2="272.0"/><line class="ch-gapmark" x1="509.5" y1="264.0" x2="509.5" y2="272.0"/><line class="ch-gapmark" x1="537.4" y1="264.0" x2="537.4" y2="272.0"/><line class="ch-gapmark" x1="565.2" y1="264.0" x2="565.2" y2="272.0"/><line class="ch-gapmark" x1="621.0" y1="264.0" x2="621.0" y2="272.0"/><line class="ch-gapmark" x1="676.7" y1="264.0" x2="676.7" y2="272.0"/><line class="ch-gapmark" x1="704.6" y1="264.0" x2="704.6" y2="272.0"/><line class="ch-gapmark" x1="732.4" y1="264.0" x2="732.4" y2="272.0"/><line class="ch-gapmark" x1="760.3" y1="264.0" x2="760.3" y2="272.0"/><line class="ch-gapmark" x1="788.1" y1="264.0" x2="788.1" y2="272.0"/><text class="ch-tick" x="826" y="272.0">$2.80</text><text class="ch-tick" x="826" y="188.0">$3.00</text><text class="ch-tick" x="826" y="104.0">$3.20</text><text class="ch-tick" x="826" y="20.0">$3.40</text><text class="ch-tick" x="8.0" y="288" text-anchor="start">18 Jul</text><text class="ch-tick" x="203.0" y="288" text-anchor="middle">25 Jul</text><text class="ch-tick" x="425.9" y="288" text-anchor="middle">2 Aug</text><text class="ch-tick" x="621.0" y="288" text-anchor="middle">9 Aug</text><text class="ch-tick" x="816.0" y="288" text-anchor="end">16 Aug</text><text class="ch-cur" x="808.0" y="50.2" text-anchor="end">$3.29</text><text class="ch-note" x="16.0" y="208.2" text-anchor="start">30-day low $2.99</text></g><line class="ch-marker-rule" x1="8.0" y1="62.2" x2="816.0" y2="62.2"/><circle class="ch-marker-ring" cx="816.0" cy="62.2" r="6"/><circle class="ch-marker" cx="816.0" cy="62.2" r="4"/><g class="hp-layer"><g class="hp" tabindex="0" role="img" aria-label="18 Jul 2026: $2.99 per GPU-hour"><line class="hp-cross" x1="8.0" y1="16.0" x2="8.0" y2="268.0"/><circle class="hp-dot" cx="8.0" cy="188.2" r="4.5"/><g class="hp-tip" transform="translate(20.0 164.2)"><rect class="hp-box" width="152" height="46" rx="3"/><line class="hp-key" x1="11" y1="18" x2="25" y2="18"/><text class="hp-val" x="31" y="22">$2.99</text><text class="hp-lab" x="11" y="37">18 Jul 2026</text></g><rect class="hp-hit" x="-5.9" y="16.0" width="27.9" height="252.0"/></g><g class="hp" tabindex="0" role="img" aria-label="8 Aug 2026: $3.25 per GPU-hour"><line class="hp-cross" x1="593.1" y1="16.0" x2="593.1" y2="268.0"/><circle class="hp-dot" cx="593.1" cy="79.0" r="4.5"/><g class="hp-tip" transform="translate(605.1 55.0)"><rect class="hp-box" width="152" height="46" rx="3"/><line class="hp-key" x1="11" y1="18" x2="25" y2="18"/><text class="hp-val" x="31" y="22">$3.25</text><text class="hp-lab" x="11" y="37">8 Aug 2026</text></g><rect class="hp-hit" x="579.2" y="16.0" width="27.9" height="252.0"/></g><g class="hp" tabindex="0" role="img" aria-label="10 Aug 2026: $3.25 per GPU-hour"><line class="hp-cross" x1="648.8" y1="16.0" x2="648.8" y2="268.0"/><circle class="hp-dot" cx="648.8" cy="79.0" r="4.5"/><g class="hp-tip" transform="translate(484.8 55.0)"><rect class="hp-box" width="152" height="46" rx="3"/><line class="hp-key" x1="11" y1="18" x2="25" y2="18"/><text class="hp-val" x="31" y="22">$3.25</text><text class="hp-lab" x="11" y="37">10 Aug 2026</text></g><rect class="hp-hit" x="634.9" y="16.0" width="27.9" height="252.0"/></g><g class="hp" tabindex="0" role="img" aria-label="16 Aug 2026: $3.29 per GPU-hour"><line class="hp-cross" x1="816.0" y1="16.0" x2="816.0" y2="268.0"/><circle class="hp-dot" cx="816.0" cy="62.2" r="4.5"/><g class="hp-tip" transform="translate(652.0 38.2)"><rect class="hp-box" width="152" height="46" rx="3"/><line class="hp-key" x1="11" y1="18" x2="25" y2="18"/><text class="hp-val" x="31" y="22">$3.29</text><text class="hp-lab" x="11" y="37">16 Aug 2026</text></g><rect class="hp-hit" x="802.1" y="16.0" width="27.9" height="252.0"/></g></g></svg></div>
-    <p class="ledger__d" style="margin-top:var(--space-4)">A gapped session is drawn as a
-    hairline tick on the baseline and the line breaks across it. Nothing is interpolated:
-    the index publishes a gap rather than a value it cannot defend.</p>
-    <details class="tableview"><summary>Table view &#8212; 30 sessions</summary>
-      <div class="tableview__scroll"><table><caption class="vh">Every session in the window,
-      published or gapped</caption><thead><tr><th scope="col">Session</th>
-      <th scope="col" class="ta-r">USD/GPU-hr</th><th scope="col">State</th></tr></thead>
-      <tbody><tr><td class="num">18 Jul 2026</td><td class="num ta-r">2.99</td><td>published</td></tr><tr><td class="num">19 Jul 2026</td><td class="num ta-r u">&#8212;</td><td>gap &#183; below the provider gate · revised</td></tr><tr><td class="num">20 Jul 2026</td><td class="num ta-r u">&#8212;</td><td>gap &#183; below the provider gate · revised</td></tr><tr><td class="num">21 Jul 2026</td><td class="num ta-r u">&#8212;</td><td>gap &#183; below the provider gate · revised</td></tr><tr><td class="num">22 Jul 2026</td><td class="num ta-r u">&#8212;</td><td>gap &#183; below the provider gate · revised</td></tr><tr><td class="num">23 Jul 2026</td><td class="num ta-r u">&#8212;</td><td>gap &#183; below the provider gate · revised</td></tr><tr><td class="num">24 Jul 2026</td><td class="num ta-r u">&#8212;</td><td>gap &#183; below the provider gate · revised</td></tr><tr><td class="num">25 Jul 2026</td><td class="num ta-r u">&#8212;</td><td>gap &#183; below the provider gate · revised</td></tr><tr><td class="num">26 Jul 2026</td><td class="num ta-r u">&#8212;</td><td>gap &#183; below the provider gate · revised</td></tr><tr><td class="num">27 Jul 2026</td><td class="num ta-r u">&#8212;</td><td>gap &#183; below the provider gate · revised</td></tr><tr><td class="num">28 Jul 2026</td><td class="num ta-r u">&#8212;</td><td>gap &#183; below the provider gate · revised</td></tr><tr><td class="num">29 Jul 2026</td><td class="num ta-r u">&#8212;</td><td>gap &#183; below the provider gate · revised</td></tr><tr><td class="num">30 Jul 2026</td><td class="num ta-r u">&#8212;</td><td>gap &#183; below the provider gate · revised</td></tr><tr><td class="num">31 Jul 2026</td><td class="num ta-r u">&#8212;</td><td>gap &#183; below the provider gate · revised</td></tr><tr><td class="num">1 Aug 2026</td><td class="num ta-r u">&#8212;</td><td>gap &#183; below the provider gate · revised</td></tr><tr><td class="num">2 Aug 2026</td><td class="num ta-r u">&#8212;</td><td>gap &#183; below the provider gate · revised</td></tr><tr><td class="num">3 Aug 2026</td><td class="num ta-r u">&#8212;</td><td>gap &#183; below the provider gate · revised</td></tr><tr><td class="num">4 Aug 2026</td><td class="num ta-r u">&#8212;</td><td>gap &#183; below the provider gate · revised</td></tr><tr><td class="num">5 Aug 2026</td><td class="num ta-r u">&#8212;</td><td>gap &#183; below the provider gate · revised</td></tr><tr><td class="num">6 Aug 2026</td><td class="num ta-r u">&#8212;</td><td>gap &#183; below the provider gate · revised</td></tr><tr><td class="num">7 Aug 2026</td><td class="num ta-r u">&#8212;</td><td>gap &#183; below the provider gate · revised</td></tr><tr><td class="num">8 Aug 2026</td><td class="num ta-r">3.25</td><td>published</td></tr><tr><td class="num">9 Aug 2026</td><td class="num ta-r u">&#8212;</td><td>gap &#183; below the provider gate · revised</td></tr><tr><td class="num">10 Aug 2026</td><td class="num ta-r">3.25</td><td>published</td></tr><tr><td class="num">11 Aug 2026</td><td class="num ta-r u">&#8212;</td><td>gap &#183; below the provider gate · revised</td></tr><tr><td class="num">12 Aug 2026</td><td class="num ta-r u">&#8212;</td><td>gap &#183; below the provider gate · revised</td></tr><tr><td class="num">13 Aug 2026</td><td class="num ta-r u">&#8212;</td><td>gap &#183; below the provider gate · revised</td></tr><tr><td class="num">14 Aug 2026</td><td class="num ta-r u">&#8212;</td><td>gap &#183; below the provider gate · revised</td></tr><tr><td class="num">15 Aug 2026</td><td class="num ta-r u">&#8212;</td><td>gap &#183; below the provider gate · revised</td></tr><tr><td class="num">16 Aug 2026</td><td class="num ta-r">3.29</td><td>published</td></tr></tbody></table></div>
-    </details>
-  </div>
-</div>
-  </section>
+reference_unit:
+  gpu_model: H100_SXM        # headline reference variant (class H100 below)
+  term: on_demand            # no term commitment
+  location: EU_EEA           # datacenter physically in the EU/EEA
+  # v0.3.0 removed `node_gpus: 8`. The node-size floor now lives in filters.min_gpu_count
+  # and is 2, not 8 - see the measurement recorded there.
+  # Per-GPU-hour, ex-VAT, excluding metered egress. USD primary, EUR companion at the
+  # ECB reference rate (T-1: the ECB publishes ~14:00 UTC, after our 11:00 cut-off, so
+  # the EUR leg structurally cannot use same-day FX - see METHODOLOGY.md).
 
-  <section class="section" aria-labelledby="s-cons" id="constituents">
-    <div class="section__head"><div>
-      <h2 class="section__h" id="s-cons">Constituents at the 2026-08-16 print</h2>
-      <p class="section__dek">Every candidate the index saw, including the ones it rejected
-      and why. Tier is ordinal: L1 executable quote, L2 neocloud list, L3 hyperscaler
-      catalog.</p></div>
-      <a class="section__link" href="methodology.html#3-aggregation-exact-algorithm">
-      How the median is taken</a></div>
-    <div class="card card__body--flush">
-<div class="scroll-x">
-<table class="grid">
-  <caption class="vh">EU-CRI-H100 constituents at the 2026-08-16 print</caption>
-  <thead><tr>
-    <th scope="col">Provider</th>
-    <th scope="col">Segment</th>
-    <th scope="col" class="ta-c">Tier</th>
-    <th scope="col" class="ta-r">Price <span class="u">USD/GPU&#8209;hr</span></th>
-    <th scope="col" class="ta-r">Weight</th>
-    <th scope="col">Flags</th>
-    <th scope="col" class="ta-r">Source</th>
-  </tr></thead>
-  <tbody><tr><th scope="row" class="grid__name">seeweb</th><td class="u">neocloud</td><td class="ta-c"><span class="badge badge--l2" title="Published neocloud list price">L2</span></td><td class="ta-r num strong">2.1600</td><td class="ta-r"><span class="wcell"><span class="num">18.8%</span><span class="meter" aria-hidden="true"><span class="meter__fill" style="width:75.0%"></span></span></span></td><td class="grid__flags"><span class="flag" title="Clamped to the k-th order statistic by the trim">TRIM</span><span class="flag" title="EU/EEA-headquartered operator">SOV</span></td><td class="ta-r"><a class="srclink" href="https://www.seeweb.it/en/products/cloud-server-gpu" rel="noopener">static_yaml<svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M6.5 3H3.2v9.8H13V9.5M9.4 2.6H13.4V6.6M13.2 2.8 7.4 8.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a></td></tr><tr><th scope="row" class="grid__name">datacrunch</th><td class="u">neocloud</td><td class="ta-c"><span class="badge badge--l2" title="Published neocloud list price">L2</span></td><td class="ta-r num strong">3.2500</td><td class="ta-r"><span class="wcell"><span class="num">18.8%</span><span class="meter" aria-hidden="true"><span class="meter__fill" style="width:75.0%"></span></span></span></td><td class="grid__flags"><span class="flag" title="EU/EEA-headquartered operator">SOV</span></td><td class="ta-r"><a class="srclink" href="https://verda.com/pricing" rel="noopener">static_yaml<svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M6.5 3H3.2v9.8H13V9.5M9.4 2.6H13.4V6.6M13.2 2.8 7.4 8.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a></td></tr><tr><th scope="row" class="grid__name">runpod</th><td class="u">marketplace</td><td class="ta-c"><span class="badge badge--l1" title="Executable marketplace quote">L1</span></td><td class="ta-r num strong">3.2900</td><td class="ta-r"><span class="wcell"><span class="num">25.0%</span><span class="meter" aria-hidden="true"><span class="meter__fill" style="width:100.0%"></span></span></span></td><td class="grid__flags"><span class="flag" title="Weight limited by the 25% concentration cap">CAP</span></td><td class="ta-r"><a class="srclink" href="https://www.runpod.io/console/gpu-cloud" rel="noopener">runpod<svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M6.5 3H3.2v9.8H13V9.5M9.4 2.6H13.4V6.6M13.2 2.8 7.4 8.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a></td></tr><tr><th scope="row" class="grid__name">scaleway</th><td class="u">neocloud</td><td class="ta-c"><span class="badge badge--l2" title="Published neocloud list price">L2</span></td><td class="ta-r num strong">3.8286</td><td class="ta-r"><span class="wcell"><span class="num">18.8%</span><span class="meter" aria-hidden="true"><span class="meter__fill" style="width:75.0%"></span></span></span></td><td class="grid__flags"><span class="flag" title="EU/EEA-headquartered operator">SOV</span></td><td class="ta-r"><a class="srclink" href="https://www.scaleway.com/en/pricing/gpu/" rel="noopener">scaleway<svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M6.5 3H3.2v9.8H13V9.5M9.4 2.6H13.4V6.6M13.2 2.8 7.4 8.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a></td></tr><tr><th scope="row" class="grid__name">nebius</th><td class="u">neocloud</td><td class="ta-c"><span class="badge badge--l2" title="Published neocloud list price">L2</span></td><td class="ta-r num strong">3.8500</td><td class="ta-r"><span class="wcell"><span class="num">18.8%</span><span class="meter" aria-hidden="true"><span class="meter__fill" style="width:75.0%"></span></span></span></td><td class="grid__flags"><span class="flag" title="Clamped to the k-th order statistic by the trim">TRIM</span><span class="flag" title="EU/EEA-headquartered operator">SOV</span></td><td class="ta-r"><a class="srclink" href="https://nebius.com/prices" rel="noopener">static_yaml<svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M6.5 3H3.2v9.8H13V9.5M9.4 2.6H13.4V6.6M13.2 2.8 7.4 8.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a></td></tr><tr><th scope="row" class="grid__name">aws</th><td class="u">hyperscaler</td><td class="ta-c"><span class="badge badge--l3" title="Hyperscaler catalog list price">L3</span></td><td class="ta-r u">&#8212;</td><td class="ta-r num u">0.0%</td><td class="grid__flags"><span class="flag" title="Excluded: out of population">OOP</span></td><td class="ta-r"><a class="srclink" href="https://aws.amazon.com/ec2/instance-types/p5/" rel="noopener">page<svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M6.5 3H3.2v9.8H13V9.5M9.4 2.6H13.4V6.6M13.2 2.8 7.4 8.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a></td></tr><tr><th scope="row" class="grid__name">azure</th><td class="u">hyperscaler</td><td class="ta-c"><span class="badge badge--l3" title="Hyperscaler catalog list price">L3</span></td><td class="ta-r u">&#8212;</td><td class="ta-r num u">0.0%</td><td class="grid__flags"><span class="flag" title="Excluded: out of population">OOP</span></td><td class="ta-r"><a class="srclink" href="https://learn.microsoft.com/en-us/azure/virtual-machines/nd-h100-v5-series" rel="noopener">page<svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M6.5 3H3.2v9.8H13V9.5M9.4 2.6H13.4V6.6M13.2 2.8 7.4 8.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a></td></tr><tr><th scope="row" class="grid__name">gcp</th><td class="u">hyperscaler</td><td class="ta-c"><span class="badge badge--l3" title="Hyperscaler catalog list price">L3</span></td><td class="ta-r u">&#8212;</td><td class="ta-r num u">0.0%</td><td class="grid__flags"><span class="flag" title="Excluded: out of population">OOP</span></td><td class="ta-r"><a class="srclink" href="https://cloud.google.com/compute/gpus-pricing" rel="noopener">page<svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M6.5 3H3.2v9.8H13V9.5M9.4 2.6H13.4V6.6M13.2 2.8 7.4 8.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a></td></tr></tbody>
-  <tfoot><tr>
-    <th scope="row" colspan="3">Weighted median over offers</th>
-    <td class="ta-r num strong">3.2900</td>
-    <td class="ta-r num strong">100.0%</td>
-    <td colspan="2" class="u">Trim k=1 each end &#183; 25% concentration cap</td>
-  </tr></tfoot>
-</table>
-</div></div>
-  </section>
+# Compute classes the index observes. A class prices its reference variant ONLY.
+# v0.3.0: cross-variant normalisation factors are removed. H100 SXM and H100 PCIe are
+# different products, and H100-&gt;H200 normalisers disagree in SIGN depending on whether
+# you divide by BF16 PFLOPs (+31%) or HBM bandwidth (-9%). A variant may re-enter a class
+# only with a factor MEASURED from same-venue, same-day, same-SKU pairs (see
+# `measured_factors` below). No assumed factors are permitted in the calculation path.
+model_classes:
+  H100:   {reference_variant: H100_SXM,  variants: {H100_SXM: 1.0}}
+  H200:   {reference_variant: H200_SXM,  variants: {H200_SXM: 1.0}}
+  B200:   {reference_variant: B200_SXM,  variants: {B200_SXM: 1.0}}
+  B300:   {reference_variant: B300_SXM,  variants: {B300_SXM: 1.0}}
+  A100:   {reference_variant: A100_SXM,  variants: {A100_SXM: 1.0}}
+  H100P:  {reference_variant: H100_PCIE, variants: {H100_PCIE: 1.0}}   # PCIe priced separately
 
-  <section class="section" aria-labelledby="s-q">
-    <div class="section__head"><div>
-      <h2 class="section__h" id="s-q">Data quality and sources</h2>
-      <p class="section__dek">The publication gate, the executable share, and the collectors
-      behind them. A gap is credible; a fabricated print is fatal.</p></div></div>
-    <div class="stack">
-      <div class="card" id="quality">
-  <div class="card__head">
-    <div><h3 class="card__title">Data quality</h3>
-    <p class="card__sub">Everything that decides whether this session publishes at all</p>
+# Market segment per provider. This is the tier-segregation control and it is
+# methodology-affecting: the constituent population is bimodal (measured 2026-08-15,
+# cluster separation 5.4 sd between the neocloud/marketplace cluster [2.16..3.85] and the
+# hyperscaler cluster [5.44..7.36]). Averaging across that gap produces a number nobody
+# quotes. Providers not listed default to &#x27;neocloud&#x27;.
+segments:
+  marketplace: [vast.ai, runpod]
+  hyperscaler: [aws, gcp, azure]
+  neocloud:    [nebius, datacrunch, seeweb, scaleway, ovhcloud, hetzner, genesis_cloud,
+                leaseweb]
+
+# Which segments each published series draws from. The headline deliberately excludes the
+# hyperscaler catalog tier - those are the two highest and least-moving prices in the panel
+# and they belong in the series where they are the correct object of measurement.
+series_populations:
+  headline:    [marketplace, neocloud]
+  marketplace: [marketplace]
+  hyperscaler: [hyperscaler]
+  sovereign:   [marketplace, neocloud]   # further filtered by config/sovereign.yaml
+
+filters:
+  min_gpu_count: 2           # v0.3.0: was 8. Measured within-venue same-day (vast.ai
+                             # 2026-07-18) the per-GPU discount SATURATES at 2 GPUs:
+                             # 1x=1.000, 2x=0.951, 4x=0.916, 8x=0.916. So 2/4/8-GPU offers
+                             # are mutually comparable within ~4% and need no factor, while
+                             # the 1-GPU offer carries a ~9% small-order premium and is
+                             # excluded rather than normalised. The old 8-GPU floor passed
+                             # 1 of 10 vast.ai days and threw away ALL marketplace price
+                             # discovery (9 distinct EU H100 prices, +12.3% range).
+  price_floor_usd: 0.25      # junk-listing guard: asks below this are excluded
+  price_ceiling_usd: 25.0    # sanity ceiling
+  datacenter_verified_only: true
+  exclude_tiers: [interruptible, spot, community]
+
+aggregation:
+  unit: offer                # v0.3.0: aggregate over OFFERS, not one price per provider.
+                             # A median over ~6 providers is a step function with delta 1.0
+                             # to one name and 0.0 to the rest. A median over many
+                             # GPU-count-weighted offers is the SOFR construction and is
+                             # locally smooth. Density is what makes the median sound.
+  estimator: weighted_median # over offers, weighted by GPU count (capacity)
+  trim_k:                    # count-based trim: clamp the k highest and k lowest.
+    - {min_n: 0,  k: 0}      # Percentile winsorising is INERT at this panel size: at n=6
+    - {min_n: 5,  k: 1}      # nearest-rank p5/p95 AND p10/p90 both resolve to (min, max)
+    - {min_n: 10, k: 2}      # and clamp nothing. The shipped [5,95] was a no-op for the
+    - {min_n: 20, k: 3}      # entire history of the index. Count-based trimming binds at
+                             # every n.
+  min_providers: 5           # below this: value=null, flag=&#x27;insufficient_sources&#x27;.
+                             # A gap stays a gap - no fallback waterfall, no fabrication.
+  min_offers: 5              # and at least this many surviving offers
+  smoothing_days: 7          # headline companion series: 7-day mean (&gt;=4 non-null required)
+
+weights:
+  capacity_cap: 64           # daily capacity term = min(observed qualifying GPUs, cap)
+  default_capacity: 8        # ... where capacity is unobservable (all list-price rows)
+  executable_multiplier: 2.0 # executable-quote sources weighted double list-price sources
+  max_weight_share_pct: 25   # per-PROVIDER aggregate cap, applied after offers are summed
+                             # within a provider. NOTE: this cap is mathematically inert at
+                             # n=4 (max(25, 100/n) forces exactly equal shares - verified
+                             # 0.0 deviation over 50k random weight vectors). It binds again
+                             # only once the panel is wider; `cap_bound` is published per
+                             # print so a reader can see whether it did anything.
+  review:                    # scheduled, data-driven weight reviews (fixed rule, no discretion)
+    anchor_weekday: 1        # ISO weekday a review takes effect (1 = Monday, i.e. weekly)
+    window_days: 28          # trailing observation window ending the day before the review
+    min_history_days: 5      # fewer collection days than this in the window -&gt; bootstrap
+
+composite:                   # EU-CRI-COMPUTE: chain-linked basket of class sub-indices
+  base_value: 100.0          # level on the composite&#x27;s first print
+  min_class_share_pct: 5     # floor for an eligible class at review (applies with &gt;=2 classes)
+  max_class_share_pct: 75    # cap for a class at review (applies with &gt;=2 classes)
+
+# Continuity series. v0.3.0 DEMOTES chain-linking from the headline to a labelled companion.
+# A Laspeyres link with a same-day divisor reset contributes exactly zero return on panel
+# entry/exit, which makes in-panel up-moves permanent while down-moves taken via exit and
+# re-entry are laundered out - a ratchet worth ~+7.8% per cycle for a 25% constituent.
+# The headline is therefore the raw cross-section (reproducible, no drift, no ratchet); the
+# chained level is published beside it and the divergence between them is a health metric.
+continuity:
+  publish_chained: true
+  base_value: 100.0
+  divergence_review_pct: 5   # chained vs raw divergence above this triggers a documented review
+
+fx:
+  max_age_days: 7            # refuse an FX rate older than this (flag the print instead)
+  # HARD RULE enforced in code: fx_date &lt;= print date. Two 2026-07 prints were computed
+  # with an FX rate published on 2026-07-21, i.e. AFTER the print date - a look-ahead
+  # introduced by backfill. Covered by a regression test.
+
+staleness:                   # static (manually verified) provider entries
+  warn_days: 45              # loader warns
+  exclude_days: 90           # excluded from the index with exclusion_reason=&#x27;stale&#x27;
+
+quality:
+  jump_flag_pct: 30          # day-over-day provider move that flags (never excludes)
+
+# Factors measured from same-venue, same-day, same-SKU observations. Published for
+# transparency; NONE of these currently enter the calculation path. A factor may only be
+# promoted into `model_classes` after it is supported by &gt;=3 independent venue-days.
+measured_factors:
+  node_size_per_gpu:         # vast.ai, EU H100_SXM, same-day ratios vs the 1-GPU offer
+    &quot;2&quot;: 0.9514              # n=3 venue-days
+    &quot;4&quot;: 0.9159              # n=1  - provisional
+    &quot;8&quot;: 0.9158              # n=1  - provisional
+  fabric_infiniband_premium: 1.107   # Azure westeurope ND96isr vs ND96is_noIB, n=1 pair.
+                                     # PROVISIONAL - measures Azure&#x27;s internal price ladder,
+                                     # not the market&#x27;s. Not in the calculation path.
+
+eu_eea_countries: [AT, BE, BG, HR, CY, CZ, DK, EE, FI, FR, DE, GR, HU, IE, IT,
+                   LV, LT, LU, MT, NL, PL, PT, RO, SK, SI, ES, SE, IS, LI, NO]
+# NOTE: CH (Switzerland) is deliberately absent - Switzerland is in EFTA but NOT the EEA.</code></pre>
+<h3 id="8-iosco-principles-mapping">8. IOSCO Principles mapping</h3>
+<div class="scroll-x"><table class="md-table"><thead><tr><th scope="col">IOSCO principle</th><th scope="col">Implementation</th></tr></thead><tbody><tr><td>Benchmark design &amp; data sufficiency (P6–P7)</td><td>Observable, executable marketplace quotes anchored; ≥5-source rule; weights set by observed data on a fixed schedule; 25% concentration cap; no expert judgement in the calculation path</td></tr><tr><td>Hierarchy of data inputs (P8)</td><td>Executable quotes weighted 2.0x over list prices inside the weight review; overlay data never enters the calculation</td></tr><tr><td>Transparency of methodology (P9, P11)</td><td>This document is auto-generated from config, semver-versioned; every parameter is a visible config value; every weight review is stored and queryable</td></tr><tr><td>Changes to methodology (P12)</td><td>CHANGELOG + one-publication notice before any parameter change takes effect; hash-locked in CI. Scheduled weight reviews follow the fixed published formula and are data updates, not methodology changes</td></tr><tr><td>Quality of the administrator (P4–P5)</td><td>Named author; stated conflicts (the author may trade venues the index observes — disclosed); corrections never silent</td></tr><tr><td>Complaints &amp; audit trail (P13, P16)</td><td>Raw observations and weight reviews immutable in SQLite; any reader can request the constituent set for a given day</td></tr></tbody></table></div>
+<hr>
+<p><em>EU-CRI is a research publication. It is not investment advice and is not administered as a benchmark under EU Regulation 2016/1011; it may not be used as a reference price in financial instruments.</em></p>
+<p><em>Author and administrator: Mark Rusch (rusch.mh@gmail.com). Conflicts: the author may hold positions on venues whose prices the index observes; see GOVERNANCE.md.</em></p></div>
     </div>
-    <span class="card__meta"><span class="chip chip--good"><svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M2.5 8.5 6.2 12.2 13.5 4.4" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Gate met</span></span></span>
   </div>
-  <div class="qgrid">
-    <div class="qstat">
-      <span class="qstat__k">Publication gate</span>
-      <span class="qstat__v">5<span class="u"> / 5</span></span>
-      <span class="qstat__n">Qualifying providers against the minimum. Below it the value is
-      null and the session is flagged, never estimated.</span>
-    </div>
-    <div class="qstat">
-      <span class="qstat__k">Executable share</span>
-      <span class="qstat__v">25.0<span class="u">%</span></span>
-      <span class="qbar" aria-hidden="true"><i style="width:25.0%"></i>
-      </span>
-      <span class="qstat__n">Share of index weight from executable marketplace quotes;
-      the rest is published list price.</span>
-    </div>
-    <div class="qstat">
-      <span class="qstat__k">Session coverage</span>
-      <span class="qstat__v">4<span class="u"> / 30</span></span>
-      <span class="qbar" aria-hidden="true">
-      <i style="width:13.3%"></i></span>
-      <span class="qstat__n">Sessions in the last 30 days that cleared the gate.
-      The remainder are published as gaps.</span>
-    </div>
-    <div class="qstat">
-      <span class="qstat__k">FX vintage</span>
-      <span class="qstat__v">T&#8722;2</span>
-      <span class="qstat__n">ECB reference rate 1.1567 dated
-      2026-08-14. The ECB publishes after the cut-off, so the EUR leg is
-      T&#8722;1 by construction.</span>
-    </div>
-    <div class="qstat">
-      <span class="qstat__k">Concentration cap</span>
-      <span class="qstat__v">BOUND</span>
-      <span class="qstat__n">The 25% per-provider cap bound on this print; it is
-      mathematically inert at n=4 and binds only from n=5.</span>
-    </div>
-    <div class="qstat">
-      <span class="qstat__k">Trim</span>
-      <span class="qstat__v">k=1</span>
-      <span class="qstat__n">Count-based: the k highest and k lowest offers are clamped to the
-      k-th order statistic. Percentile winsorising is inert at this panel size.</span>
-    </div>
-  </div>
-</div>
-      <div class="card">
-  <div class="card__head">
-    <div><h3 class="card__title">Composite basket, effective 2026-08-10</h3>
-    <p class="card__sub">Window 2026-07-13 to 2026-08-09 &#183; 8 collection
-    days &#183; recomputed by a fixed published formula, stored append-only</p></div>
-    <span class="card__meta num">rev 2</span>
-  </div>
-  <div class="card__body"><ol class="ledger"><li class="ledger__row"><span class="ledger__n num">01</span><div class="ledger__body"><h4 class="ledger__t">H100 class share</h4><p class="ledger__d">Share of total observed qualifying capacity over the review window, floored at 5% and capped at 75%.</p></div><span class="ledger__v num">72.5%</span></li><li class="ledger__row"><span class="ledger__n num">02</span><div class="ledger__body"><h4 class="ledger__t">A100 class share</h4><p class="ledger__d">Share of total observed qualifying capacity over the review window, floored at 5% and capped at 75%.</p></div><span class="ledger__v num">27.5%</span></li></ol></div>
-</div>
-      <div class="card" id="sources">
-  <div class="card__head">
-    <div><h3 class="card__title">Sources</h3>
-    <p class="card__sub">Every collector the index reads. Overlay data (power prices) is
-    published beside the index and never enters the calculation.</p></div>
-  </div>
-  <div class="srcs"><div class="srcs__row"><div><span class="srcs__name">vast_ai</span><span class="srcs__label">Vast.ai marketplace API</span></div><div class="srcs__ep">POST console.vast.ai/api/v0/bundles/</div><a class="srclink" href="https://cloud.vast.ai/" rel="noopener">Site<svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M6.5 3H3.2v9.8H13V9.5M9.4 2.6H13.4V6.6M13.2 2.8 7.4 8.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div><div class="srcs__row"><div><span class="srcs__name">runpod</span><span class="srcs__label">RunPod GraphQL API</span></div><div class="srcs__ep">POST api.runpod.io/graphql</div><a class="srclink" href="https://www.runpod.io/" rel="noopener">Site<svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M6.5 3H3.2v9.8H13V9.5M9.4 2.6H13.4V6.6M13.2 2.8 7.4 8.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div><div class="srcs__row"><div><span class="srcs__name">gpuhunt</span><span class="srcs__label">gpuhunt (dstack open-source catalogs)</span></div><div class="srcs__ep">aws/azure/gcp public catalog prices</div><a class="srclink" href="https://github.com/dstackai/gpuhunt" rel="noopener">Site<svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M6.5 3H3.2v9.8H13V9.5M9.4 2.6H13.4V6.6M13.2 2.8 7.4 8.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div><div class="srcs__row"><div><span class="srcs__name">static_yaml</span><span class="srcs__label">Manually verified public pricing pages</span></div><div class="srcs__ep">config/providers/*.yaml, refreshed manually with a last_verified date</div><a class="srclink" href="https://github.com/markrusch/Compute-Index/tree/main/config/providers" rel="noopener">Site<svg class="ico" viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false"><path d="M6.5 3H3.2v9.8H13V9.5M9.4 2.6H13.4V6.6M13.2 2.8 7.4 8.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div></div>
-</div>
-    </div>
-  </section>
 </main>
 <footer class="footer">
   <div class="wrap footer__inner">
@@ -1641,25 +1706,6 @@ figure.fig figcaption b { color: var(--ink-2); font-weight: var(--weight-semibol
     </div>
   </div>
 </footer>
-<script>(function(){var r=document.documentElement;var v=r.getAttribute('data-theme')||'auto';var el=document.getElementById('th-'+v);if(el)el.checked=true;document.addEventListener('change',function(e){var t=e.target;if(!t||t.name!=='theme')return;if(t.value==='auto'){r.removeAttribute('data-theme');try{localStorage.removeItem('eucri-theme');}catch(x){}}else{r.setAttribute('data-theme',t.value);try{localStorage.setItem('eucri-theme',t.value);}catch(x){}}});})();</script><script>(function(){
-var stamp=document.getElementById('asof'),hero=document.getElementById('hero-usd');
-if(!stamp||!hero)return;
-var baked=stamp.getAttribute('data-generated');
-function paint(d){
- var s=d.series&&d.series['EU-CRI-H100'];if(!s||s.value_usd==null)return;
- var v=s.value_usd.toFixed(2);
- if(v!==hero.textContent){hero.textContent=v;hero.classList.remove('is-ticked');
-  void hero.offsetWidth;hero.classList.add('is-ticked');}
- var eur=document.getElementById('hero-eur');
- if(eur&&s.value_eur!=null)eur.textContent=s.value_eur.toFixed(2);
- stamp.textContent='AS OF '+d.generated_at.replace('T',' ').replace('Z',' UTC');
- stamp.setAttribute('data-generated',d.generated_at);}
-function poll(){fetch('data/latest.json',{cache:'no-store'}).then(function(r){
- return r.ok?r.json():null;}).then(function(d){
- if(d&&d.generated_at&&d.generated_at!==baked){baked=d.generated_at;paint(d);}
- }).catch(function(){});}
-document.addEventListener('visibilitychange',function(){
- if(document.visibilityState==='visible')poll();});
-setInterval(poll,300000);})();</script>
+<script>(function(){var r=document.documentElement;var v=r.getAttribute('data-theme')||'auto';var el=document.getElementById('th-'+v);if(el)el.checked=true;document.addEventListener('change',function(e){var t=e.target;if(!t||t.name!=='theme')return;if(t.value==='auto'){r.removeAttribute('data-theme');try{localStorage.removeItem('eucri-theme');}catch(x){}}else{r.setAttribute('data-theme',t.value);try{localStorage.setItem('eucri-theme',t.value);}catch(x){}}});})();</script>
 </body>
 </html>

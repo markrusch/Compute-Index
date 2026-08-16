@@ -18,7 +18,6 @@ CONFIG_DIR = Path(__file__).resolve().parents[2] / "config"
 @dataclass(frozen=True)
 class ReferenceUnit:
     gpu_model: str
-    node_gpus: int
     term: str
     location: str
 
@@ -62,10 +61,45 @@ class Composite:
 
 
 @dataclass(frozen=True)
+class TrimRule:
+    """One step of the count-based trim ladder: for n >= min_n, clamp k from each end."""
+
+    min_n: int
+    k: int
+
+
+@dataclass(frozen=True)
 class Aggregation:
-    winsorise_pct: tuple[float, float]
+    unit: str  # 'offer' — the aggregation unit (v0.3.0: offers, not one price per provider)
+    estimator: str
+    trim_k: tuple[TrimRule, ...]
     min_providers: int
+    min_offers: int
     smoothing_days: int
+
+    def trim_for(self, n: int) -> int:
+        """k for a panel of n observations — the last rule whose min_n is satisfied.
+
+        Count-based because percentile winsorising is inert at small n: at n=6 the
+        nearest-rank p5/p95 boundaries are the min and max, so nothing is clamped.
+        """
+        k = 0
+        for rule in self.trim_k:
+            if n >= rule.min_n:
+                k = rule.k
+        return min(k, max(0, (n - 1) // 2))  # never trim away the whole panel
+
+
+@dataclass(frozen=True)
+class Continuity:
+    publish_chained: bool
+    base_value: float
+    divergence_review_pct: float
+
+
+@dataclass(frozen=True)
+class Fx:
+    max_age_days: int
 
 
 @dataclass(frozen=True)
@@ -79,12 +113,17 @@ class Factors:
     methodology_version: str
     reference_unit: ReferenceUnit
     model_classes: dict[str, ModelClass]
+    segments: dict[str, str]  # provider -> market segment
+    series_populations: dict[str, tuple[str, ...]]  # series role -> segments drawn from
     filters: Filters
     weights: Weights
     composite: Composite
     aggregation: Aggregation
+    continuity: Continuity
+    fx: Fx
     staleness: Staleness
     jump_flag_pct: float
+    measured_factors: dict[str, Any]
     eu_eea_countries: frozenset[str]
 
     @property
@@ -96,6 +135,20 @@ class Factors:
         raise ValueError(
             f"no model class has reference_variant {self.reference_unit.gpu_model!r}"
         )
+
+    def segment_of(self, provider: str) -> str:
+        """Market segment for a provider; unlisted providers default to 'neocloud'.
+
+        Defaulting to neocloud rather than hyperscaler is deliberate: a new provider we
+        have not classified is far more likely to be a specialist GPU cloud, and the
+        hyperscaler segment is excluded from the headline, so the default must not
+        silently drop an unknown name out of the headline population.
+        """
+        return self.segments.get(provider, "neocloud")
+
+    def population_for(self, role: str) -> frozenset[str]:
+        """Segments a series role draws from."""
+        return frozenset(self.series_populations[role])
 
 
 @dataclass(frozen=True)
@@ -116,7 +169,19 @@ def load_factors(config_dir: Path | None = None) -> Factors:
     raw = yaml.safe_load((cfg_dir / "factors.yaml").read_text(encoding="utf-8"))
     return Factors(
         methodology_version=str(raw["methodology_version"]),
-        reference_unit=ReferenceUnit(**raw["reference_unit"]),
+        reference_unit=ReferenceUnit(
+            gpu_model=str(raw["reference_unit"]["gpu_model"]),
+            term=str(raw["reference_unit"]["term"]),
+            location=str(raw["reference_unit"]["location"]),
+        ),
+        segments={
+            provider: segment
+            for segment, providers in raw["segments"].items()
+            for provider in providers
+        },
+        series_populations={
+            role: tuple(segments) for role, segments in raw["series_populations"].items()
+        },
         model_classes={
             name: ModelClass(
                 reference_variant=str(mc["reference_variant"]),
@@ -148,18 +213,28 @@ def load_factors(config_dir: Path | None = None) -> Factors:
             max_class_share_pct=float(raw["composite"]["max_class_share_pct"]),
         ),
         aggregation=Aggregation(
-            winsorise_pct=(
-                float(raw["aggregation"]["winsorise_pct"][0]),
-                float(raw["aggregation"]["winsorise_pct"][1]),
+            unit=str(raw["aggregation"]["unit"]),
+            estimator=str(raw["aggregation"]["estimator"]),
+            trim_k=tuple(
+                TrimRule(min_n=int(r["min_n"]), k=int(r["k"]))
+                for r in sorted(raw["aggregation"]["trim_k"], key=lambda r: int(r["min_n"]))
             ),
             min_providers=int(raw["aggregation"]["min_providers"]),
+            min_offers=int(raw["aggregation"]["min_offers"]),
             smoothing_days=int(raw["aggregation"]["smoothing_days"]),
         ),
+        continuity=Continuity(
+            publish_chained=bool(raw["continuity"]["publish_chained"]),
+            base_value=float(raw["continuity"]["base_value"]),
+            divergence_review_pct=float(raw["continuity"]["divergence_review_pct"]),
+        ),
+        fx=Fx(max_age_days=int(raw["fx"]["max_age_days"])),
         staleness=Staleness(
             warn_days=int(raw["staleness"]["warn_days"]),
             exclude_days=int(raw["staleness"]["exclude_days"]),
         ),
         jump_flag_pct=float(raw["quality"]["jump_flag_pct"]),
+        measured_factors=dict(raw.get("measured_factors") or {}),
         eu_eea_countries=frozenset(raw["eu_eea_countries"]),
     )
 

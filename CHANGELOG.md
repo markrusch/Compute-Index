@@ -3,6 +3,65 @@
 All methodology-affecting changes require an entry here **before** the lock regenerates
 (see GOVERNANCE.md §1). Format: version, date, what changed, why.
 
+## 0.3.0-dev — 2026-08-16
+
+A structural rebuild. Validation against the stored observations showed the v0.2.0 index
+was measuring its own sampling rather than the market: over 14 collection days the
+published headline moved +10.03% while the matched-pair market move was **+0.00%**, and
+a +10% shock to four of six constituents moved the print by **exactly 0.00%**. The root
+cause was not the estimator but the unit definition. Changes, in order of impact:
+
+- **Node-size floor 8 → 2 GPUs** (`filters.min_gpu_count`). The 8-GPU floor admitted
+  marketplace inventory on **1 collection day in 10** and discarded essentially all price
+  discovery: vast.ai posted 9 distinct EU H100 prices spanning +12.3% (~179% annualised
+  vol) and almost none of it reached a print. Marketplace supply is 1/2/4-GPU. Measured
+  within one venue on one day, the per-GPU discount **saturates at 2 GPUs** (1×=1.000,
+  2×=0.951, 4×=0.916, 8×=0.916), so 2/4/8-GPU offers are comparable within ~4% and need
+  no adjustment, while the ~9% 1-GPU small-order premium stays excluded rather than
+  normalised away. **Effect on the level**: the headline now responds to marketplace
+  price moves at all.
+- **Aggregation unit: offer, not provider.** A weighted median over ~6 providers has
+  ∂I/∂p = 1 for one name and 0 for every other, and steps discontinuously when the 50%
+  crossing point moves. A capacity-weighted median over many offers is the SOFR
+  construction — locally smooth, and it always lands on a price someone actually quoted.
+- **Market-segment segregation.** The constituent distribution is bimodal (measured
+  separation **5.4 sd** between the neocloud/marketplace cluster and the hyperscaler
+  catalog cluster); a mean across that gap falls in an empty interval and prices nothing.
+  The headline population is marketplace + neocloud; hyperscaler catalog rates move to
+  `EU-CRI-H100-HS`, where they are the correct object of measurement. New series
+  `EU-CRI-H100-NC` and `EU-CRI-H100-HS`; `EU-CRI-H100-CLOUD` is retired.
+  **Effect on the level**: removes AWS/GCP catalog rates from the headline.
+- **Count-based trim replaces percentile winsorising.** `winsorise_pct: [5, 95]` was a
+  **no-op for the entire history of the index** — at n=6, nearest-rank p5/p95 *and*
+  p10/p90 both resolve to (min, max) and clamp nothing; percentiles only begin binding
+  at n≥10, and even there only on the upper tail. Replaced with clamping the k highest
+  and k lowest, k by panel size.
+- **Provider weighting is tier-only.** Capacity is unobservable for every list source, so
+  `default_capacity: 8` made AWS and Seeweb identical while giving vast.ai — which
+  honestly discloses a real 2-GPU offer — a *lower* weight than either, inverting the
+  hierarchy the executable multiplier exists to express. Capacity still weights offers
+  *within* a provider, where it is genuinely observed. Scheduled weight reviews and the
+  `bootstrap_weights` / `no_weight_history` flags are retired from the calculation path.
+- **No assumed variant factors.** `H100_NVL_94GB: 1.0 # default until measured` is
+  removed; H100 PCIe becomes its own class rather than being folded into SXM. A factor
+  may enter only when measured from same-venue, same-day, same-SKU pairs. Measured
+  candidates are published under `measured_factors` and are *not* in the calculation path.
+- **FX look-ahead fixed.** `latest_rate()` returned the globally latest ECB rate with no
+  date bound, so backfilled prints for 2026-07-18/19 were computed with a rate published
+  on 2026-07-21. Replaced with `rate_for(conn, date)` (`fx_date <= date`), regression
+  tested. The EUR leg is now stated as **T-1**: the ECB publishes ~14:00 UTC, after the
+  11:00 UTC cut-off, so same-day FX was never achievable. Providers quoting natively in
+  EUR are converted from the native amount at print time rather than at collection.
+- **New classes and series**: H200, B300, H100-PCIe. New sources: Scaleway (public
+  Instance API, French/sovereign, also carries B300 in the EEA) and Azure Retail Prices
+  (10 EEA regions). Switzerland is **not** in the EEA and is excluded from both.
+- **Scope statement corrected.** Regulation (EU) 2025/914 (applying 1 Jan 2026) removes
+  non-significant benchmarks from BMR Titles II–VI, but new Article 2(1c) separately
+  applies Article 19 to *any commodity benchmark based on contributed input data*, exempt
+  only below EUR 200m average notional over 12 months. The research-publication
+  disclaimer is retained, and the settlement-grade preconditions are now published and
+  falsifiable rather than implied.
+
 ## 0.2.0-dev — 2026-07-19
 
 Adaptive, data-driven weighting — standard index procedure (scheduled reviews,

@@ -19,10 +19,14 @@ FACTORS = load_factors()
 
 
 def nobs(provider: str, tier: str = "executable", gpu_count: int | None = 8,
-         model_class: str = "H100") -> NormalisedObs:
+         model_class: str = "H100", price_usd: float = 2.0,
+         segment: str | None = None) -> NormalisedObs:
     return NormalisedObs(
-        provider=provider, source="s", tier=tier, model_class=model_class,
-        gpu_model="H100_SXM", gpu_count=gpu_count, price_usd=2.0, country="NL",
+        provider=provider, source="s",
+        segment=segment or FACTORS.segment_of(provider),
+        tier=tier, model_class=model_class,
+        gpu_model="H100_SXM", gpu_count=gpu_count, price_usd=price_usd,
+        currency="USD", price_native=price_usd, country="NL",
         last_verified=None,
     )
 

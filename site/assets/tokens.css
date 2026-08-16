@@ -1,0 +1,703 @@
+/* ==========================================================================
+   EU-CRI — European Compute Reference Index
+   DESIGN TOKENS  ·  v1.0  ·  the whole visual system, one file
+   ==========================================================================
+
+   HOW THIS FILE IS ORGANISED
+   --------------------------
+   §0  Reset-adjacent globals            §7   Diverging scale (basis ribbon)
+   §1  Neutral ramp (cool slate)         §8   Typography
+   §2  Semantic surfaces                 §9   Space
+   §3  Ink (text)                        §10  Radii & borders
+   §4  Lines, rules, focus               §11  Elevation
+   §5  Brand accent (rationed)           §12  Motion
+   §6  Status, delta, chart chrome,      §13  Layout
+       categorical + sequential
+
+   THE THREE RULES THAT MAKE THIS SYSTEM WORK
+   ------------------------------------------
+   1. THE ACCENT IS RATIONED. `--accent` is teal and it means ONE thing:
+      "this is the live / current value." It is not a link colour by default,
+      not a button colour by default, not a section-header colour, ever. If
+      the teal appears more than a couple of times in a viewport, the system
+      has been misused and the page has stopped signalling anything.
+      (Lineage: Ornn ships exactly one saturated hex, used once, in a
+      stylesheet otherwise made of ten greys.)
+
+   2. THE BASE CARRIES NO HUE. The neutral ramp is a cool slate with no
+      green, no navy, no warmth. All hue in the product comes from the
+      accent, the status scale, and the chart palettes. Tinting the base
+      spends the hue budget on chrome.
+
+   3. COLOUR IS NEVER THE ONLY CHANNEL. Every status, every delta, every
+      diverging value ships with a glyph, a sign, a direct label, or a
+      table view beside it. See §6 and §7.
+
+   THEMING CONTRACT
+   ----------------
+   The complete light palette lives on bare `:root`. Dark mode redefines
+   ONLY the tokens that change, in two places:
+     (a) `@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) }`
+         — follows the OS, but yields to an explicit light stamp.
+     (b) `:root[data-theme="dark"]`
+         — an explicit toggle, declared after (a) so it wins in both
+           directions.
+   Non-colour tokens (type, space, radii, motion, layout) are declared once
+   and never themed.
+
+   NO EXTERNAL REQUESTS. System font stacks only. No @import, no url(),
+   no remote anything. This file is safe under a strict CSP.
+   ========================================================================== */
+
+
+/* ==========================================================================
+   :root — THE COMPLETE LIGHT PALETTE + ALL UNTHEMED TOKENS
+   ========================================================================== */
+
+:root {
+  color-scheme: light;
+
+  /* ------------------------------------------------------------------------
+     §1  NEUTRAL RAMP — cool slate, no hue cast
+     ------------------------------------------------------------------------
+     The raw ladder. DO NOT reference these directly in component CSS —
+     always go through a semantic token in §2/§3/§4. The ramp exists so new
+     semantic tokens can be minted from steps that are already in the family.
+     Numbering runs 0 (white) → 1000 (near-black); the number is a rough
+     darkness position, not a fixed lightness value.
+     ---------------------------------------------------------------------- */
+  --slate-0:    #ffffff;   /* card / chart surface, light mode                */
+  --slate-25:   #f7f8f9;   /* inset well — code blocks, table headers         */
+  --slate-50:   #f3f3f3;   /* page plane, light mode                          */
+  --slate-75:   #eceef1;   /* ticker strip, neutral chip fill                 */
+  --slate-100:  #e8eaed;   /* chart gridline, table row rule                  */
+  --slate-150:  #dbdde0;   /* structural border / hairline                    */
+  --slate-200:  #c4c8ce;   /* chart axis + baseline, strong rule              */
+  --slate-300:  #a2a9b3;   /* — dark-mode secondary-ish; unused in light      */
+  --slate-350:  #949ba5;   /* NON-TEXT only in light (2.80:1). Disabled glyph */
+  --slate-400:  #8b929d;   /* chart de-emphasis stroke, light (3.14:1)        */
+  --slate-450:  #7b828c;   /* dark-mode de-emphasis stroke                    */
+  --slate-500:  #5f6570;   /* light muted ink — smallest AA-safe grey (5.28+) */
+  --slate-550:  #565c66;   /* reserved mid step                               */
+  --slate-600:  #454b54;   /* light secondary ink; default chart line         */
+  --slate-650:  #3d4045;   /* dark-mode strong rule                           */
+  --slate-750:  #2a2d33;   /* dark-mode structural border                     */
+  --slate-800:  #24272c;   /* dark-mode gridline / row rule                   */
+  --slate-825:  #22262c;   /* dark-mode neutral chip fill                     */
+  --slate-850:  #1c1f24;   /* dark-mode inset well                            */
+  --slate-875:  #17191c;   /* dark-mode card / chart surface                  */
+  --slate-925:  #101113;   /* dark-mode page plane                            */
+  --slate-950:  #0b0c0e;   /* dark-mode masthead / footer plane               */
+  --slate-1000: #08090a;   /* deepest step — hard borders on dark             */
+
+  /* ------------------------------------------------------------------------
+     §2  SEMANTIC SURFACES
+     ------------------------------------------------------------------------
+     Four planes, and that is the whole depth model. There is no fifth.
+     Depth is expressed by surface + hairline, not by shadow (see §11).
+     ---------------------------------------------------------------------- */
+  --page:            var(--slate-50);   /* the page body. Always set explicitly
+                                           on <body> — never leave transparent. */
+  --surface:         var(--slate-0);    /* cards, panels, table bodies, the
+                                           surface every chart is drawn on.     */
+  --surface-inset:   var(--slate-25);   /* recessed wells: code blocks, table
+                                           headers, footnote strips.            */
+  --surface-strip:   var(--slate-75);   /* the ticker strip + any full-bleed
+                                           band that must read denser than the
+                                           page but flatter than a card.        */
+  --surface-chrome:  var(--slate-0);    /* masthead / footer plane.             */
+  --surface-hover:   var(--slate-25);   /* ghost wash on row + control hover.
+                                           Never a saturated hover state.       */
+  --surface-active:  var(--slate-75);   /* pressed / selected row.              */
+
+  /* ------------------------------------------------------------------------
+     §3  INK — text colour
+     ------------------------------------------------------------------------
+     Three text levels, and one non-text grey. Every text level clears
+     WCAG AA 4.5:1 on EVERY surface in §2 — checked, not assumed. Ratios in
+     DESIGN.md. If you need a fourth level, you have a hierarchy problem,
+     not a token problem.
+     ---------------------------------------------------------------------- */
+  --ink:           var(--slate-1000);  /* overridden below — see note          */
+  --ink-1:         #111214;            /* primary: headings, prices, values.
+                                          18.7:1 on surface, 16.9:1 on page.    */
+  --ink-2:         var(--slate-600);   /* secondary: body prose, table cells.
+                                          8.8:1 / 7.9:1.                        */
+  --ink-3:         var(--slate-500);   /* muted: labels, captions, units, axis
+                                          tick text, timestamps. 5.9:1 / 5.3:1.
+                                          THIS IS THE FLOOR FOR TEXT.           */
+  --ink-faint:     var(--slate-350);   /* NOT FOR TEXT (2.8:1). Disabled
+                                          controls, decorative glyphs, the
+                                          inactive half of a toggle only.       */
+  --ink-inverse:   #ffffff;            /* text on a filled accent/status mark. */
+
+  /* ------------------------------------------------------------------------
+     §4  LINES, RULES, FOCUS
+     ------------------------------------------------------------------------
+     Everything structural is a 1px hairline. There are no 2px dividers, no
+     dashed rules anywhere (dashes read as "projection" in a data product),
+     and no double borders.
+     ---------------------------------------------------------------------- */
+  --rule:          var(--slate-100);   /* table row dividers, ledger rows,
+                                          the densest separator.               */
+  --rule-strong:   var(--slate-150);   /* card borders, section boundaries.    */
+  --rule-heavy:    var(--slate-200);   /* the one rule under a table head; the
+                                          chart baseline. Use sparingly.       */
+  --focus-ring:    var(--accent);      /* 2px solid + 2px offset. Never remove
+                                          focus; restyle it.                   */
+  --focus-offset:  2px;
+  --focus-width:   2px;
+
+  /* ------------------------------------------------------------------------
+     §5  BRAND ACCENT — teal, RATIONED
+     ------------------------------------------------------------------------
+     Meaning: "live / current / this is the number the page is about."
+     Lineage: Nord Pool's power-market teal, deepened for contrast. Chosen
+     over blue because every comparable in the category (Ornn, Deribit,
+     Linear, generic fintech) defaults to blue, and blue is already spoken
+     for as categorical slot 1 in charts.
+
+     BUDGET: at most ~3 accent marks per viewport. In practice that is the
+     hero rule, the live dot, and the chart's current-value marker.
+     ---------------------------------------------------------------------- */
+  --accent:        #00786c;   /* MARKS ONLY — rules, dots, chart markers,
+                                 filled button backgrounds. 5.4:1 on surface. */
+  --accent-ink:    #00655c;   /* TEXT — links, accented labels. 7.0:1 on
+                                 surface, 6.3:1 on page. Use this, not
+                                 --accent, whenever the teal is a glyph the
+                                 reader must read.                            */
+  --accent-wash:   #dff0ed;   /* the only tinted fill: L1 badge, selected
+                                 state, accent callout rail background.       */
+  --on-accent:     #ffffff;   /* text on an --accent fill. 5.4:1.             */
+
+  /* ------------------------------------------------------------------------
+     §6  STATUS — fixed scale, reserved meaning
+     ------------------------------------------------------------------------
+     These four steps are FIXED and identical in both themes. They are never
+     reused as "series 5", and a categorical series colour is never used for
+     status. Every status mark ships with an icon AND a text label — on the
+     light surface `warning` (1.8:1) and `serious` (2.6:1) are deliberately
+     below 3:1, and the icon+label pairing is the mitigation.
+
+     Each status has THREE tokens with three different jobs:
+       --status-x        the MARK   — dot, icon fill, chart mark. Non-text.
+       --status-x-ink    the TEXT   — AA-safe on --surface and --status-x-bg.
+       --status-x-bg     the WASH   — chip background only. Never a table-cell
+                                      fill: full-cell colour washes are the
+                                      single fastest way to look like a retail
+                                      trading app instead of a benchmark.
+     ---------------------------------------------------------------------- */
+  --status-good:       #0ca30c;
+  --status-good-ink:   #006300;
+  --status-good-bg:    #e2f3e2;
+
+  --status-warning:    #fab219;
+  --status-warning-ink:#7a5200;
+  --status-warning-bg: #fbf0d8;
+
+  --status-serious:    #ec835a;
+  --status-serious-ink:#8f4420;
+  --status-serious-bg: #fbeae2;
+
+  --status-critical:   #d03b3b;
+  --status-critical-ink:#a32222;
+  --status-critical-bg:#fbe6e6;
+
+  --status-neutral:    var(--slate-400);
+  --status-neutral-ink:var(--ink-2);
+  --status-neutral-bg: var(--slate-75);
+
+  /* ---- DELTA -------------------------------------------------------------
+     Price movement. Text-safe steps derived from the status scale — NOT the
+     status marks themselves, which are too light to read as text on white.
+     ALWAYS rendered with a visible +/− sign and a hairline arrow glyph, so
+     the colour is redundant. Never a background wash on the cell.
+     ---------------------------------------------------------------------- */
+  --delta-up:      var(--status-good-ink);   /* 7.5:1 */
+  --delta-down:    var(--status-critical-ink);/* 7.5:1 */
+  --delta-flat:    var(--ink-3);              /* 5.9:1 */
+
+  /* ---- TIER BADGES -------------------------------------------------------
+     L1 = verified transacted price · L2 = published API/list with observed
+     fills · L3 = list price only. This is an ORDINAL scale (the order is the
+     meaning), so it is encoded by ink weight + wash lightness, not by hue —
+     only L1 earns the accent, because L1 is the tier the index trusts.
+     ---------------------------------------------------------------------- */
+  --tier-1-ink:  var(--accent-ink);   --tier-1-bg: var(--accent-wash);
+  --tier-2-ink:  var(--ink-2);        --tier-2-bg: var(--slate-75);
+  --tier-3-ink:  var(--ink-3);        --tier-3-bg: var(--slate-25);
+
+  /* ------------------------------------------------------------------------
+     §6b  CHART CHROME
+     ------------------------------------------------------------------------
+     The non-data ink in a chart. All of it recessive: gridlines one step off
+     the surface, solid hairlines only, never dashed.
+
+     THE HOUSE CHART RULE: a chart is GREYSCALE by default. `--chart-line` is
+     the default single-series stroke. The categorical palette (§6c) comes out
+     only when two or more series genuinely need identity. The accent marks
+     the current value and nothing else.
+     ---------------------------------------------------------------------- */
+  --chart-surface: var(--surface);
+  --chart-grid:    var(--slate-100);  /* 1px solid. Recessive.                */
+  --chart-axis:    var(--slate-200);  /* baseline + axis rule.                */
+  --chart-label:   var(--ink-3);      /* axis tick text — AA-safe, 5.9:1.     */
+  --chart-line:    var(--slate-600);  /* default single series, 2px. 8.8:1.   */
+  --chart-wash:    rgba(69, 75, 84, 0.08); /* area fill under --chart-line.   */
+  --chart-deemph:  var(--slate-400);  /* sparkline body, context series.
+                                         3.14:1 — clears the 3:1 mark floor.  */
+  --chart-marker:  var(--accent);     /* current-value dot + hairline. ONE
+                                         per chart.                           */
+  --chart-ring:    var(--surface);    /* 2px surface ring on overlapping dots */
+  --chart-crosshair: var(--slate-300);/* hover hairline.                      */
+  --chart-gap:     2px;               /* surface gap between touching marks.  */
+
+  /* ------------------------------------------------------------------------
+     §6c  CATEGORICAL PALETTE — fixed order, NEVER cycled
+     ------------------------------------------------------------------------
+     Validated (dataviz validator, both modes, against THIS system's surfaces
+     #ffffff / #17191c): lightness band PASS, chroma floor PASS, CVD
+     separation PASS (worst adjacent ΔE 9.1 light / 8.4 dark, protanopia,
+     Machado 2009 @1.0), normal-vision floor PASS (19.6 / 19.3).
+
+     RULES
+     · Assign in slot order 1,2,3… Colour follows the ENTITY, never its rank —
+       filtering a series out must not repaint the survivors.
+     · There is no slot 9. A ninth series folds into "Other", facets into
+       small multiples, or the chart form changes.
+     · Scatter / bubble / choropleth / small-multiples use the ALL-PAIRS test
+       and are capped at THREE slots. Past three, facet.
+     · LIGHT-MODE RELIEF RULE: slots 3 (2.82:1), 4 (2.17:1) and 5 (2.69:1) sit
+       below 3:1 on white. Wherever they appear, ship visible direct labels or
+       the table view. This is not dismissable.
+     · Text never wears a series colour. A coloured mark sits BESIDE the label.
+     ---------------------------------------------------------------------- */
+  --series-1: #2a78d6;  /* blue    4.42:1 */
+  --series-2: #eb6834;  /* orange  3.20:1 */
+  --series-3: #1baf7a;  /* aqua    2.82:1  ← relief required */
+  --series-4: #eda100;  /* yellow  2.17:1  ← relief required */
+  --series-5: #e87ba4;  /* magenta 2.69:1  ← relief required */
+  --series-6: #008300;  /* green   4.95:1 */
+  --series-7: #4a3aa7;  /* violet  8.56:1 */
+  --series-8: #e34948;  /* red     3.95:1 */
+
+  /* ------------------------------------------------------------------------
+     §6d  SEQUENTIAL RAMP — one hue, light → dark, for MAGNITUDE
+     ------------------------------------------------------------------------
+     Blue. Heatmaps, choropleths, weight-share intensity. For an ORDINAL use
+     (discrete ordered marks) do not go lighter than --seq-250 on light or
+     darker than --seq-600 on dark — those are the 2:1-vs-surface floors.
+     ---------------------------------------------------------------------- */
+  --seq-100: #cde2fb;  --seq-150: #b7d3f6;  --seq-200: #9ec5f4;
+  --seq-250: #86b6ef;  --seq-300: #6da7ec;  --seq-350: #5598e7;
+  --seq-400: #3987e5;  --seq-450: #2a78d6;  --seq-500: #256abf;
+  --seq-550: #1c5cab;  --seq-600: #184f95;  --seq-650: #104281;
+  --seq-700: #0d366b;
+
+  /* ------------------------------------------------------------------------
+     §7  DIVERGING SCALE — the basis ribbon
+     ------------------------------------------------------------------------
+     The signature device. Encodes the EU-vs-global spread: which side of
+     zero, and how far.
+
+       COOL (blue)  = EU DISCOUNT — European compute cheaper than the
+                      global reference.
+       NEUTRAL      = flat. A GREY, never a hue — the midpoint has to read
+                      as "nothing happened".
+       WARM (orange)= EU PREMIUM — European compute dearer.
+
+     Poles are the categorical slot-1 blue and slot-2 orange hues, so the
+     colourblind-safety of those hues carries over. Warm/cool poles read as
+     opposite; blue↔aqua would not. Four equal steps per arm; both arms pass
+     the ordinal check in both modes (monotone lightness, adjacent ΔL ≥ 0.06,
+     near-surface end ≥ 2:1, single hue).
+
+     BINS (absolute basis, $/GPU-hr):  1: <0.10   2: 0.10–0.20
+                                       3: 0.20–0.32   4: ≥0.32
+
+     MANDATORY COMPANIONS: a scale legend, and a table view. Colour is
+     paired with column DIRECTION (up = premium, down = discount) so sign is
+     never carried by hue alone.
+     ---------------------------------------------------------------------- */
+  --div-cool-4: #1c5cab;   /* deepest discount   6.63:1 */
+  --div-cool-3: #2a78d6;   /*                    4.42:1 */
+  --div-cool-2: #5598e7;   /*                    2.99:1 */
+  --div-cool-1: #86b6ef;   /* nearest zero       2.11:1 */
+  --div-mid:    #edeff2;   /* neutral grey midpoint     */
+  --div-warm-1: #e89d83;   /* nearest zero       2.19:1 */
+  --div-warm-2: #da7550;   /*                    3.16:1 */
+  --div-warm-3: #c54e1c;   /*                    4.69:1 */
+  --div-warm-4: #9c390c;   /* deepest premium    6.99:1 */
+  /* Ink for a label set INSIDE a diverging fill — pick by the fill's
+     luminance so it always clears contrast. */
+  --div-ink-on-deep:  #ffffff;   /* on arms 3–4: 6.6:1 / 7.0:1 */
+  --div-ink-on-light: var(--ink-1); /* on arms 1–2: 8.9:1 / 8.6:1 */
+
+  /* ------------------------------------------------------------------------
+     §8  TYPOGRAPHY — three system stacks, three jobs
+     ------------------------------------------------------------------------
+     No webfonts. No @font-face. System stacks only, chosen so the fallback
+     chain lands on a grotesque / a mono / a transitional serif on every
+     platform.
+       SANS  — all UI, all prose. The workhorse.
+       MONO  — EVERY numeral the reader might compare: prices, deltas,
+               weights, timestamps, hashes, versions, axis ticks. This is the
+               institutional tell; proportional figures in a price column is
+               the fastest way to look un-audited.
+       SERIF — editorial display ONLY: methodology and research page
+               headlines, pull quotes. Never on a price, never in a chart,
+               never in the UI. (A serif on a hero figure reads as
+               decoration; the hero price uses MONO.)
+     ---------------------------------------------------------------------- */
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+               Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, "Cascadia Mono",
+               "Segoe UI Mono", "Roboto Mono", Menlo, Consolas,
+               "Liberation Mono", monospace;
+  --font-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Palladio,
+               "Hoefler Text", Georgia, "Times New Roman", serif;
+
+  /* Type scale — 1.200 minor third, anchored at 14px body. Institutional
+     products run one step smaller than consumer products; that is deliberate. */
+  --text-3xs:  10px;   /* table-head labels, flag glyph text. ALL-CAPS only. */
+  --text-2xs:  11px;   /* footnote refs, chip text, axis ticks               */
+  --text-xs:   12px;   /* dense table cells, metadata lines                  */
+  --text-sm:   13px;   /* secondary UI, ticker strip                         */
+  --text-base: 14px;   /* body prose, default UI                             */
+  --text-md:   16px;   /* lead paragraph, sub-index tile value               */
+  --text-lg:   19px;   /* card / section headings                            */
+  --text-xl:   23px;   /* page section headings                              */
+  --text-2xl:  28px;   /* page title                                         */
+  --text-3xl:  34px;   /* editorial display headline (serif)                 */
+  --text-hero: 60px;   /* THE print. Exactly one per view.                   */
+
+  --leading-tight:  1.15;  /* headings, the hero print                       */
+  --leading-snug:   1.35;  /* table cells, tiles, chips                      */
+  --leading-normal: 1.55;  /* UI text                                        */
+  --leading-prose:  1.65;  /* body copy at --measure-prose                   */
+
+  --weight-regular:  400;
+  --weight-medium:   500;
+  --weight-semibold: 600;
+  --weight-bold:     700;
+
+  --tracking-tight:  -0.02em;  /* the hero print + display sizes only        */
+  --tracking-normal: 0;
+  --tracking-wide:   0.06em;   /* small-caps-ish label runs                  */
+  --tracking-caps:   0.09em;   /* --text-3xs ALL-CAPS table heads            */
+
+  /* Numerals. Applied globally to mono in §0 below; stated here so it can be
+     reasoned about as a token. Tabular + fixed decimals means a live cell
+     never reflows on update. */
+  --numeric-table: tabular-nums lining-nums;
+
+  /* ------------------------------------------------------------------------
+     §9  SPACE — 8px base, with a 4px half-step for dense grids
+     ------------------------------------------------------------------------
+     Outer rhythm is 8px. Inside a dense table or ticker the rhythm halves to
+     4px — that nesting is what produces terminal density without the page
+     itself feeling cramped.
+     ---------------------------------------------------------------------- */
+  --space-0:  0;
+  --space-1:  2px;   /* the chart surface-gap; icon nudges                   */
+  --space-2:  4px;   /* dense-grid half-step                                 */
+  --space-3:  8px;   /* BASE                                                 */
+  --space-4:  12px;
+  --space-5:  16px;
+  --space-6:  24px;
+  --space-7:  32px;
+  --space-8:  48px;
+  --space-9:  64px;
+  --space-10: 96px;  /* major section separation                             */
+
+  /* ------------------------------------------------------------------------
+     §10  RADII & BORDER WIDTHS
+     ------------------------------------------------------------------------
+     Nothing rounder than 6px. >8px corner radii are a consumer-SaaS signal;
+     no institutional comparable uses them. Tables and the ticker are square.
+     ---------------------------------------------------------------------- */
+  --radius-0:  0;      /* tables, ticker, full-bleed bands — square          */
+  --radius-xs: 2px;    /* chips, badges, inline code                         */
+  --radius-sm: 3px;    /* buttons, inputs                                    */
+  --radius-md: 6px;    /* cards, panels. THE MAXIMUM.                        */
+  --radius-pill: 999px;/* the live dot only                                  */
+
+  --border-hairline: 1px;
+  --border-marker:   2px;   /* the accent rule on the hero card; focus ring  */
+
+  /* ------------------------------------------------------------------------
+     §11  ELEVATION — exactly one shadow token
+     ------------------------------------------------------------------------
+     Depth in this system is surface + hairline. --shadow-raised exists for
+     genuinely floating layers only: the chart tooltip and a dropdown. A card
+     never has a shadow. If you are reaching for a second shadow, use a
+     hairline instead.
+     ---------------------------------------------------------------------- */
+  --shadow-none:   none;
+  --shadow-raised: 0 2px 8px rgba(17, 18, 20, 0.10),
+                   0 0 0 1px rgba(17, 18, 20, 0.06);
+  /* The same elevation expressed as a filter, for SVG tooltips — box-shadow
+     does not apply inside SVG. Keep the two in step. */
+  --shadow-raised-svg: drop-shadow(0 2px 8px rgba(17, 18, 20, 0.18));
+
+  /* ------------------------------------------------------------------------
+     §12  MOTION
+     ------------------------------------------------------------------------
+     Motion is functional or absent. The only animation in the product is the
+     live-dot pulse and the tick flash. A tick flash is a brief OPACITY change
+     on the changed cell — never a green/red background wash across the row.
+     All of it collapses to nothing under prefers-reduced-motion (§0).
+     ---------------------------------------------------------------------- */
+  --dur-flash: 180ms;  /* the tick flash on an updated cell                  */
+  --dur-fast:  120ms;  /* hover / focus state changes                        */
+  --dur-base:  200ms;  /* disclosure, theme swap                             */
+  --dur-pulse: 2400ms; /* the live dot. Slow enough to be ambient.           */
+  --ease:      cubic-bezier(0.2, 0, 0.2, 1);
+
+  /* ------------------------------------------------------------------------
+     §13  LAYOUT
+     ------------------------------------------------------------------------ */
+  --content-max:   1280px;  /* the 12-column field                           */
+  --measure-prose: 68ch;    /* body copy never exceeds this. Charts and
+                               tables break out to full width.               */
+  --row-h:         36px;    /* standard table row                            */
+  --row-h-dense:   28px;    /* constituents grid, ticker — terminal density  */
+  --strip-h:       34px;    /* the ticker strip                              */
+
+  --z-base:    0;
+  --z-sticky:  10;   /* masthead + ticker                                    */
+  --z-overlay: 20;   /* chart tooltip                                        */
+}
+
+
+/* ==========================================================================
+   DARK — (a) follows the OS, yields to an explicit light stamp
+   Only the tokens that CHANGE are redefined. Type, space, radii, motion and
+   layout are inherited untouched from :root.
+   ========================================================================== */
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+
+    /* §2 surfaces — the plane order inverts: page is darker than card */
+    --page:           var(--slate-925);
+    --surface:        var(--slate-875);
+    --surface-inset:  var(--slate-850);
+    --surface-strip:  var(--slate-925);
+    --surface-chrome: var(--slate-950);
+    --surface-hover:  var(--slate-850);
+    --surface-active: var(--slate-825);
+
+    /* §3 ink — re-selected for the dark surface, not an automatic flip */
+    --ink-1:       #f5f6f7;              /* 16.3:1 surface / 17.5:1 page      */
+    --ink-2:       #c3c8d0;              /* 10.5:1 / 11.2:1                   */
+    --ink-3:       var(--slate-300);     /*  7.4:1 /  8.0:1                   */
+    --ink-faint:   var(--slate-450);     /*  4.5:1 — still non-text by policy */
+    --ink-inverse: #08191c;
+
+    /* §4 lines */
+    --rule:        var(--slate-800);
+    --rule-strong: var(--slate-750);
+    --rule-heavy:  var(--slate-650);
+
+    /* §5 accent — one step, bright enough to carry 3:1 as a mark and
+       4.5:1 as text, so --accent and --accent-ink converge in dark */
+    --accent:      #2fd6c3;   /* 9.7:1 on surface */
+    --accent-ink:  #2fd6c3;   /* 9.7:1 */
+    --accent-wash: #0d2b28;
+    --on-accent:   #08191c;   /* 9.9:1 on the accent fill */
+
+    /* §6 status — the four MARKS are fixed and do not change. Only the
+       text-safe inks and the washes are re-selected for the dark surface. */
+    --status-good-ink:     #0ca30c;  /* 5.3:1 */
+    --status-good-bg:      #0e2413;
+    --status-warning-ink:  #fab219;  /* 9.6:1 */
+    --status-warning-bg:   #2a2109;
+    --status-serious-ink:  #ec835a;  /* 6.7:1 */
+    --status-serious-bg:   #2a1a12;
+    --status-critical-ink: #ef7a7a;  /* 6.5:1 */
+    --status-critical-bg:  #2c1516;
+    --status-neutral:      var(--slate-450);
+    --status-neutral-bg:   var(--slate-825);
+
+    /* §6 tiers */
+    --tier-2-bg: var(--slate-825);
+    --tier-3-bg: var(--slate-850);
+
+    /* §6b chart chrome */
+    --chart-grid:      var(--slate-800);
+    --chart-axis:      var(--slate-650);
+    --chart-line:      var(--ink-2);                  /* 10.5:1 */
+    --chart-wash:      rgba(195, 200, 208, 0.08);
+    --chart-deemph:    var(--slate-450);              /*  4.5:1 */
+    --chart-crosshair: var(--slate-550);
+
+    /* §6c categorical — the same eight hues, RE-STEPPED for the dark
+       surface (not a filter, not an automatic lighten). All eight clear
+       3:1 on #17191c, so the light-mode relief rule does not apply here —
+       but ship the labels anyway so both themes read identically. */
+    --series-1: #3987e5;  /* 4.84:1 */
+    --series-2: #d95926;  /* 4.54:1 */
+    --series-3: #199e70;  /* 5.17:1 */
+    --series-4: #c98500;  /* 5.74:1 */
+    --series-5: #d55181;  /* 4.46:1 */
+    --series-6: #008300;  /* 3.56:1 */
+    --series-7: #9085e9;  /* 5.63:1 */
+    --series-8: #e66767;  /* 5.45:1 */
+
+    /* §7 diverging — the arms flip anchor: the step nearest zero is now the
+       DARKEST, so "nearly flat" still recedes toward the surface. */
+    --div-cool-4: #6da7ec;  /* 7.04:1 */
+    --div-cool-3: #3987e5;  /* 4.84:1 */
+    --div-cool-2: #256abf;  /* 3.26:1 */
+    --div-cool-1: #184f95;  /* 2.17:1 */
+    --div-mid:    #33373d;
+    --div-warm-1: #883008;  /* 2.07:1 */
+    --div-warm-2: #af4517;  /* 3.09:1 */
+    --div-warm-3: #d45e2f;  /* 4.56:1 */
+    --div-warm-4: #e28969;  /* 6.72:1 */
+    --div-ink-on-deep:  var(--ink-1);   /* on arms 3–4 in dark: 7.5:1 / 7.9:1 */
+    --div-ink-on-light: var(--ink-1);
+
+    /* §11 elevation — a dark surface cannot be lifted by a darker shadow, so
+       the ring does the work and the shadow only deepens the ground. */
+    --shadow-raised: 0 2px 10px rgba(0, 0, 0, 0.55),
+                     0 0 0 1px rgba(255, 255, 255, 0.10);
+    --shadow-raised-svg: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.7));
+  }
+}
+
+
+/* ==========================================================================
+   DARK — (b) explicit toggle. Declared AFTER the media block so that
+   data-theme="dark" wins under an OS set to light, and the :not() guard in
+   (a) lets data-theme="light" win under an OS set to dark.
+   Identical body to (a). Keep the two blocks in lockstep.
+   ========================================================================== */
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --page:           var(--slate-925);
+  --surface:        var(--slate-875);
+  --surface-inset:  var(--slate-850);
+  --surface-strip:  var(--slate-925);
+  --surface-chrome: var(--slate-950);
+  --surface-hover:  var(--slate-850);
+  --surface-active: var(--slate-825);
+
+  --ink-1:       #f5f6f7;
+  --ink-2:       #c3c8d0;
+  --ink-3:       var(--slate-300);
+  --ink-faint:   var(--slate-450);
+  --ink-inverse: #08191c;
+
+  --rule:        var(--slate-800);
+  --rule-strong: var(--slate-750);
+  --rule-heavy:  var(--slate-650);
+
+  --accent:      #2fd6c3;
+  --accent-ink:  #2fd6c3;
+  --accent-wash: #0d2b28;
+  --on-accent:   #08191c;
+
+  --status-good-ink:     #0ca30c;
+  --status-good-bg:      #0e2413;
+  --status-warning-ink:  #fab219;
+  --status-warning-bg:   #2a2109;
+  --status-serious-ink:  #ec835a;
+  --status-serious-bg:   #2a1a12;
+  --status-critical-ink: #ef7a7a;
+  --status-critical-bg:  #2c1516;
+  --status-neutral:      var(--slate-450);
+  --status-neutral-bg:   var(--slate-825);
+
+  --tier-2-bg: var(--slate-825);
+  --tier-3-bg: var(--slate-850);
+
+  --chart-grid:      var(--slate-800);
+  --chart-axis:      var(--slate-650);
+  --chart-line:      var(--ink-2);
+  --chart-wash:      rgba(195, 200, 208, 0.08);
+  --chart-deemph:    var(--slate-450);
+  --chart-crosshair: var(--slate-550);
+
+  --series-1: #3987e5;
+  --series-2: #d95926;
+  --series-3: #199e70;
+  --series-4: #c98500;
+  --series-5: #d55181;
+  --series-6: #008300;
+  --series-7: #9085e9;
+  --series-8: #e66767;
+
+  --div-cool-4: #6da7ec;
+  --div-cool-3: #3987e5;
+  --div-cool-2: #256abf;
+  --div-cool-1: #184f95;
+  --div-mid:    #33373d;
+  --div-warm-1: #883008;
+  --div-warm-2: #af4517;
+  --div-warm-3: #d45e2f;
+  --div-warm-4: #e28969;
+  --div-ink-on-deep:  var(--ink-1);
+  --div-ink-on-light: var(--ink-1);
+
+  --shadow-raised: 0 2px 10px rgba(0, 0, 0, 0.55),
+                   0 0 0 1px rgba(255, 255, 255, 0.10);
+  --shadow-raised-svg: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.7));
+}
+
+
+/* ==========================================================================
+   §0  GLOBALS — the small amount of behaviour the tokens imply
+   ========================================================================== */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  /* An explicit token background is mandatory: a transparent body borrows
+     the host's theme and the whole palette comes apart. */
+  background: var(--page);
+  color: var(--ink-2);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  /* The page body never scrolls horizontally. Wide tables and charts scroll
+     inside their own overflow-x container. */
+  overflow-x: hidden;
+}
+
+/* Every numeral the reader might compare is mono, tabular, fixed-width. */
+code, kbd, samp, pre,
+.num, .mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: var(--numeric-table);
+  font-feature-settings: "tnum" 1, "lnum" 1;
+}
+
+:focus-visible {
+  outline: var(--focus-width) solid var(--focus-ring);
+  outline-offset: var(--focus-offset);
+  border-radius: var(--radius-xs);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* forced-colors: let the OS palette through rather than fighting it. The
+   texture channel (45°/135° hatch) is the identity backup here. */
+@media (forced-colors: active) {
+  :root { --shadow-raised: none; }
+  .chip, .badge, .card { border: 1px solid CanvasText; }
+}
