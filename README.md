@@ -1,25 +1,29 @@
 # eu-compute-index
 
-**EU-CRI** — a daily, methodology-transparent reference price for renting AI compute in
-Europe. Headline series **EU-CRI-H100**: one NVIDIA H100 SXM 80GB GPU-hour, on-demand,
-8-GPU NVLink node, delivered from an EU/EEA data centre, in USD (EUR companion at the
-ECB reference rate). Sub-indices: EU-sovereign providers, marketplace vs cloud, class
-series (A100/B200 once they clear the source gate), and **EU-CRI-COMPUTE** — a
-chain-linked composite whose class basket follows the observed market across hardware
-generations. Constituent weights are data-driven: recomputed on a fixed weekly schedule
-from a trailing observation window, capped so no single venue can set the print, and
-stored append-only for audit.
+**EU-CRI** — a daily, fully reproducible reference price for renting AI compute in the
+EU/EEA. Headline series **EU-CRI-H100**: one NVIDIA H100 SXM 80GB GPU-hour, on-demand,
+per-GPU, ex-VAT, from an EU/EEA data centre, in USD with a EUR companion at the ECB
+reference rate (T-1). Companion series by market segment (`-MKT` marketplace, `-NC`
+neocloud, `-HS` hyperscaler catalog, `-SOV` EU-incorporated operators), by generation
+(H200, B200, B300, A100, H100-PCIe), and **EU-CRI-COMPUTE**, a chain-linked composite
+that follows the observed market across hardware generations.
 
-The credibility strategy is radical methodological transparency on a regional niche:
-every parameter is a visible config value, the methodology document is generated from
-that config, raw observations are immutable, and every published print carries a full,
-queryable constituent set. Design follows the IOSCO Principles for Financial Benchmarks
-(2013) as voluntary best practice — see [GOVERNANCE.md](GOVERNANCE.md),
-[METHODOLOGY.md](METHODOLOGY.md), and [SOURCES.md](SOURCES.md).
+The credibility strategy is reproducibility, not scale: every parameter is a visible
+config value, the methodology document is generated from that config, raw observations
+are immutable, every print carries a queryable constituent set, and the whole thing can
+be rebuilt from public sources by anyone with the repo. Design follows the IOSCO
+Principles for Financial Benchmarks (2013) as voluntary best practice — see
+[GOVERNANCE.md](GOVERNANCE.md), [METHODOLOGY.md](METHODOLOGY.md), and
+[SOURCES.md](SOURCES.md).
 
-> EU-CRI is a research publication. It is not investment advice and is not administered
-> as a benchmark under EU Regulation 2016/1011; it may not be used as a reference price
-> in financial instruments.
+> **EU-CRI is a price-transparency benchmark, not a settlement benchmark.** It is a
+> research publication, is not investment advice, and may not be used as a reference
+> price in financial instruments. It has **no transaction feed** and does not claim one.
+> The conditions that would have to be met before settlement use is credible are
+> published in [GOVERNANCE.md](GOVERNANCE.md); as of v0.3.0, six of the seven are unmet.
+
+Why it was rebuilt in v0.3.0, and what was wrong before:
+[research/composition-vs-price.md](research/composition-vs-price.md).
 
 ## Quickstart
 
@@ -38,10 +42,10 @@ pytest
 | Command | Purpose |
 |---|---|
 | `migrate` | apply database migrations |
-| `daily [--date D]` | run collectors (idempotent per source+day), compute all series, export CSV/charts |
+| `daily [--date D]` | run collectors (idempotent per source+day), compute all series, regenerate the site, CSV and charts |
 | `constituents --date D [--series S]` | full audit table for a print (IOSCO P13/P16) |
 | `backfill --from D --to D` | recompute prints from stored observations (never re-collects) |
-| `weights [--date D]` | show (computing if due) the weight review in effect for a date |
+| `weights [--date D]` | show the stored weight review for a date (v0.3.0 weights providers by tier; reviews are retained for audit, not used in the calculation path) |
 | `validate` | source-dropout sensitivity + optional check-series correlation |
 | `post` | regenerate the paste-ready Substack post |
 | `docs` | regenerate METHODOLOGY.md + METHODOLOGY.lock |
@@ -54,27 +58,38 @@ pytest
   normalisation, index calculation, outputs
 - `data/eucri.db` — SQLite, committed; observations and prints are append-only
   (trigger-enforced)
-- `site/` — the live dashboard (`index.html`), CSV history, charts, `data/latest.json`
-  (constituents, weight review, and per-source weblinks for the dashboard), and
-  `api/refresh.js` (Vercel-only serverless function). Regenerated daily. Deployed to
-  GitHub Pages by `.github/workflows/pages.yml` on every push that touches `site/`.
-- `config/source_links.yaml` — reference weblinks for the dashboard's Sources panel and
-  per-constituent links. Presentational only; not part of METHODOLOGY.lock.
+- `site/` — the published site, **regenerated from the database on every daily run** by
+  `src/eucri/outputs/site.py`; do not hand-edit the HTML. Six pages: `index.html`
+  (dashboard), `methodology.html`, `governance.html`, `research.html` and
+  `research/*.html`. Plus `assets/` (the design system: `tokens.css`, `site.css`),
+  `data/` (CSV history + `latest.json`), and `charts/` (PNGs used by the Substack post,
+  not by the site — the site draws its own inline SVG).
+- `site/components.html` — the design-system component gallery. A reference artefact, not
+  linked from the site.
+- `DESIGN.md` — the design system spec: tokens, chart rules, density, contrast ratios.
+- `research/*.md` — research notes, rendered to `site/research/` by the generator.
+- `config/source_links.yaml` — reference weblinks for the Sources panel and per-constituent
+  links. Presentational only; not part of METHODOLOGY.lock.
 
 ## Deploying the dashboard
 
 `site/` is a self-contained static site plus one optional serverless endpoint, so it can
 be hosted anywhere that serves static files. Two targets are wired up:
 
-- **GitHub Pages** (works out of the box): `.github/workflows/pages.yml` deploys `site/`
-  on every push. The dashboard degrades gracefully here — the "Request today's
-  collection" button reports "live refresh isn't available on this mirror" since Pages
-  has no serverless functions.
-- **Vercel** (adds live refresh): import the repo as a Vercel project with **Root
-  Directory set to `site`**. This serves the same dashboard plus `api/refresh.js`, which
-  lets a visitor trigger `daily.yml` on demand when today hasn't been collected yet.
-  Requires two Vercel **Environment Variables** (Project Settings → Environment
-  Variables — never committed to the repo):
+Both targets serve **byte-identical** content. Every link in the generated site is
+relative, so the site works equally at a subpath (`markrusch.github.io/Compute-Index/`)
+and at a domain root (Vercel), and there are no external requests to differ between them.
+
+- **GitHub Pages**: `.github/workflows/pages.yml` deploys `site/` on every push that
+  touches it. Served at `https://markrusch.github.io/Compute-Index/`.
+- **Vercel**: import the repo with **Root Directory set to `site`**. Served at the
+  project root.
+
+`site/api/refresh.js` is a Vercel-only serverless endpoint that can trigger `daily.yml`
+on demand. **The v0.3.0 dashboard does not surface it** — deliberately, so the two hosts
+behave identically rather than one carrying a button the other cannot honour. The
+endpoint still functions if called directly; to use it, set two Vercel **Environment
+Variables** (Project Settings → Environment Variables — never committed to the repo):
   - `GITHUB_DISPATCH_TOKEN` — a token scoped to just this repo's Actions
     (read/write), e.g. a fine-grained PAT limited to `markrusch/Compute-Index`
   - `GITHUB_REPO` — `markrusch/Compute-Index`
