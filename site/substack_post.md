@@ -1,6 +1,6 @@
-# EU-CRI weekly — 2026-08-18
+# EU-CRI weekly — 2026-08-19
 
-**No index value published for 2026-08-18: insufficient_sources** (constituents: 4, minimum required: 5). A gap is credible; a fabricated print is fatal — the constituent table below shows exactly what we saw.
+**No index value published for 2026-08-19: insufficient_sources** (constituents: 4, minimum required: 5). A gap is credible; a fabricated print is fatal — the constituent table below shows exactly what we saw.
 
 <!-- EDITORIAL: lead commentary -->
 
@@ -11,7 +11,7 @@
 | gcp |  | $0.00 | 0 | *(excluded: out_of_population)*
 | seeweb | list | $2.16 | 0 | *(excluded: insufficient_sources)*
 | datacrunch | list | $3.25 | 0 | *(excluded: insufficient_sources)*
-| scaleway | list | $3.84 | 0 | *(excluded: insufficient_sources)*
+| scaleway | list | $3.83 | 0 | *(excluded: insufficient_sources)*
 | nebius | list | $3.85 | 0 | *(excluded: insufficient_sources)*
 
 ![EU-CRI-H100 headline](charts/headline_7d.png)
