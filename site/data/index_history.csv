@@ -251,3 +251,14 @@ date,series,value_usd,value_eur,fx_rate,fx_date,n_sources,n_executable,flags,met
 2026-08-19,EU-CRI-H100-PCIE,,,1.1576,2026-08-18,1,0,insufficient_sources,0.3.0-dev,1
 2026-08-19,EU-CRI-H100-SOV,,,1.1576,2026-08-18,4,0,insufficient_sources,0.3.0-dev,1
 2026-08-19,EU-CRI-H200,,,1.1576,2026-08-18,0,0,insufficient_sources,0.3.0-dev,1
+2026-08-20,EU-CRI-A100,,,1.1605,2026-08-19,1,2,insufficient_sources,0.3.0-dev,1
+2026-08-20,EU-CRI-B300,,,1.1605,2026-08-19,1,0,insufficient_sources,0.3.0-dev,1
+2026-08-20,EU-CRI-COMPUTE,101.230769,,,,1,0,,0.3.0-dev,1
+2026-08-20,EU-CRI-H100,3.29,2.834985,1.1605,2026-08-19,5,1,,0.3.0-dev,1
+2026-08-20,EU-CRI-H100-7D,,,1.1605,2026-08-19,3,0,insufficient_history,0.3.0-dev,1
+2026-08-20,EU-CRI-H100-HS,,,1.1605,2026-08-19,3,0,insufficient_sources,0.3.0-dev,1
+2026-08-20,EU-CRI-H100-MKT,,,1.1605,2026-08-19,1,1,insufficient_sources,0.3.0-dev,1
+2026-08-20,EU-CRI-H100-NC,,,1.1605,2026-08-19,4,0,insufficient_sources,0.3.0-dev,1
+2026-08-20,EU-CRI-H100-PCIE,,,1.1605,2026-08-19,1,0,insufficient_sources,0.3.0-dev,1
+2026-08-20,EU-CRI-H100-SOV,,,1.1605,2026-08-19,4,0,insufficient_sources,0.3.0-dev,1
+2026-08-20,EU-CRI-H200,,,1.1605,2026-08-19,0,0,insufficient_sources,0.3.0-dev,1
