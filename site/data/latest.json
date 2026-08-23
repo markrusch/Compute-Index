@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-08-22T11:06:11Z",
+  "generated_at": "2026-08-23T11:06:59Z",
   "eucri_version": "0.1.0",
   "methodology_version": "0.3.0-dev",
   "disclaimer": "EU-CRI is a research publication. It is not investment advice and is not administered as a benchmark under EU Regulation 2016/1011; it may not be used as a reference price in financial instruments.",
-  "date": "2026-08-22",
+  "date": "2026-08-23",
   "series": {
     "EU-CRI-H100": {
-      "date": "2026-08-22",
+      "date": "2026-08-23",
       "value_usd": 3.29,
       "value_eur": 2.812206,
       "fx_rate": 1.1699,
@@ -16,11 +16,11 @@
       "flags": "",
       "wow_pct": 0.0,
       "mom_pct": 1.2308,
-      "prev_date": "2026-08-20",
+      "prev_date": "2026-08-22",
       "prev_value_usd": 3.29
     },
     "EU-CRI-H100-7D": {
-      "date": "2026-08-22",
+      "date": "2026-08-23",
       "value_usd": 3.29,
       "value_eur": 2.812206,
       "fx_rate": 1.1699,
@@ -30,11 +30,11 @@
       "flags": "",
       "wow_pct": 0.0,
       "mom_pct": null,
-      "prev_date": "2026-08-15",
+      "prev_date": "2026-08-22",
       "prev_value_usd": 3.29
     },
     "EU-CRI-H100-SOV": {
-      "date": "2026-08-22",
+      "date": "2026-08-23",
       "value_usd": null,
       "value_eur": null,
       "fx_rate": 1.1699,
@@ -44,7 +44,7 @@
       "flags": "insufficient_sources"
     },
     "EU-CRI-H100-MKT": {
-      "date": "2026-08-22",
+      "date": "2026-08-23",
       "value_usd": null,
       "value_eur": null,
       "fx_rate": 1.1699,
@@ -54,7 +54,7 @@
       "flags": "insufficient_sources"
     },
     "EU-CRI-H100-NC": {
-      "date": "2026-08-22",
+      "date": "2026-08-23",
       "value_usd": null,
       "value_eur": null,
       "fx_rate": 1.1699,
@@ -64,7 +64,7 @@
       "flags": "insufficient_sources"
     },
     "EU-CRI-H100-HS": {
-      "date": "2026-08-22",
+      "date": "2026-08-23",
       "value_usd": null,
       "value_eur": null,
       "fx_rate": 1.1699,
@@ -88,7 +88,7 @@
       "prev_value_usd": 3.85
     },
     "EU-CRI-H100-PCIE": {
-      "date": "2026-08-22",
+      "date": "2026-08-23",
       "value_usd": null,
       "value_eur": null,
       "fx_rate": 1.1699,
@@ -98,7 +98,7 @@
       "flags": "insufficient_sources"
     },
     "EU-CRI-H200": {
-      "date": "2026-08-22",
+      "date": "2026-08-23",
       "value_usd": null,
       "value_eur": null,
       "fx_rate": 1.1699,
@@ -108,7 +108,7 @@
       "flags": "insufficient_sources"
     },
     "EU-CRI-B300": {
-      "date": "2026-08-22",
+      "date": "2026-08-23",
       "value_usd": null,
       "value_eur": null,
       "fx_rate": 1.1699,
@@ -118,7 +118,7 @@
       "flags": "insufficient_sources"
     },
     "EU-CRI-A100": {
-      "date": "2026-08-22",
+      "date": "2026-08-23",
       "value_usd": null,
       "value_eur": null,
       "fx_rate": 1.1699,
@@ -128,7 +128,7 @@
       "flags": "insufficient_sources"
     },
     "EU-CRI-COMPUTE": {
-      "date": "2026-08-22",
+      "date": "2026-08-23",
       "value_usd": 101.230769,
       "value_eur": null,
       "fx_rate": null,
@@ -136,9 +136,9 @@
       "n_sources": 1,
       "n_executable": 0,
       "flags": "",
-      "wow_pct": 1.2308,
+      "wow_pct": 0.0,
       "mom_pct": null,
-      "prev_date": "2026-08-20",
+      "prev_date": "2026-08-22",
       "prev_value_usd": 101.230769
     }
   },
@@ -286,7 +286,7 @@
         "provider": "vast.ai",
         "source": "vast_ai",
         "tier": "executable",
-        "price_usd": 0.8007407407407406,
+        "price_usd": 0.7344444444444445,
         "weight": 0.0,
         "included": false,
         "exclusion_reason": "insufficient_sources",
