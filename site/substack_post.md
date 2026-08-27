@@ -1,18 +1,25 @@
-# EU-CRI weekly — 2026-08-26
+# EU-CRI weekly — 2026-08-27
 
-**No index value published for 2026-08-26: insufficient_sources** (constituents: 4, minimum required: 5). A gap is credible; a fabricated print is fatal — the constituent table below shows exactly what we saw.
+**EU-CRI-H100: $3.29 / GPU-hour** (€2.83 at ECB 1.1645 on 2026-08-27)
+
+Week-over-week: +0.0% · Month-over-month: +1.2% · Constituents: 5 (1 executable-quote)
+
+7-day mean: $3.29
 
 <!-- EDITORIAL: lead commentary -->
 
+Dispersion: cheapest constituent $2.16, dearest $3.85 — a 1.8x spread for the same reference unit.
+
 | provider | tier | $/GPU-hr | weight |
 |---|---|---|---|
+| seeweb | list | $2.16 | 19 |
+| datacrunch | list | $3.25 | 19 |
+| runpod | executable | $3.29 | 25 |
+| nebius | list | $3.85 | 19 |
+| scaleway | list | $3.85 | 19 |
 | aws |  | $0.00 | 0 | *(excluded: out_of_population)*
 | azure |  | $0.00 | 0 | *(excluded: out_of_population)*
 | gcp |  | $0.00 | 0 | *(excluded: out_of_population)*
-| seeweb | list | $2.16 | 0 | *(excluded: insufficient_sources)*
-| datacrunch | list | $3.25 | 0 | *(excluded: insufficient_sources)*
-| nebius | list | $3.85 | 0 | *(excluded: insufficient_sources)*
-| scaleway | list | $3.86 | 0 | *(excluded: insufficient_sources)*
 
 ![EU-CRI-H100 headline](charts/headline_7d.png)
 ![Constituent dispersion](charts/dispersion.png)
