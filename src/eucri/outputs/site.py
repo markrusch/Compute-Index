@@ -319,6 +319,48 @@ def _bounds(values: list[float]) -> tuple[float, float, float]:
     return floor(lo / step) * step, ceil(hi / step) * step, step
 
 
+def _monotone_path(pts: list[tuple[float, float]]) -> str:
+    """SVG path through PTS as a cubic Hermite spline, tangents chosen by the
+    Fritsch-Carlson monotone rule (the same constraint D3's curveMonotoneX and
+    matplotlib's PCHIP enforce). Passes through every real point exactly and
+    never overshoots past two consecutive points' values — so a run of real
+    prints reads as a smooth line instead of a jagged polyline, without ever
+    implying a high or low between two prints that didn't happen."""
+    n = len(pts)
+    xs = [p[0] for p in pts]
+    ys = [p[1] for p in pts]
+    if n == 2:
+        return f"M{xs[0]} {ys[0]} L{xs[1]} {ys[1]}"
+    d = [(ys[i + 1] - ys[i]) / (xs[i + 1] - xs[i]) for i in range(n - 1)]
+    m = [0.0] * n
+    m[0], m[-1] = d[0], d[-1]
+    for i in range(1, n - 1):
+        if d[i - 1] == 0 or d[i] == 0 or (d[i - 1] > 0) != (d[i] > 0):
+            m[i] = 0.0
+        else:
+            m[i] = (d[i - 1] + d[i]) / 2
+    for i in range(n - 1):
+        if d[i] == 0:
+            m[i] = m[i + 1] = 0.0
+            continue
+        a, b = m[i] / d[i], m[i + 1] / d[i]
+        if a < 0:
+            m[i], a = 0.0, 0.0
+        if b < 0:
+            m[i + 1], b = 0.0, 0.0
+        s = a * a + b * b
+        if s > 9:
+            tau = 3.0 / s**0.5
+            m[i], m[i + 1] = tau * a * d[i], tau * b * d[i]
+    parts = [f"M{xs[0]} {ys[0]}"]
+    for i in range(n - 1):
+        dx = xs[i + 1] - xs[i]
+        c1x, c1y = round(xs[i] + dx / 3, 1), round(ys[i] + m[i] * dx / 3, 1)
+        c2x, c2y = round(xs[i + 1] - dx / 3, 1), round(ys[i + 1] - m[i + 1] * dx / 3, 1)
+        parts.append(f"C{c1x} {c1y},{c2x} {c2y},{xs[i + 1]} {ys[i + 1]}")
+    return "".join(parts)
+
+
 def line_chart(points: list[Point], *, symbol: str, ccy: str = "$", dp: int = 2) -> str:
     """A single-series time-series chart. Greyscale line, accent only on the current value.
 
@@ -362,12 +404,7 @@ def line_chart(points: list[Point], *, symbol: str, ccy: str = "$", dp: int = 2)
             run.append((x(i), y(p.value)))
     if len(run) > 1:
         segments.append(run)
-    paths = "".join(
-        '<path class="ch-line" d="M'
-        + " L".join(f"{px} {py}" for px, py in seg)
-        + '"/>'
-        for seg in segments
-    )
+    paths = "".join(f'<path class="ch-line" d="{_monotone_path(seg)}"/>' for seg in segments)
     # An isolated print (both neighbours gapped) would otherwise draw nothing at all.
     isolated = "".join(
         f'<circle class="ch-marker-ring" cx="{x(i)}" cy="{y(p.value)}" r="4.5"/>'
@@ -393,9 +430,14 @@ def line_chart(points: list[Point], *, symbol: str, ccy: str = "$", dp: int = 2)
     ]
     if low_i != last_i:
         anchor = "start" if low_i < n / 2 else "end"
+        low_y = y(low_v)
+        # The current-value guide rule (drawn below, at y=ly) runs the full plot width.
+        # When the low ties or nearly ties the current value, the default +20 label
+        # offset lands right on that rule — push it further clear in that case.
+        label_y = low_y + (30 if abs(low_y - ly) < 12 else 20)
         labels.append(
             f'<text class="ch-note" x="{x(low_i) + (8 if anchor == "start" else -8)}"'
-            f' y="{y(low_v) + 20}" text-anchor="{anchor}">'
+            f' y="{label_y}" text-anchor="{anchor}">'
             f"{n}-day low {ccy}{low_v:,.{dp}f}</text>"
         )
 
@@ -468,11 +510,11 @@ def sparkline(points: list[Point]) -> str:
     def sy(v: float) -> float:
         return round(24 - (v - lo) / span * 20, 1)
 
-    d = " L".join(f"{sx(i)} {sy(v)}" for i, v in vals)
+    d = _monotone_path([(sx(i), sy(v)) for i, v in vals])
     ex, ey = sx(vals[-1][0]), sy(vals[-1][1])
     return (
         '<svg class="spark" viewBox="0 0 96 28" width="96" height="28" aria-hidden="true"'
-        f' focusable="false"><path class="spark__line" d="M{d}"/>'
+        f' focusable="false"><path class="spark__line" d="{d}"/>'
         f'<circle class="spark__ring" cx="{ex}" cy="{ey}" r="4.5"/>'
         f'<circle class="spark__dot" cx="{ex}" cy="{ey}" r="2.8"/></svg>'
     )
