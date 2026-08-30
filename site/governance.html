@@ -9,7 +9,7 @@
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f3f3f3">
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#101113">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%2317191c'/%3E%3Cpath d='M7 21 L13 13 L18 17 L25 9' fill='none' stroke='%232fd6c3' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
-<script>(function(){try{var t=localStorage.getItem('eucri-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<script>(function(){try{var t=localStorage.getItem('eucri-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}document.documentElement.classList.add('js-boot');})();</script>
 <style>
 /* ==========================================================================
    EU-CRI — European Compute Reference Index
@@ -1196,6 +1196,16 @@ code.inline { background: var(--surface-inset); border: var(--border-hairline) s
    responsive block, so each addition carries its own media query.
    ========================================================================== */
 
+/* ---- BOOT FADE-IN --------------------------------------------------------
+   One-shot, JS-gated. `.js-boot` is added to <html> by an inline head script
+   before body paints (same pre-paint idiom as the theme flash-guard above
+   it in site.py) — so with scripting off the class never lands and the page
+   is simply visible from the first frame. `prefers-reduced-motion` already
+   forces every animation-duration to 1ms globally (tokens.css §0), so this
+   collapses to an imperceptible flash there rather than a true fade. */
+.js-boot body { opacity: 0; animation: cri-boot-in var(--dur-base) var(--ease) forwards; }
+@keyframes cri-boot-in { to { opacity: 1; } }
+
 /* ---- SKIP LINK ---------------------------------------------------------- */
 /* Off-screen until focused. The masthead is sticky, so it lands below it. */
 .skip { position: absolute; left: var(--space-3); top: -100px; z-index: calc(var(--z-sticky) + 1);
@@ -1305,6 +1315,25 @@ code.inline { background: var(--surface-inset); border: var(--border-hairline) s
 .qbar { display: block; margin-top: var(--space-3); block-size: 4px; background: var(--rule);
         border-radius: var(--radius-xs); overflow: hidden; }
 .qbar > i { display: block; block-size: 100%; background: var(--chart-deemph); }
+
+/* ---- MODEL MIX BAR -------------------------------------------------------
+   A stacked composition bar — the one place besides an actual chart that the
+   categorical palette (tokens.css §6c) is justified: several GPU classes
+   genuinely need distinct identity in one whole, not just magnitude. Segment
+   widths sum to 100%; box-sizing:border-box (tokens.css §0) means each
+   segment's own hairline divider is cut from its own fill, never added on
+   top, so the bar can never overflow past its container. */
+.mixbar { display: flex; inline-size: 100%; block-size: 10px;
+          border-radius: var(--radius-xs); overflow: hidden; background: var(--rule); }
+.mixbar__seg { display: block; block-size: 100%;
+               border-right: var(--border-hairline) solid var(--surface); }
+.mixbar__seg:last-child { border-right: 0; }
+.mixlegend { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-5);
+             margin: var(--space-4) 0 0; padding: 0; list-style: none; }
+.mixlegend li { display: inline-flex; align-items: center; gap: var(--space-2);
+                font-size: var(--text-xs); color: var(--ink-2); }
+.mixlegend i { inline-size: 10px; block-size: 10px; border-radius: 2px; flex: none; }
+.mixlegend .num { color: var(--ink-3); }
 
 /* ---- GAP STATE ---------------------------------------------------------- */
 /* A gap is published, never hidden and never back-filled with a stale print.
@@ -1534,7 +1563,7 @@ figure.fig figcaption b { color: var(--ink-2); font-weight: var(--weight-semibol
       back-filled, never carried forward.</p>
       <p class="disclaimer__meta num">EU&#8209;CRI&#8209;M v0.3.0-dev &#183;
       methodology hash sha256:64d7f6cd88fc&#8230; &#183; generated
-      2026-08-30T11:09:27Z &#183; administrator Mark Rusch &#183; USD primary, EUR companion
+      2026-08-30T15:47:09Z &#183; administrator Mark Rusch &#183; USD primary, EUR companion
       at the ECB reference rate dated on or before the print date.</p>
     </div>
   </div>

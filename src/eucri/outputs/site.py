@@ -485,7 +485,13 @@ def sparkline(points: list[Point]) -> str:
 _THEME_HEAD = (
     "(function(){try{var t=localStorage.getItem('eucri-theme');"
     "if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}"
-    "catch(e){}})();"
+    "catch(e){}"
+    # Marks the document as scripted, before body paints. The one-shot fade-in CSS
+    # (.js-boot body, see site.css) only fires when this class is present, so with
+    # scripting off the class is never added and the page renders at full opacity
+    # immediately — nothing to skip, nothing to wait for.
+    "document.documentElement.classList.add('js-boot');"
+    "})();"
 )
 
 _THEME_BODY = (
@@ -1145,15 +1151,17 @@ def _sources_card(ctx: SiteContext) -> str:
 </div>"""
 
 
-def _weights_card(ctx: SiteContext) -> str:
-    """The standing weight review — a data update on a fixed schedule, not a discretion."""
+def _model_mix_entries(ctx: SiteContext) -> tuple[str, int, list[sqlite3.Row]] | None:
+    """The standing weight review's current row set, scope='model' — shared by the
+    full ledger (`_weights_card`) and the compact summary bar (`_model_mix_bar`) so
+    the two can never drift onto different revisions of the same basket."""
     row = ctx.conn.execute(
         "SELECT effective_date FROM weight_sets WHERE effective_date <= ?"
         " ORDER BY effective_date DESC LIMIT 1",
         (ctx.date,),
     ).fetchone()
     if row is None:
-        return ""
+        return None
     effective = row["effective_date"]
     rev = ctx.conn.execute(
         "SELECT MAX(revision) AS rev FROM weight_sets WHERE effective_date = ?", (effective,)
@@ -1166,7 +1174,16 @@ def _weights_card(ctx: SiteContext) -> str:
         )
     )
     if not entries:
+        return None
+    return effective, int(rev["rev"]), entries
+
+
+def _weights_card(ctx: SiteContext) -> str:
+    """The standing weight review — a data update on a fixed schedule, not a discretion."""
+    found = _model_mix_entries(ctx)
+    if found is None:
         return ""
+    effective, revn, entries = found
     total = sum(e["weight"] for e in entries) or 1.0
     body = "".join(
         f'<li class="ledger__row"><span class="ledger__n num">{i:02d}</span>'
@@ -1183,9 +1200,51 @@ def _weights_card(ctx: SiteContext) -> str:
     <div><h3 class="card__title">Composite basket, effective {_e(effective)}</h3>
     <p class="card__sub">Window {_e(window)} &#183; {entries[0]["n_days_window"]} collection
     days &#183; recomputed by a fixed published formula, stored append-only</p></div>
-    <span class="card__meta num">rev {rev["rev"]}</span>
+    <span class="card__meta num">rev {revn}</span>
   </div>
   <div class="card__body"><ol class="ledger">{body}</ol></div>
+</div>"""
+
+
+def _model_mix_bar(ctx: SiteContext) -> str:
+    """A compact composition summary of the same basket `_weights_card` itemises in
+    full below it — a stacked bar, not a replacement for the ledger's review-window
+    and formula detail. Uses the categorical palette (tokens.css §6c): colour here
+    identifies a GPU class across a genuinely multi-part whole, the documented case
+    for reaching past the single-hue chart default."""
+    found = _model_mix_entries(ctx)
+    if found is None:
+        return ""
+    effective, _revn, entries = found
+    total = sum(e["weight"] for e in entries) or 1.0
+    shares = [(str(e["key"]), e["weight"] / total * 100) for e in entries]
+    # The palette has 8 fixed slots and no ninth — DESIGN.md/tokens.css §6c is explicit
+    # that a ninth series folds into "Other" rather than reusing a slot's colour.
+    if len(shares) > 8:
+        shares, rest = shares[:7], shares[7:]
+        shares.append(("Other", sum(pct for _k, pct in rest)))
+    segs = "".join(
+        f'<span class="mixbar__seg" style="inline-size:{pct:.4f}%;'
+        f'background:var(--series-{i + 1})"></span>'
+        for i, (_key, pct) in enumerate(shares)
+    )
+    legend = "".join(
+        f'<li><i style="background:var(--series-{i + 1})"></i>'
+        f"<span>{_e(key)}</span><span class=\"num\">{pct:,.1f}%</span></li>"
+        for i, (key, pct) in enumerate(shares)
+    )
+    label = ", ".join(f"{key} {pct:.1f}%" for key, pct in shares)
+    return f"""<div class="card">
+  <div class="card__head">
+    <div><h3 class="card__title">Model mix</h3>
+    <p class="card__sub">Composite weight by GPU class, effective {_e(effective)} &#183; same
+    basket as the ledger below</p></div>
+  </div>
+  <div class="card__body">
+    <div class="mixbar" role="img"
+    aria-label="Composite weight by GPU class: {_e(label)}">{segs}</div>
+    <ul class="mixlegend">{legend}</ul>
+  </div>
 </div>"""
 
 
@@ -1254,6 +1313,7 @@ def _dashboard(ctx: SiteContext) -> str:
       behind them. A gap is credible; a fabricated print is fatal.</p></div></div>
     <div class="stack">
       {_quality_card(ctx)}
+      {_model_mix_bar(ctx)}
       {_weights_card(ctx)}
       {_sources_card(ctx)}
     </div>
