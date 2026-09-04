@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Mark Rusch
 """SQLite connection and migrations.
 
 Raw tables (observations, daily_index) are append-only, enforced by triggers

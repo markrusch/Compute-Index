@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Mark Rusch
 """Exact weighted-median semantics (METHODOLOGY.md §3.6): lower weighted median."""
 
 from __future__ import annotations

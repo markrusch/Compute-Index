@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Mark Rusch
 """A very small Markdown -> HTML renderer, written here rather than added as a dependency.
 
 WHY not a library: the site must render under a CSP that permits nothing off-origin and

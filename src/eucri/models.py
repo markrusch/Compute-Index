@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Mark Rusch
 """Shared dataclasses."""
 
 from __future__ import annotations

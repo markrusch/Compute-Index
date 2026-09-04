@@ -1,0 +1,60 @@
+Creative Commons Attribution 4.0 International (CC BY 4.0)
+Copyright 2026 Mark Rusch
+
+WHAT THIS COVERS
+
+The prose documentation and research output of this project:
+
+    METHODOLOGY.md      GOVERNANCE.md     SOURCES.md
+    DESIGN.md           STYLE.md          CHANGELOG.md
+    README.md           research/*.md
+
+and the rendered versions of those documents published on the project website.
+
+It does NOT cover the software (Apache-2.0, see LICENSE) or the index data
+(see DATA-TERMS.md).
+
+
+THE LICENCE
+
+This material is licensed under the Creative Commons Attribution 4.0
+International License. The authoritative legal code is published by Creative
+Commons at:
+
+    https://creativecommons.org/licenses/by/4.0/legalcode
+
+and the human-readable summary at:
+
+    https://creativecommons.org/licenses/by/4.0/
+
+The legal code is referenced rather than reproduced here, which is how Creative
+Commons intends its licences to be applied: the canonical text lives at the URL
+above and cannot drift from it.
+
+In short, and without replacing the legal code above: you may share and adapt
+this material for any purpose, including commercially, provided you give
+appropriate credit, link to the licence, and indicate whether changes were made.
+
+
+HOW TO ATTRIBUTE
+
+    Methodology and documentation from EU-CRI by Mark Rusch, licensed
+    under CC BY 4.0. https://creativecommons.org/licenses/by/4.0/
+
+When citing a specific published value or methodology version, cite the version
+and lock hash so the claim is checkable — see CITATION.cff and the "how to cite"
+section on the project website.
+
+
+WHY THE METHODOLOGY IS OPENLY LICENSED
+
+A benchmark that cannot be checked is not a benchmark. IOSCO transparency and the
+project's own governance both require the methodology to be public, so licensing
+it openly costs nothing and makes the transparency real rather than nominal: a
+reader may reproduce it, quote it at length, translate it, or publish a critique
+that includes it.
+
+Attribution is the one condition, and it is the point. The methodology and the
+values computed under it are only meaningful when it is clear who computed them
+and under which published version. That correspondence is protected by the
+trademark, not by this licence — see NOTICE.

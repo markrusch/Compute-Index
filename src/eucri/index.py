@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Mark Rusch
 """EU-CRI index calculation (methodology-hashed: changes require a version bump).
 
 Pure functions — no database access — so the whole calculation is golden-file testable.

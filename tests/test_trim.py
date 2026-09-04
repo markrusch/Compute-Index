@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Mark Rusch
 """Count-based trim, and the regression that killed percentile winsorising.
 
 v0.2.0 clamped the constituent set at nearest-rank p5/p95. At the panel sizes this index

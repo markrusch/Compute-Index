@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Mark Rusch
 """End-to-end weight review + composite flow over a multi-day history.
 
 Timeline (2026-07-13 is a Monday):

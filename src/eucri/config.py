@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Mark Rusch
 """Typed loaders for the methodology config.
 
 factors.yaml is the single source of truth for every methodology parameter;

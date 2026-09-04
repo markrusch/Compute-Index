@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Mark Rusch
 """ENTSO-E Transparency day-ahead prices — overlay data ONLY, never an index input.
 
 Requires a free ENTSOE_TOKEN (env var or .env). Skips cleanly when absent.

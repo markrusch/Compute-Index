@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Mark Rusch
 """Collector infrastructure: polite HTTP, fail-soft execution, per-day idempotency.
 
 Rules (SOURCES.md): 1 request per source per day, honest User-Agent, 30s timeout,

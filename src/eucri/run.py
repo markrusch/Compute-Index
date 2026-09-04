@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Mark Rusch
 """CLI entrypoint: python -m eucri.run <command>."""
 
 from __future__ import annotations

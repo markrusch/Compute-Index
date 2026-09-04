@@ -1483,7 +1483,7 @@ figure.fig figcaption b { color: var(--ink-2); font-weight: var(--weight-semibol
     same file at build time, so neither can drift from the calculation.</p>
     <div class="pagehead__meta">
       <span>Version <span class="num">v0.3.0-dev</span></span>
-      <span id="lock">Lock <span class="num">sha256:64d7f6cd88fc3e46&#8230;</span></span>
+      <span id="lock">Lock <span class="num">sha256:903fcfecf9d327da&#8230;</span></span>
       <span>Print date <span class="num">2026-09-04</span></span>
       <span><a href="governance.html">Change procedure</a></span>
     </div>
@@ -1498,7 +1498,7 @@ figure.fig figcaption b { color: var(--ink-2); font-weight: var(--weight-semibol
             <p class="card__sub">Hash-locked. A change to any row requires a version bump, a
             CHANGELOG entry, and one publication's notice.</p></div>
             <span class="card__meta num">v0.3.0-dev &#183;
-            sha256:64d7f6cd&#8230;</span>
+            sha256:903fcfec&#8230;</span>
           </div>
           <div class="card__body"><ol class="ledger"><li class="ledger__row ledger__row--head"><span>#</span><span>Step</span><span class="ledger__v">Parameter</span></li><li class="ledger__row"><span class="ledger__n num">01</span><div class="ledger__body"><h4 class="ledger__t">Reference unit</h4><p class="ledger__d">One H100 SXM GPU-hour, on-demand, delivered from the EU/EEA, per GPU, ex-VAT, excluding storage and metered egress. A class prices its reference variant only.</p></div><span class="ledger__v num">6 classes</span></li><li class="ledger__row"><span class="ledger__n num">02</span><div class="ledger__body"><h4 class="ledger__t">Unit filters</h4><p class="ledger__d">Offers below 2 GPUs are excluded rather than normalised: the per-GPU discount saturates at 2 GPUs, while a 1-GPU offer carries a small-order premium. Sanity band $0.25&#8211;$25.00. Excluded tiers: interruptible, spot, community.</p></div><span class="ledger__v num">&#8805;2 GPU</span></li><li class="ledger__row"><span class="ledger__n num">03</span><div class="ledger__body"><h4 class="ledger__t">Market segment</h4><p class="ledger__d">The constituent distribution is bimodal, so series never average across the neocloud/hyperscaler gap. The headline draws from marketplace, neocloud.</p></div><span class="ledger__v num">3 segments</span></li><li class="ledger__row"><span class="ledger__n num">04</span><div class="ledger__body"><h4 class="ledger__t">Staleness</h4><p class="ledger__d">Manually verified static entries warn at 45 days and are excluded at 90.</p></div><span class="ledger__v num">90 d</span></li><li class="ledger__row"><span class="ledger__n num">05</span><div class="ledger__body"><h4 class="ledger__t">Provider weight</h4><p class="ledger__d">A provider with any executable offer is weighted 2&#215; a list-only provider. Capacity does not enter at provider level: it is unobservable for every list source.</p></div><span class="ledger__v num">&#215;2.0</span></li><li class="ledger__row"><span class="ledger__n num">06</span><div class="ledger__body"><h4 class="ledger__t">Concentration cap</h4><p class="ledger__d">No provider may exceed this share of total weight; the excess is redistributed pro-rata to a fixed point. Mathematically inert at n=4; binds from n=5. Every print publishes whether it bound.</p></div><span class="ledger__v num">25%</span></li><li class="ledger__row"><span class="ledger__n num">07</span><div class="ledger__body"><h4 class="ledger__t">Offer spread</h4><p class="ledger__d">Each provider's share is spread across its own offers in proportion to observed capacity, capped at 64 GPUs, defaulting to 8 where capacity is unobservable.</p></div><span class="ledger__v num">cap 64</span></li><li class="ledger__row"><span class="ledger__n num">08</span><div class="ledger__body"><h4 class="ledger__t">Trim</h4><p class="ledger__d">Count-based: clamp the k highest and k lowest offer prices to the k-th order statistic. Percentile winsorising is inert at this panel size — at n=6 both p5/p95 and p10/p90 resolve to (min, max) and clamp nothing.</p></div><span class="ledger__v num">n&#8805;5&#8594;k=1 · n&#8805;10&#8594;k=2 · n&#8805;20&#8594;k=3</span></li><li class="ledger__row"><span class="ledger__n num">09</span><div class="ledger__body"><h4 class="ledger__t">Estimator</h4><p class="ledger__d">Weighted median over offers: the first price at which cumulative weight reaches 50%. It always lands on a price someone actually quoted.</p></div><span class="ledger__v num">over offers</span></li><li class="ledger__row"><span class="ledger__n num">10</span><div class="ledger__body"><h4 class="ledger__t">Publication gate</h4><p class="ledger__d">Fewer than 5 qualifying providers or fewer than 5 qualifying offers publishes no value, flagged <code class="inline">insufficient_sources</code> / <code class="inline">insufficient_offers</code>. There is no fallback waterfall.</p></div><span class="ledger__v num">&#8805;5 / &#8805;5</span></li><li class="ledger__row"><span class="ledger__n num">11</span><div class="ledger__body"><h4 class="ledger__t">EUR companion</h4><p class="ledger__d">USD value divided by the most recent ECB reference rate dated on or before the print date, refused beyond 7 days old. The ECB publishes after the cut-off, so the EUR leg is T&#8722;1 by construction.</p></div><span class="ledger__v num">&#8804;7 d</span></li><li class="ledger__row"><span class="ledger__n num">12</span><div class="ledger__body"><h4 class="ledger__t">Smoothing companion</h4><p class="ledger__d">The headline's 7-day mean, requiring at least 4 non-null days. Published beside the headline, never as it.</p></div><span class="ledger__v num">7 d</span></li><li class="ledger__row"><span class="ledger__n num">13</span><div class="ledger__body"><h4 class="ledger__t">Composite</h4><p class="ledger__d">Chain-linked over class sub-indices from a base of 100, class shares floored at 5% and capped at 75%. A class that gaps drops out of that day's link.</p></div><span class="ledger__v num">base 100</span></li><li class="ledger__row"><span class="ledger__n num">14</span><div class="ledger__body"><h4 class="ledger__t">Quality flag</h4><p class="ledger__d">A constituent moving more than 30% day-over-day is flagged for review and is never silently excluded.</p></div><span class="ledger__v num">30%</span></li><li class="ledger__row"><span class="ledger__n num">15</span><div class="ledger__body"><h4 class="ledger__t">Revisions</h4><p class="ledger__d">Observations and prints are append-only, enforced by database triggers. An error is corrected as a new revision flagged <code class="inline">correction</code>; prior revisions stay queryable forever.</p></div><span class="ledger__v num">append-only</span></li></ol></div>
         </div>
@@ -1523,7 +1523,7 @@ python -m eucri.run docs</code></pre>
                 <div class="ledger__body"><h4 class="ledger__t">Methodology lock</h4>
                 <p class="ledger__d">A sha256 over factors.yaml, sovereign.yaml, index.py,
                 normalise.py and weights.py. CI fails whenever the working tree stops matching
-                it.<span class="ledger__k">sha256:64d7f6cd88fc3e468ff4036fc8638394971eaafe1c0232b0295b9e9e3b72e372</span></p></div>
+                it.<span class="ledger__k">sha256:903fcfecf9d327da586990e245a6751c865a642ca81991a36d6b2ab00bdfc1e6</span></p></div>
                 <span class="ledger__v num">v0.3.0-dev</span></li>
               <li class="ledger__row"><span class="ledger__n num">A2</span>
                 <div class="ledger__body"><h4 class="ledger__t">Machine-readable prints</h4>
@@ -1760,9 +1760,16 @@ eu_eea_countries: [AT, BE, BG, HR, CY, CZ, DK, EE, FI, FR, DE, GR, HU, IE, IT,
       prices actually obtainable. Past values are not indicative of future values. A session
       with too few qualifying providers is <strong>published as a gap</strong> — never
       back-filled, never carried forward.</p>
+      <p>&#169; 2026 Mark Rusch. The <strong>software</strong> that computes this index is
+      open source under the Apache&#160;License&#160;2.0 and the <strong>methodology</strong>
+      is published under CC&#160;BY&#160;4.0, so any print here can be reproduced and
+      checked independently. The <strong>index data</strong> is published under separate
+      terms: free to use for research, journalism and other non-commercial purposes with
+      attribution. &#8220;EU&#8209;CRI&#8221; is used as the identity of this benchmark and
+      its published values; a fork is welcome and must carry its own name.</p>
       <p class="disclaimer__meta num">EU&#8209;CRI&#8209;M v0.3.0-dev &#183;
-      methodology hash sha256:64d7f6cd88fc&#8230; &#183; generated
-      2026-09-04T19:32:35Z &#183; administrator Mark Rusch &#183; USD primary, EUR companion
+      methodology hash sha256:903fcfecf9d3&#8230; &#183; generated
+      2026-09-04T20:07:11Z &#183; administrator Mark Rusch &#183; USD primary, EUR companion
       at the ECB reference rate dated on or before the print date.</p>
     </div>
   </div>

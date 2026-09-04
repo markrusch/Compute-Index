@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Mark Rusch
 """Validation diagnostics (methodology memo §4): source-dropout sensitivity and an
 optional correlation check against a manually entered external series.
 

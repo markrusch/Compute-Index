@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Mark Rusch
 """METHODOLOGY.md + METHODOLOGY.lock generation.
 
 The lock records a sha256 over every file that can change a published print

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Mark Rusch
 """Scaleway public Instance API (no auth) — EU list prices, zone by zone.
 
 Collection scope (SOURCES.md): scaleway.com/pricing renders GPU prices via JS only, so

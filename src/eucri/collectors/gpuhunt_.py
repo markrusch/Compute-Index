@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Mark Rusch
 """Hyperscaler EU list prices via the open-source gpuhunt package (dstack catalogs).
 
 Scope: aws / azure / gcp only (other gpuhunt providers are covered directly or are

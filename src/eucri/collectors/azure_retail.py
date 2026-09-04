@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Mark Rusch
 """Azure Retail Prices API (no auth) — EEA list prices for mapped ND/NC H100/A100/H200 SKUs.
 
 Public, unauthenticated pricing feed (prices.azure.com); one OData query per EEA region,

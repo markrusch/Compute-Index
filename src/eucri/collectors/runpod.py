@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Mark Rusch
 """RunPod public GraphQL (no auth) — secure-cloud executable per-GPU rates.
 
 Collection scope (SOURCES.md): secure cloud only; community tier is outside the index

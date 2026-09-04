@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Mark Rusch
 """Normalisation to the reference unit (methodology-hashed: changes require a version bump).
 
 Input: raw observation rows (sqlite Rows or dicts). Output: **one NormalisedObs per

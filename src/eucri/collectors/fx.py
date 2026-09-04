@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Mark Rusch
 """ECB EUR/USD reference rate via frankfurter.app (stored in the fx table, not observations)."""
 
 from __future__ import annotations

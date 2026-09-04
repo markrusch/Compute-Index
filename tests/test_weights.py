@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Mark Rusch
 """Unit tests for the data-driven weight mechanics (METHODOLOGY.md §3.1–3.2)."""
 
 from __future__ import annotations

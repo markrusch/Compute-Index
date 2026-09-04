@@ -1,0 +1,98 @@
+EU-CRI — European Compute Reference Index
+Copyright 2026 Mark Rusch
+
+This product includes software developed by Mark Rusch.
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this software except in compliance with the License. You may obtain a copy of the
+License in the LICENSE file distributed with this work, or at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+
+-------------------------------------------------------------------------------
+SCOPE: WHAT THE APACHE LICENCE COVERS HERE
+-------------------------------------------------------------------------------
+
+This repository contains three kinds of material, and they are NOT all under the
+same terms. Read this before reusing anything.
+
+1. SOFTWARE — Apache License 2.0.
+   Everything under `src/` and `tests/`, the build configuration, and the site
+   generator. Each file carries an SPDX-License-Identifier.
+
+2. DOCUMENTATION AND RESEARCH — Creative Commons Attribution 4.0 International
+   (CC BY 4.0). METHODOLOGY.md, GOVERNANCE.md, SOURCES.md, DESIGN.md, STYLE.md,
+   CHANGELOG.md and research/*.md. The methodology is published in full because a
+   benchmark that cannot be checked is not a benchmark; attribution travels with
+   it. See LICENSE-docs.
+
+3. INDEX DATA — see DATA-TERMS.md. The published prints, the constituent audit
+   sets and the observation database (`site/data/`, `data/eucri.db`) are NOT
+   covered by the Apache License. The Apache License grants rights in software,
+   not in the data a program produces.
+
+-------------------------------------------------------------------------------
+TRADEMARKS
+-------------------------------------------------------------------------------
+
+The Apache License does not grant permission to use the trade names, trademarks,
+service marks, or product names of the licensor (section 6).
+
+"EU-CRI" and "European Compute Reference Index", together with the series
+identifiers derived from them, are used by Mark Rusch as the identity of this
+benchmark and its published values. You may use them nominatively — to refer to
+this index, to cite it in research or journalism, and to state that software is
+compatible with it. You may not use them to name a fork, a derived index, or a
+commercial product, or in any way that suggests endorsement by or affiliation
+with the administrator.
+
+A permissively licensed fork is welcome. It must carry its own name: a benchmark
+name identifies who computed the value and under which published methodology, and
+that correspondence is the entire point of the mark.
+
+-------------------------------------------------------------------------------
+THIRD-PARTY DEPENDENCIES
+-------------------------------------------------------------------------------
+
+Runtime dependencies and their licences:
+
+    requests      Apache-2.0
+    PyYAML        MIT
+    matplotlib    Matplotlib licence (PSF-derived, BSD-compatible)
+    gpuhunt       MPL-2.0        (dstack GmbH)
+
+`certifi`, a CA bundle reached transitively through `requests`, is also MPL-2.0.
+
+MPL-2.0 is file-level weak copyleft. Both MPL-2.0 components are used unmodified
+as libraries, so the obligation does not extend to this project's own files. If a
+file from either is ever modified and redistributed, MPL-2.0 section 3 applies to
+that file.
+
+-------------------------------------------------------------------------------
+UPSTREAM DATA SOURCES
+-------------------------------------------------------------------------------
+
+Index values are derived from public price surfaces. SOURCES.md records, per
+source, the endpoint, the IOSCO input tier, the robots/ToS basis relied upon, and
+the date it was last reviewed. Two sources are themselves redistributors: ECB
+reference rates reach this project via frankfurter.dev, and hyperscaler catalog
+prices via the gpuhunt package.
+
+Nothing in this file, and nothing in DATA-TERMS.md, purports to grant rights in
+any upstream source's own data beyond what that source's terms permit.
+
+-------------------------------------------------------------------------------
+STATUS
+-------------------------------------------------------------------------------
+
+EU-CRI is a research publication. It is not investment advice, is not administered
+by an authorised benchmark administrator under Regulation (EU) 2016/1011, and may
+not be used as a reference price in a financial instrument. See GOVERNANCE.md for
+the regulatory position and for the conditions that would have to be met before
+settlement use could be credible.

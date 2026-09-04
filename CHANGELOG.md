@@ -61,6 +61,18 @@ cause was not the estimator but the unit definition. Changes, in order of impact
   only below EUR 200m average notional over 12 months. The research-publication
   disclaimer is retained, and the settlement-grade preconditions are now published and
   falsifiable rather than implied.
+- 2026-09-04 (still 0.3.0-dev, pre-launch): **methodology lock rehashed for an editorial
+  change — no numeric effect.** The project was licensed (Apache-2.0 for the software,
+  CC BY 4.0 for the documentation, separate terms for the index data), which added a
+  two-line SPDX/copyright header to every source file including three hash-locked ones:
+  `index.py`, `normalise.py`, `weights.py`. The diff is 6 inserted comment lines and zero
+  deletions; the golden print, weighting, normalisation, trim and estimator tests all
+  reproduce their pinned values unchanged. `methodology_version` is deliberately **not**
+  bumped: this is editorial under §1's patch definition, and a bump would discard the
+  stored weight review (`_load_review` drops a review whose methodology version differs)
+  and force a recomputation for a licence header. Recorded here because the lock hash
+  moving without a version change is exactly the kind of thing an audit trail exists to
+  explain.
 
 ## 0.2.0-dev — 2026-07-19
 

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Mark Rusch
 """The in-repo Markdown renderer. Covers the constructs METHODOLOGY.md, GOVERNANCE.md and
 the research notes actually use, plus the escaping rules that keep the output safe."""
 

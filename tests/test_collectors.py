@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Mark Rusch
 """Collector parsing against recorded fixtures + fail-soft behaviour. No live network."""
 
 from __future__ import annotations

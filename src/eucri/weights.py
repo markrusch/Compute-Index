@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Mark Rusch
 """Data-driven weight determination (methodology-hashed: changes require a version bump).
 
 Pure functions — no database access. Three mechanisms, all standard index procedure:

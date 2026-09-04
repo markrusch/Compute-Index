@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Mark Rusch
 """Manually verified price entries for EU neoclouds without stable public APIs.
 
 Each config/providers/*.yaml carries a `last_verified` date. Entries are warned at

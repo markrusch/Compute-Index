@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Mark Rusch
 """Static site generation: revision selection, gap honesty, and the page shell contract."""
 
 from __future__ import annotations

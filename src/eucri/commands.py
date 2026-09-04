@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Mark Rusch
 """Implementations of the data-facing CLI commands (daily, constituents, backfill, ...).
 
 Database orchestration lives here; the calculation itself (index.py, normalise.py) is

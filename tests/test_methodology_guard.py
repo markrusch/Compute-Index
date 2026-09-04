@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Mark Rusch
 """The methodology change guard, verified locally and in CI.
 
 Three invariants:

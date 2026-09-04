@@ -1,19 +1,52 @@
 [build-system]
-requires = ["setuptools>=68"]
+# >=77 for PEP 639: `license` as an SPDX expression plus `license-files`, which
+# emits a License-Expression field that SBOM and licence-audit tooling can read
+# without guessing from classifiers.
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "eu-compute-index"
 version = "0.1.0"
 description = "EU-CRI: a daily, methodology-transparent EU GPU rental price index"
+readme = "README.md"
 requires-python = ">=3.11"
 authors = [{ name = "Mark Rusch", email = "rusch.mh@gmail.com" }]
+maintainers = [{ name = "Mark Rusch", email = "rusch.mh@gmail.com" }]
+# Software only. The documentation is CC BY 4.0 (LICENSE-docs) and the index data
+# is published under separate terms (DATA-TERMS.md) -- a licence over source code
+# does not carry rights in the data the program produces. See NOTICE.
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+keywords = [
+    "benchmark", "price-index", "gpu", "compute", "reference-rate",
+    "iosco", "reproducible-research",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Financial and Insurance Industry",
+    "Intended Audience :: Science/Research",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Office/Business :: Financial",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Typing :: Typed",
+]
 dependencies = [
     "requests>=2.31,<3",
     "PyYAML>=6.0,<7",
     "matplotlib>=3.8,<4",
     "gpuhunt>=0.1,<1",
 ]
+
+[project.urls]
+Homepage = "https://markrusch.github.io/Compute-Index/"
+Repository = "https://github.com/markrusch/Compute-Index"
+Methodology = "https://markrusch.github.io/Compute-Index/methodology.html"
+Governance = "https://markrusch.github.io/Compute-Index/governance.html"
+Changelog = "https://github.com/markrusch/Compute-Index/blob/main/CHANGELOG.md"
 
 [project.optional-dependencies]
 dev = [

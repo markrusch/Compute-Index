@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Mark Rusch
 """Daily runs are idempotent: re-running never duplicates data, recomputes add revisions."""
 
 from __future__ import annotations

@@ -106,3 +106,26 @@ unless the version is bumped, the CHANGELOG has an entry, and the lock is regene
 and takes effect only after one publication's notice. Scheduled weight reviews execute
 a fixed published formula and are data updates, not methodology changes. Procedure:
 [GOVERNANCE.md](GOVERNANCE.md).
+
+## Licence
+
+Three kinds of material live here, under three different terms. A licence over source
+code does not carry rights in the data a program produces, so they are stated separately.
+
+| Material | Terms |
+|---|---|
+| **Software** — `src/`, `tests/`, build config | [Apache&nbsp;2.0](LICENSE) |
+| **Documentation and research** — `METHODOLOGY.md`, `GOVERNANCE.md`, `SOURCES.md`, `DESIGN.md`, `STYLE.md`, `research/*.md` | [CC&nbsp;BY&nbsp;4.0](LICENSE-docs) |
+| **Index data** — `site/data/`, `data/eucri.db` | [DATA-TERMS.md](DATA-TERMS.md) |
+
+The methodology is openly licensed on purpose: a benchmark that cannot be checked is not
+a benchmark, and this repo already claims every print is recomputable from public sources.
+That claim is only real if you are actually permitted to do it.
+
+**Name.** "EU-CRI" identifies this benchmark and the values published under it. Cite it,
+critique it, build on it — but a fork must carry its own name, because a benchmark name
+says who computed the value and under which published methodology. See [NOTICE](NOTICE).
+
+**Status.** EU-CRI is a research publication: not investment advice, not administered by
+an authorised benchmark administrator under Regulation (EU) 2016/1011, and not for use as
+a reference price in a financial instrument. See [GOVERNANCE.md](GOVERNANCE.md).

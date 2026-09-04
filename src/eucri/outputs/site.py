@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Mark Rusch
 """Static site generation: the published EU-CRI pages, rendered from the DB + the docs.
 
 WHY a generator and not hand-maintained HTML: the dashboard has to be correct the morning
@@ -671,6 +673,13 @@ def _footer(ctx: SiteContext, prefix: str) -> str:
       prices actually obtainable. Past values are not indicative of future values. A session
       with too few qualifying providers is <strong>published as a gap</strong> — never
       back-filled, never carried forward.</p>
+      <p>&#169; 2026 Mark Rusch. The <strong>software</strong> that computes this index is
+      open source under the Apache&#160;License&#160;2.0 and the <strong>methodology</strong>
+      is published under CC&#160;BY&#160;4.0, so any print here can be reproduced and
+      checked independently. The <strong>index data</strong> is published under separate
+      terms: free to use for research, journalism and other non-commercial purposes with
+      attribution. &#8220;EU&#8209;CRI&#8221; is used as the identity of this benchmark and
+      its published values; a fork is welcome and must carry its own name.</p>
       <p class="disclaimer__meta num">EU&#8209;CRI&#8209;M v{_e(ctx.version)} &#183;
       methodology hash sha256:{_e(ctx.lock_hash[:12])}&#8230; &#183; generated
       {_e(ctx.generated_at)} &#183; administrator Mark Rusch &#183; USD primary, EUR companion

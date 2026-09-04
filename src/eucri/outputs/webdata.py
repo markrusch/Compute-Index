@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Mark Rusch
 """site/data/latest.json — the data contract for the static dashboard (site/index.html).
 
 Never part of the calculation path: pure read-and-serialise of what daily_index,

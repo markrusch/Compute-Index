@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Mark Rusch
 """Unit-definition filters (METHODOLOGY.md §1)."""
 
 from __future__ import annotations

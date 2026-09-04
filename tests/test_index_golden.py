@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Mark Rusch
 """Golden-file test: the full v0.3.0 calculation on a hand-computed constituent set.
 
 Every expected number below was computed by hand from METHODOLOGY.md §3 BEFORE being

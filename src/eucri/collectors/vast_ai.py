@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Mark Rusch
 """Vast.ai public search API (no auth) — executable marketplace asks.
 
 Collection scope (documented in SOURCES.md): datacenter-verified hosts only

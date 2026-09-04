@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Mark Rusch
 """FX must never be dated after the print it prices.
 
 v0.2.0 selected the globally latest stored ECB rate with no date bound. During a backfill

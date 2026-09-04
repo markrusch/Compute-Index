@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Mark Rusch
 """Append-only guarantees are enforced by the database, not by convention."""
 
 from __future__ import annotations

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Mark Rusch
 """Paste-ready Substack post (Substack has no public posting API — by design this
 produces markdown + the PNGs in site/charts to paste manually)."""
 

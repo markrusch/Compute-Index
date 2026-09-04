@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Mark Rusch
 """Dropout sensitivity on a controlled dataset."""
 
 from __future__ import annotations

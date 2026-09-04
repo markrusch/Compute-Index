@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Mark Rusch
 """Chart generation: 1200x675 PNGs for the weekly post and the dashboard.
 
 Design rules (dataviz): one axis per panel (the energy overlay is two stacked panels,

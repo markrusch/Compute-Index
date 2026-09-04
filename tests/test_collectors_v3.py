@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Mark Rusch
 """Scaleway and Azure Retail collectors. Fixture-driven, no live network.
 
 Both were added in v0.3.0 to widen a panel too thin to clear its own publish gate.
