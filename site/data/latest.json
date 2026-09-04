@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-04T11:10:07Z",
+  "generated_at": "2026-09-04T19:32:35Z",
   "eucri_version": "0.1.0",
   "methodology_version": "0.3.0-dev",
   "disclaimer": "EU-CRI is a research publication. It is not investment advice and is not administered as a benchmark under EU Regulation 2016/1011; it may not be used as a reference price in financial instruments.",
@@ -64,20 +64,6 @@
       "n_sources": 3,
       "n_executable": 0,
       "flags": "insufficient_sources"
-    },
-    "EU-CRI-H100-CLOUD": {
-      "date": "2026-08-15",
-      "value_usd": 3.85,
-      "value_eur": 3.328434,
-      "fx_rate": 1.1567,
-      "fx_date": "2026-08-14",
-      "n_sources": 5,
-      "n_executable": 0,
-      "flags": "",
-      "wow_pct": 0.0,
-      "mom_pct": null,
-      "prev_date": "2026-08-14",
-      "prev_value_usd": 3.85
     },
     "EU-CRI-H100-PCIE": {
       "date": "2026-09-04",

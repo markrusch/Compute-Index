@@ -241,10 +241,22 @@ never jumps the published level:
 | `EU-CRI-H100` | all qualifying H100-class providers (headline) |
 | `EU-CRI-H100-7D` | {f.aggregation.smoothing_days}-day mean of the headline |
 | `EU-CRI-H100-SOV` | EU/EEA-headquartered operators: {", ".join(sovereign)} |
-| `EU-CRI-H100-MKT` | executable-tier (marketplace) sources only |
-| `EU-CRI-H100-CLOUD` | list-tier (cloud) sources only |
-| `EU-CRI-A100`, `EU-CRI-B200` | class series; published once ≥{f.aggregation.min_providers} sources exist (gapped, with audit trail, before that) |
+| `EU-CRI-H100-MKT` | marketplace segment only |
+| `EU-CRI-H100-NC` | neocloud segment only |
+| `EU-CRI-H100-HS` | hyperscaler catalog segment only |
+| `EU-CRI-H100-PCIE` | H100 PCIe, priced as its own class (no assumed SXM factor) |
+| class series (`EU-CRI-A100`, `EU-CRI-H200`, `EU-CRI-B300`, …) | one per observed class in §1; published once ≥{f.aggregation.min_providers} providers exist (gapped, with audit trail, before that) |
 | `EU-CRI-COMPUTE` | chain-linked composite of class series (§3.2); a level, not a $/hr price |
+
+`EU-CRI-H100-CLOUD` was **retired in v0.3.0** and is not published. Its historical
+values remain in `index_history.csv` under the methodology version that produced them.
+
+**Segment size and the publication gate.** A sub-population series can only print when
+its segment holds at least `min_providers` ({f.aggregation.min_providers}) qualifying
+providers. `EU-CRI-H100-MKT` and `EU-CRI-H100-HS` draw on segments smaller than that and
+therefore gap by construction rather than by circumstance. This is stated here because a
+permanent gap and a temporary one look identical on the dashboard, and the difference
+matters to a reader.
 
 ## 5. Revisions and corrections
 

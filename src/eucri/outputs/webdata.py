@@ -29,9 +29,11 @@ OUT_PATH = REPO_ROOT / "site" / "data" / "latest.json"
 # must be able to show a GAP honestly, so a series with no value still belongs in the
 # snapshot — omitting it would make a gapped series indistinguishable from one that was
 # never computed.
+# EU-CRI-H100-CLOUD is deliberately absent: retired in v0.3.0 and no longer computed.
+# Listing it here republished its final 0.2.0-dev value in latest.json indefinitely.
 ALL_SERIES = [
     "EU-CRI-H100", "EU-CRI-H100-7D", "EU-CRI-H100-SOV", "EU-CRI-H100-MKT",
-    "EU-CRI-H100-NC", "EU-CRI-H100-HS", "EU-CRI-H100-CLOUD", "EU-CRI-H100-PCIE",
+    "EU-CRI-H100-NC", "EU-CRI-H100-HS", "EU-CRI-H100-PCIE",
     "EU-CRI-H200", "EU-CRI-B200", "EU-CRI-B300", "EU-CRI-A100", COMPOSITE,
 ]
 

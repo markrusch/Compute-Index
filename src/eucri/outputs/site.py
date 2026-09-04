@@ -52,9 +52,18 @@ NAV: tuple[tuple[str, str], ...] = (
 )
 
 # Ticker order: the headline first, then its companions. Presentational only.
-TICKER = (HEADLINE, SERIES_7D, "EU-CRI-H100-CLOUD", "EU-CRI-H100-MKT", COMPOSITE)
+# EU-CRI-H100-CLOUD was retired in v0.3.0 (see CHANGELOG) but stayed in this tuple, so
+# the ticker kept rendering its final 0.2.0-dev value. Removed 2026-09-04 and not
+# replaced: the remaining sub-population series draw on segments smaller than
+# aggregation.min_providers and so cannot print (see the note in TILES).
+TICKER = (HEADLINE, SERIES_7D, "EU-CRI-H100-MKT", COMPOSITE)
 
 # The sub-index tiles, in publication order.
+# NOTE (2026-09-04): EU-CRI-H100-MKT and EU-CRI-H100-HS draw on the marketplace (2
+# providers) and hyperscaler (3) segments, against aggregation.min_providers = 5, so
+# they cannot clear the gate and have never published a value. EU-CRI-H100-NC and
+# EU-CRI-H100-SOV have not either. They render as honest gaps, but a tile that can
+# never print is a governance question, not a rendering one — it is on the 0.4.0 list.
 TILES = (
     "EU-CRI-H200", "EU-CRI-B300", "EU-CRI-A100", "EU-CRI-H100-PCIE",
     "EU-CRI-H100-SOV", "EU-CRI-H100-MKT", "EU-CRI-H100-NC", "EU-CRI-H100-HS",
@@ -63,7 +72,6 @@ TILES = (
 SERIES_LABEL: dict[str, str] = {
     HEADLINE: "H100 SXM 80GB, on-demand, EU/EEA",
     SERIES_7D: "7-day mean of the headline",
-    "EU-CRI-H100-CLOUD": "List-tier (cloud) sources only",
     "EU-CRI-H100-MKT": "Marketplace segment only",
     "EU-CRI-H100-NC": "Neocloud segment only",
     "EU-CRI-H100-HS": "Hyperscaler catalog segment",
@@ -244,6 +252,22 @@ def latest_print(conn: sqlite3.Connection, series: str) -> sqlite3.Row | None:
         "SELECT * FROM daily_index WHERE series = ? ORDER BY date DESC, revision DESC LIMIT 1",
         (series,),
     ).fetchone()
+
+
+def current_print(conn: sqlite3.Connection, series: str, date: str) -> sqlite3.Row | None:
+    """The print for THIS session, or None — never an older one dressed as current.
+
+    `latest_print` returns a series' newest row whatever its date, which is right for
+    history but wrong for a live surface: a series that stops being computed keeps
+    rendering its last good value forever. That is exactly what happened to the retired
+    `EU-CRI-H100-CLOUD`, which sat in the ticker showing 3.85 from 2026-08-15 under
+    methodology 0.2.0-dev — for a while the only number on a ticker where every live
+    series was honestly gapped. A stale value presented as current is the one failure
+    mode this project cannot afford, so the live surfaces ask for the session's row by
+    date and get nothing if it does not exist.
+    """
+    row = latest_print(conn, series)
+    return row if row is not None and row["date"] == date else None
 
 
 def previous_published(
@@ -729,7 +753,7 @@ def _lock_hash() -> str:
 def _ticker(ctx: SiteContext) -> str:
     items = []
     for i, series in enumerate(TICKER):
-        row = latest_print(ctx.conn, series)
+        row = current_print(ctx.conn, series, ctx.date)
         if row is None:
             continue
         dot = '<span class="live-dot" aria-hidden="true"></span>' if i == 0 else ""
@@ -888,7 +912,7 @@ def _tiles(ctx: SiteContext) -> str:
     dates = _window(ctx.date, 14)
     out = []
     for series in TILES:
-        row = latest_print(ctx.conn, series)
+        row = current_print(ctx.conn, series, ctx.date)
         label = SERIES_LABEL.get(series, series)
         short = series.replace("EU-CRI-", "")
         head = (

@@ -9,7 +9,7 @@ from pathlib import Path
 import pytest
 
 from eucri import db
-from eucri.outputs import site
+from eucri.outputs import site, webdata
 from tests.conftest import insert_run
 
 PAGES = (
@@ -256,6 +256,36 @@ def test_dashboard_shows_the_headline_and_never_carries_a_gap_forward(built):
     # the gapped sub-index shows a dash and the reason, not the last good value
     assert "below the provider gate" in html
     assert "H200" in html
+
+
+def test_live_surfaces_never_show_a_stale_print_as_current(conn):
+    """A series that stops being computed must vanish from the live surfaces, not keep
+    rendering its last good value.
+
+    Regression: EU-CRI-H100-CLOUD was retired in v0.3.0 but left in site.TICKER, so the
+    ticker went on showing 3.85 from 2026-08-15 under methodology 0.2.0-dev. On
+    2026-09-04 it was the only number on a ticker where every live series was honestly
+    gapped -- precisely the "stale value dressed as live" this generator exists to
+    prevent.
+    """
+    insert_run(conn, "r1", "2026-08-16")
+    session = "2026-08-16"
+    # A series still being computed, gapped this session after an earlier real value.
+    _print(conn, "2026-08-10", "EU-CRI-H100", 1, 3.85)
+    _print(conn, "2026-08-16", "EU-CRI-H100", 1, None, flags="insufficient_sources",
+           n_sources=4, n_executable=0)
+    # A retired series: its newest row is old, and it must not resolve as current.
+    _print(conn, "2026-08-10", "EU-CRI-RETIRED", 1, 3.85)
+
+    assert site.latest_print(conn, "EU-CRI-RETIRED")["value_usd"] == 3.85
+    assert site.current_print(conn, "EU-CRI-RETIRED", session) is None
+    # A live series keeps resolving, and its gap stays a gap rather than reverting to 3.85.
+    assert site.current_print(conn, "EU-CRI-H100", session)["value_usd"] is None
+
+    # And the retired series is gone from every surface that renders live values.
+    assert "EU-CRI-H100-CLOUD" not in site.TICKER
+    assert "EU-CRI-H100-CLOUD" not in site.SERIES_LABEL
+    assert "EU-CRI-H100-CLOUD" not in webdata.ALL_SERIES
 
 
 def test_research_note_is_rendered_from_markdown(built):
