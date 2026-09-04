@@ -108,6 +108,16 @@ def _to_observation(item: dict, region: str, ts: str) -> Observation | None:
         return None
     if item.get("unitOfMeasure") != "1 Hour":
         return None
+    # Azure publishes every GPU SKU twice: a base/Linux meter and a "... Windows" meter
+    # carrying a bundled Windows Server licence, ~23% dearer (e.g. DE NC24ads_A100_v4 at
+    # 4.7750 Linux vs 5.8790 Windows on 2026-09-04). An OS licence is not part of the
+    # unit -- METHODOLOGY.md §1 prices a GPU-hour ex-VAT, excluding storage and egress --
+    # so admitting both put a ~23% non-compute spread inside what looks like one cell.
+    # Measured 2026-09-04: 68 of 69 (country, model, SKU) cells carried both meters.
+    # The Linux meter is sometimes suffixed "Linux" and sometimes unsuffixed, so the
+    # test is on the Windows form, which is always explicit.
+    if "Windows" in (item.get("productName") or ""):
+        return None
     sku = item.get("armSkuName") or ""
     mapped = SKU_MAP.get(sku)
     if mapped is None:
