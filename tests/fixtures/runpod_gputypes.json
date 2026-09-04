@@ -9,7 +9,17 @@
     "communityCloud": false,
     "securePrice": 2.19,
     "communityPrice": 0.5,
-    "lowestPrice": {
+    "c8": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c4": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c2": {
      "minimumBidPrice": null,
      "uninterruptablePrice": null,
      "stockStatus": null
@@ -23,7 +33,17 @@
     "communityCloud": true,
     "securePrice": 1.39,
     "communityPrice": 1.19,
-    "lowestPrice": {
+    "c8": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c4": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c2": {
      "minimumBidPrice": null,
      "uninterruptablePrice": null,
      "stockStatus": null
@@ -37,7 +57,17 @@
     "communityCloud": true,
     "securePrice": 0,
     "communityPrice": 1,
-    "lowestPrice": {
+    "c8": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c4": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c2": {
      "minimumBidPrice": null,
      "uninterruptablePrice": null,
      "stockStatus": null
@@ -51,8 +81,18 @@
     "communityCloud": true,
     "securePrice": 1.49,
     "communityPrice": 1.39,
-    "lowestPrice": {
-     "minimumBidPrice": 11.12,
+    "c8": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": 11.12,
+     "stockStatus": "Low"
+    },
+    "c4": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": 11.12,
+     "stockStatus": "Low"
+    },
+    "c2": {
+     "minimumBidPrice": null,
      "uninterruptablePrice": 11.12,
      "stockStatus": "Low"
     }
@@ -65,7 +105,17 @@
     "communityCloud": false,
     "securePrice": 0.44,
     "communityPrice": 0.35,
-    "lowestPrice": {
+    "c8": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c4": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c2": {
      "minimumBidPrice": null,
      "uninterruptablePrice": null,
      "stockStatus": null
@@ -79,7 +129,17 @@
     "communityCloud": true,
     "securePrice": 5.89,
     "communityPrice": 5.98,
-    "lowestPrice": {
+    "c8": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c4": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c2": {
      "minimumBidPrice": null,
      "uninterruptablePrice": null,
      "stockStatus": null
@@ -93,7 +153,17 @@
     "communityCloud": true,
     "securePrice": 7.39,
     "communityPrice": 6.94,
-    "lowestPrice": {
+    "c8": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c4": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c2": {
      "minimumBidPrice": null,
      "uninterruptablePrice": null,
      "stockStatus": null
@@ -107,7 +177,17 @@
     "communityCloud": false,
     "securePrice": 0.5,
     "communityPrice": 0.5,
-    "lowestPrice": {
+    "c8": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c4": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c2": {
      "minimumBidPrice": null,
      "uninterruptablePrice": null,
      "stockStatus": null
@@ -121,7 +201,17 @@
     "communityCloud": false,
     "securePrice": 0.5,
     "communityPrice": 0.5,
-    "lowestPrice": {
+    "c8": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c4": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c2": {
      "minimumBidPrice": null,
      "uninterruptablePrice": null,
      "stockStatus": null
@@ -135,7 +225,17 @@
     "communityCloud": true,
     "securePrice": 0,
     "communityPrice": 0.13,
-    "lowestPrice": {
+    "c8": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c4": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c2": {
      "minimumBidPrice": null,
      "uninterruptablePrice": null,
      "stockStatus": null
@@ -149,7 +249,17 @@
     "communityCloud": true,
     "securePrice": 0,
     "communityPrice": 0.17,
-    "lowestPrice": {
+    "c8": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c4": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c2": {
      "minimumBidPrice": null,
      "uninterruptablePrice": null,
      "stockStatus": null
@@ -163,7 +273,17 @@
     "communityCloud": true,
     "securePrice": 0,
     "communityPrice": 0.18,
-    "lowestPrice": {
+    "c8": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c4": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c2": {
      "minimumBidPrice": null,
      "uninterruptablePrice": null,
      "stockStatus": null
@@ -177,7 +297,17 @@
     "communityCloud": true,
     "securePrice": 0.46,
     "communityPrice": 0.22,
-    "lowestPrice": {
+    "c8": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c4": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c2": {
      "minimumBidPrice": null,
      "uninterruptablePrice": null,
      "stockStatus": null
@@ -191,7 +321,17 @@
     "communityCloud": true,
     "securePrice": 0.46,
     "communityPrice": 0.27,
-    "lowestPrice": {
+    "c8": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c4": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c2": {
      "minimumBidPrice": null,
      "uninterruptablePrice": null,
      "stockStatus": null
@@ -205,7 +345,17 @@
     "communityCloud": true,
     "securePrice": 0.5,
     "communityPrice": 0.19,
-    "lowestPrice": {
+    "c8": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c4": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c2": {
      "minimumBidPrice": null,
      "uninterruptablePrice": null,
      "stockStatus": null
@@ -219,7 +369,17 @@
     "communityCloud": true,
     "securePrice": 0.5,
     "communityPrice": 0.27,
-    "lowestPrice": {
+    "c8": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c4": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c2": {
      "minimumBidPrice": null,
      "uninterruptablePrice": null,
      "stockStatus": null
@@ -233,7 +393,17 @@
     "communityCloud": true,
     "securePrice": 0.5,
     "communityPrice": 0.28,
-    "lowestPrice": {
+    "c8": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c4": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c2": {
      "minimumBidPrice": null,
      "uninterruptablePrice": null,
      "stockStatus": null
@@ -247,7 +417,17 @@
     "communityCloud": true,
     "securePrice": 0.69,
     "communityPrice": 0.34,
-    "lowestPrice": {
+    "c8": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c4": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c2": {
      "minimumBidPrice": null,
      "uninterruptablePrice": null,
      "stockStatus": null
@@ -261,7 +441,17 @@
     "communityCloud": true,
     "securePrice": 0.59,
     "communityPrice": 0.39,
-    "lowestPrice": {
+    "c8": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c4": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c2": {
      "minimumBidPrice": null,
      "uninterruptablePrice": null,
      "stockStatus": null
@@ -275,7 +465,17 @@
     "communityCloud": true,
     "securePrice": 0.99,
     "communityPrice": 0.69,
-    "lowestPrice": {
+    "c8": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": 5.52,
+     "stockStatus": "Low"
+    },
+    "c4": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": 5.52,
+     "stockStatus": "Low"
+    },
+    "c2": {
      "minimumBidPrice": null,
      "uninterruptablePrice": 5.52,
      "stockStatus": "Low"
@@ -289,8 +489,18 @@
     "communityCloud": true,
     "securePrice": 2.99,
     "communityPrice": 2.69,
-    "lowestPrice": {
-     "minimumBidPrice": 21.52,
+    "c8": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": 21.52,
+     "stockStatus": "High"
+    },
+    "c4": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": 21.52,
+     "stockStatus": "High"
+    },
+    "c2": {
+     "minimumBidPrice": null,
      "uninterruptablePrice": 21.52,
      "stockStatus": "High"
     }
@@ -303,10 +513,20 @@
     "communityCloud": true,
     "securePrice": 3.19,
     "communityPrice": 2.59,
-    "lowestPrice": {
+    "c8": {
      "minimumBidPrice": null,
      "uninterruptablePrice": null,
      "stockStatus": null
+    },
+    "c4": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c2": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": "Low"
     }
    },
    {
@@ -317,7 +537,17 @@
     "communityCloud": true,
     "securePrice": 2.89,
     "communityPrice": 1.99,
-    "lowestPrice": {
+    "c8": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c4": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c2": {
      "minimumBidPrice": null,
      "uninterruptablePrice": null,
      "stockStatus": null
@@ -331,7 +561,17 @@
     "communityCloud": true,
     "securePrice": 4.39,
     "communityPrice": 3.59,
-    "lowestPrice": {
+    "c8": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": 28.72,
+     "stockStatus": "Medium"
+    },
+    "c4": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": 28.72,
+     "stockStatus": "Medium"
+    },
+    "c2": {
      "minimumBidPrice": null,
      "uninterruptablePrice": 28.72,
      "stockStatus": "Medium"
@@ -345,7 +585,17 @@
     "communityCloud": false,
     "securePrice": 3.79,
     "communityPrice": 0.5,
-    "lowestPrice": {
+    "c8": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c4": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c2": {
      "minimumBidPrice": null,
      "uninterruptablePrice": null,
      "stockStatus": null
@@ -359,7 +609,17 @@
     "communityCloud": false,
     "securePrice": 0.39,
     "communityPrice": 0.44,
-    "lowestPrice": {
+    "c8": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c4": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c2": {
      "minimumBidPrice": null,
      "uninterruptablePrice": null,
      "stockStatus": null
@@ -373,7 +633,17 @@
     "communityCloud": true,
     "securePrice": 0.82,
     "communityPrice": 0.69,
-    "lowestPrice": {
+    "c8": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c4": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c2": {
      "minimumBidPrice": null,
      "uninterruptablePrice": null,
      "stockStatus": null
@@ -387,7 +657,17 @@
     "communityCloud": true,
     "securePrice": 0.99,
     "communityPrice": 0.79,
-    "lowestPrice": {
+    "c8": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c4": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c2": {
      "minimumBidPrice": null,
      "uninterruptablePrice": null,
      "stockStatus": null
@@ -401,7 +681,17 @@
     "communityCloud": false,
     "securePrice": 0.24,
     "communityPrice": 0.5,
-    "lowestPrice": {
+    "c8": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c4": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c2": {
      "minimumBidPrice": null,
      "uninterruptablePrice": null,
      "stockStatus": null
@@ -415,7 +705,17 @@
     "communityCloud": true,
     "securePrice": 0.26,
     "communityPrice": 0.2,
-    "lowestPrice": {
+    "c8": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c4": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c2": {
      "minimumBidPrice": null,
      "uninterruptablePrice": null,
      "stockStatus": null
@@ -429,7 +729,17 @@
     "communityCloud": true,
     "securePrice": 0.44,
     "communityPrice": 0.18,
-    "lowestPrice": {
+    "c8": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c4": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c2": {
      "minimumBidPrice": null,
      "uninterruptablePrice": null,
      "stockStatus": null
@@ -443,7 +753,17 @@
     "communityCloud": true,
     "securePrice": 0.83,
     "communityPrice": 0.49,
-    "lowestPrice": {
+    "c8": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c4": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c2": {
      "minimumBidPrice": null,
      "uninterruptablePrice": null,
      "stockStatus": null
@@ -457,7 +777,17 @@
     "communityCloud": true,
     "securePrice": 0.77,
     "communityPrice": 0.74,
-    "lowestPrice": {
+    "c8": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c4": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c2": {
      "minimumBidPrice": null,
      "uninterruptablePrice": null,
      "stockStatus": null
@@ -471,7 +801,17 @@
     "communityCloud": true,
     "securePrice": 0.5,
     "communityPrice": 0.12,
-    "lowestPrice": {
+    "c8": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c4": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c2": {
      "minimumBidPrice": null,
      "uninterruptablePrice": null,
      "stockStatus": null
@@ -485,7 +825,17 @@
     "communityCloud": true,
     "securePrice": 0.25,
     "communityPrice": 0.17,
-    "lowestPrice": {
+    "c8": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c4": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c2": {
      "minimumBidPrice": null,
      "uninterruptablePrice": null,
      "stockStatus": null
@@ -499,7 +849,17 @@
     "communityCloud": true,
     "securePrice": 0.25,
     "communityPrice": 0.19,
-    "lowestPrice": {
+    "c8": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c4": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c2": {
      "minimumBidPrice": null,
      "uninterruptablePrice": null,
      "stockStatus": null
@@ -513,7 +873,17 @@
     "communityCloud": true,
     "securePrice": 0.27,
     "communityPrice": 0.16,
-    "lowestPrice": {
+    "c8": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c4": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c2": {
      "minimumBidPrice": null,
      "uninterruptablePrice": null,
      "stockStatus": null
@@ -527,7 +897,17 @@
     "communityCloud": true,
     "securePrice": 0.49,
     "communityPrice": 0.33,
-    "lowestPrice": {
+    "c8": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c4": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c2": {
      "minimumBidPrice": null,
      "uninterruptablePrice": null,
      "stockStatus": null
@@ -541,7 +921,17 @@
     "communityCloud": false,
     "securePrice": 0.57,
     "communityPrice": 0.5,
-    "lowestPrice": {
+    "c8": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c4": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c2": {
      "minimumBidPrice": null,
      "uninterruptablePrice": null,
      "stockStatus": null
@@ -555,7 +945,17 @@
     "communityCloud": false,
     "securePrice": 0.74,
     "communityPrice": 0.34,
-    "lowestPrice": {
+    "c8": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c4": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c2": {
      "minimumBidPrice": null,
      "uninterruptablePrice": null,
      "stockStatus": null
@@ -569,7 +969,17 @@
     "communityCloud": true,
     "securePrice": 0.96,
     "communityPrice": 0.82,
-    "lowestPrice": {
+    "c8": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c4": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c2": {
      "minimumBidPrice": null,
      "uninterruptablePrice": null,
      "stockStatus": null
@@ -583,7 +993,17 @@
     "communityCloud": true,
     "securePrice": 0.5,
     "communityPrice": 1.64,
-    "lowestPrice": {
+    "c8": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c4": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c2": {
      "minimumBidPrice": null,
      "uninterruptablePrice": null,
      "stockStatus": null
@@ -597,7 +1017,17 @@
     "communityCloud": true,
     "securePrice": 1.99,
     "communityPrice": 1.69,
-    "lowestPrice": {
+    "c8": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": 13.52,
+     "stockStatus": "Low"
+    },
+    "c4": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": 13.52,
+     "stockStatus": "Low"
+    },
+    "c2": {
      "minimumBidPrice": null,
      "uninterruptablePrice": 13.52,
      "stockStatus": "Low"
@@ -611,7 +1041,17 @@
     "communityCloud": false,
     "securePrice": 0.49,
     "communityPrice": 0.5,
-    "lowestPrice": {
+    "c8": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c4": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c2": {
      "minimumBidPrice": null,
      "uninterruptablePrice": null,
      "stockStatus": null
@@ -625,7 +1065,17 @@
     "communityCloud": false,
     "securePrice": 1,
     "communityPrice": 1,
-    "lowestPrice": {
+    "c8": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c4": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c2": {
      "minimumBidPrice": null,
      "uninterruptablePrice": null,
      "stockStatus": null
@@ -639,7 +1089,17 @@
     "communityCloud": true,
     "securePrice": 1.89,
     "communityPrice": 1.69,
-    "lowestPrice": {
+    "c8": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c4": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c2": {
      "minimumBidPrice": null,
      "uninterruptablePrice": null,
      "stockStatus": null
@@ -653,7 +1113,17 @@
     "communityCloud": true,
     "securePrice": 0,
     "communityPrice": 0.19,
-    "lowestPrice": {
+    "c8": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c4": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c2": {
      "minimumBidPrice": null,
      "uninterruptablePrice": null,
      "stockStatus": null
@@ -667,7 +1137,17 @@
     "communityCloud": true,
     "securePrice": 0,
     "communityPrice": 0.23,
-    "lowestPrice": {
+    "c8": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c4": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c2": {
      "minimumBidPrice": null,
      "uninterruptablePrice": null,
      "stockStatus": null
@@ -681,7 +1161,17 @@
     "communityCloud": false,
     "securePrice": 0,
     "communityPrice": 0,
-    "lowestPrice": {
+    "c8": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c4": {
+     "minimumBidPrice": null,
+     "uninterruptablePrice": null,
+     "stockStatus": null
+    },
+    "c2": {
      "minimumBidPrice": null,
      "uninterruptablePrice": null,
      "stockStatus": null
